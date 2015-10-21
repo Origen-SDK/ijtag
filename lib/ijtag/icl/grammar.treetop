@@ -1,0 +1,85 @@
+module IJTAG
+  module ICL
+    grammar Grammar
+
+      rule icl_source
+        icl_source_items+
+      end
+
+      rule icl_source_items
+        sl_comment / namespace_def / use_namespace_def / module_def
+      end
+
+      rule namespace_def
+        s 'NameSpace' s namespace_name? s ';' sn
+      end
+
+      rule use_namespace_def
+        s 'UseNameSpace' s namespace_name? s ';' sn
+      end
+
+      rule module_def
+        s 'Module' S module_name S '{' S scalar_id S '}' sn
+      end
+
+      rule scalar_id
+        [a-zA-Z] ([a-zA-Z_] / dec_digit)*
+      end
+
+      rule dec_digit
+        [0-9]
+      end
+
+      rule module_name
+        scalar_id
+      end
+
+      rule namespace_name
+        scalar_id
+      end
+
+      #rule ml_comment
+      #  '/*' .*? '*/'
+      #end
+
+      rule sl_comment
+        s '//' (!N .)* sn
+      end
+
+      # Whitespace helpers
+      # s in the name means space, n means newline, and capitalization
+      # means that the capitalized part is required (contrary to being optional)
+      rule s
+        (' ' / '\t')*
+      end
+
+      rule S
+        (' ' / '\t')+
+      end
+
+      rule n
+        '\r'? '\n'?
+      end
+
+      rule N
+        '\r'? '\n'
+      end
+
+      rule sn
+        s n
+      end
+
+      rule sN
+        s N 
+      end
+
+      rule Sn
+        S n
+      end
+
+      rule SN
+        S N 
+      end
+    end
+  end
+end
