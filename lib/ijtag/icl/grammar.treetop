@@ -1,7 +1,6 @@
 module IJTAG
   module ICL
     grammar Grammar
-
       rule icl_source
         icl_source_items+
       end
@@ -11,15 +10,15 @@ module IJTAG
       end
 
       rule namespace_def
-        'NameSpace' s namespace_name? s ';' s
+        "NameSpace" s namespace_name? s ";" s
       end
 
       rule use_namespace_def
-        'UseNameSpace' s namespace_name? s ';' s
+        "UseNameSpace" s namespace_name? s ";" s
       end
 
       rule module_def
-        'Module' S module_name S '{' module_item* '}' s
+        "Module" S module_name S "{" s module_item* s "}" s
       end
 
       rule module_item
@@ -43,35 +42,35 @@ module IJTAG
       end
 
       rule ml_comment
-        '/*' (!end_of_comment .)* end_of_comment s
+        "/*" (!end_of_comment .)* end_of_comment s
       end
 
       rule end_of_comment
-        '*/'
+        "*/"
       end
 
       rule sl_comment
-        '//' (!N .)*
+        "//" (!N .)* s
       end
 
-      # Optional space, including new lines and comments to end of line
+      # Optional space, including new lines and comments
       rule s
-        (' ' / '\t' / N / sl_comment)*
+        (" " / "\t" / N / sl_comment / ml_comment)*
       end
 
-      # Required space, including new lines and comments to end of line
+      # Required space, including new lines and comments
       rule S
-        (' ' / '\t' / N / sl_comment)+
+        (" " / "\t" / N / sl_comment / ml_comment)+
       end
 
       # Optional end of line
       rule n
-        '\r'? '\n'?
+        "\r"? "\n"?
       end
 
       # Required end of line
       rule N
-        '\r'? '\n'
+        "\r"? "\n"
       end
     end
   end
