@@ -7,19 +7,23 @@ module IJTAG
       end
 
       rule icl_source_items
-        ml_comment / sl_comment / namespace_def / use_namespace_def / module_def
+        S / ml_comment / sl_comment / namespace_def / use_namespace_def / module_def
       end
 
       rule namespace_def
-        s 'NameSpace' s namespace_name? s ';' sn
+        'NameSpace' s namespace_name? s ';' s
       end
 
       rule use_namespace_def
-        s 'UseNameSpace' s namespace_name? s ';' sn
+        'UseNameSpace' s namespace_name? s ';' s
       end
 
       rule module_def
-        s 'Module' S module_name S '{' S scalar_id S '}' sn
+        'Module' S module_name S '{' module_item* '}' s
+      end
+
+      rule module_item
+        use_namespace_def
       end
 
       rule scalar_id
@@ -39,7 +43,7 @@ module IJTAG
       end
 
       rule ml_comment
-        s '/*' (!end_of_comment .)* end_of_comment sn
+        '/*' (!end_of_comment .)* end_of_comment s
       end
 
       rule end_of_comment
@@ -47,42 +51,27 @@ module IJTAG
       end
 
       rule sl_comment
-        s '//' (!N .)* sn
+        '//' (!N .)*
       end
 
-      # Whitespace helpers
-      # s in the name means space, n means newline, and capitalization
-      # means that the capitalized part is required (contrary to being optional)
+      # Optional space, including new lines and comments to end of line
       rule s
-        (' ' / '\t')*
+        (' ' / '\t' / N / sl_comment)*
       end
 
+      # Required space, including new lines and comments to end of line
       rule S
-        (' ' / '\t')+
+        (' ' / '\t' / N / sl_comment)+
       end
 
+      # Optional end of line
       rule n
         '\r'? '\n'?
       end
 
+      # Required end of line
       rule N
         '\r'? '\n'
-      end
-
-      rule sn
-        s n
-      end
-
-      rule sN
-        s N 
-      end
-
-      rule Sn
-        S n
-      end
-
-      rule SN
-        S N 
       end
     end
   end
