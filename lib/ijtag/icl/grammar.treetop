@@ -7,7 +7,7 @@ module IJTAG
       end
 
       rule icl_source_items
-        sl_comment / namespace_def / use_namespace_def / module_def
+        ml_comment / sl_comment / namespace_def / use_namespace_def / module_def
       end
 
       rule namespace_def
@@ -38,9 +38,13 @@ module IJTAG
         scalar_id
       end
 
-      #rule ml_comment
-      #  '/*' .*? '*/'
-      #end
+      rule ml_comment
+        s '/*' (!end_of_comment .)* end_of_comment sn
+      end
+
+      rule end_of_comment
+        '*/'
+      end
 
       rule sl_comment
         s '//' (!N .)* sn

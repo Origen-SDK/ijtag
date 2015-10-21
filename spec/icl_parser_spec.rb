@@ -28,4 +28,9 @@ describe "The ICL Parser" do
     p '// Hello\n'
     p '// Hello'
   end
+
+  it "can parse multi line comments" do
+    p '/* Hello */'
+    p '/* Hello \n How are you today */\n'
+  end
 end
