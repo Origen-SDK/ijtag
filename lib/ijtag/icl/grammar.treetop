@@ -2,7 +2,11 @@ module IJTAG
   module ICL
     grammar Grammar
       rule icl_source
-        icl_source_items+
+        icl_source_items+ {
+          def to_ast
+            Node.new(:icl, elements.map{ |e| e.to_ast })
+          end
+        }
       end
 
       rule icl_source_items
@@ -14,11 +18,19 @@ module IJTAG
       end
 
       rule use_namespace_def
-        "UseNameSpace" s namespace_name? s ";" s
+        "UseNameSpace" s name:namespace_name? s ";" s {
+          def to_ast
+            Node.new(:use_namespace, [name.to_ast])
+          end
+        }
       end
 
       rule module_def
-        "Module" S module_name S "{" s module_item* s "}" s
+        "Module" S name:module_name S "{" s items:module_item* s "}" s {
+          def to_ast
+            Node.new(:module, [name.to_ast, *items.elements.map{ |e| e.to_ast }])
+          end
+        }
       end
 
       rule module_item
@@ -34,11 +46,19 @@ module IJTAG
       end
 
       rule module_name
-        scalar_id
+        scalar_id {
+          def to_ast
+            Node.new(:name, [text_value])
+          end
+        }
       end
 
       rule namespace_name
-        scalar_id
+        scalar_id {
+          def to_ast
+            Node.new(:name, [text_value])
+          end
+        }
       end
 
       rule ml_comment

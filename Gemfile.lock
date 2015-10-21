@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     ijtag (0.1.1)
+      ast
       origen (>= 0.5.7)
       treetop (~> 1)
 

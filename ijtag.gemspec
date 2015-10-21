@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
   # Add any gems that your plugin needs to run within a host application
   spec.add_runtime_dependency "origen", ">= 0.5.7"
   spec.add_runtime_dependency "treetop", '~>1'
+  spec.add_runtime_dependency "ast"
 
   # Add any gems that your plugin needs for its development environment only
   spec.add_development_dependency "origen_doc_helpers"
