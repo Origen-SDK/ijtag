@@ -2,15 +2,15 @@ module IJTAG
   module ICL
     grammar Grammar
       rule icl_source
-        icl_source_items+ {
+        iclSource_items+ {
           def to_ast
             n :icl, elements.map{ |e| e.to_ast }
           end
         }
       end
 
-      rule icl_source_items
-        S / ml_comment / sl_comment / namespace_def / use_namespace_def / module_def
+      rule iclSource_items
+        S / ml_comment / sl_comment / nameSpace_def / useNameSpace_def / module_def
       end
 
       #  _______            _                    _   _   _           _           
@@ -34,11 +34,11 @@ module IJTAG
         "//" (!N .)* s
       end
 
-      rule namespace_def
+      rule nameSpace_def
         "NameSpace" s namespace_name? s ";" s
       end
 
-      rule use_namespace_def
+      rule useNameSpace_def
         "UseNameSpace" s name:namespace_name? s ";" s {
           def to_ast
             n1 :use_namespace, name.to_ast
@@ -55,7 +55,54 @@ module IJTAG
       end
 
       rule module_item
-        use_namespace_def
+        useNameSpace_def
+        #useNameSpace_def /
+        #port_def /
+        #instance_def /
+        #scanRegister_def /
+        #dataRegister_def /
+        #logicSignal_def /
+        #scanMux_def /
+        #dataMux_def /
+        #clockMux_def /
+        #oneHotDataGroup_def /
+        #oneHotScanGroup_def /
+        #scanInterface_def /
+        #accessLink_def /
+        #alias_def /
+        #enum_def /
+        #parameter_def /
+        #localParameter_def /
+        #attribute_def
+      end
+
+      rule port_def
+        scanInPort_def /
+        scanOutPort_def /
+        shiftEnPort_def /
+        captureEnPort_def /
+        updateEnPort_def /
+        dataInPort_def /
+        dataOutPort_def /
+        toShiftEnPort_def /
+        toUpdateEnPort_def /
+        toCaptureEnPort_def /
+        selectPort_def /
+        toSelectPort_def /
+        resetPort_def /
+        toResetPort_def /
+        tmsPort_def /
+        toTmsPort_def /
+        tckPort_def /
+        toTckPort_def /
+        clockPort_def /
+        toClockPort_def /
+        trstPort_def /
+        toTrstPort_def /
+        toIRSelectPort_def /
+        addressPort_def /
+        writeEnPort_def /
+        readEnPort_def
       end
 
       #  _______                  _             _   _   _           _           
@@ -74,7 +121,7 @@ module IJTAG
       end
 
       rule port_name
-        scalar_id / vector_id { 
+        SCALAR_ID / vector_id { 
           def to_ast
             n1 :name, text_value
           end
@@ -82,7 +129,7 @@ module IJTAG
       end
 
       rule register_name
-        scalar_id / vector_id { 
+        SCALAR_ID / vector_id { 
           def to_ast
             n1 :name, text_value
           end
@@ -90,7 +137,7 @@ module IJTAG
       end
 
       rule instance_name
-        scalar_id {
+        SCALAR_ID {
           def to_ast
             n1 :name, text_value
           end
@@ -98,7 +145,7 @@ module IJTAG
       end
 
       rule namespace_name
-        scalar_id {
+        SCALAR_ID {
           def to_ast
             n1 :name, text_value
           end
@@ -106,7 +153,7 @@ module IJTAG
       end
 
       rule module_name
-        scalar_id {
+        SCALAR_ID {
           def to_ast
             n1 :name, text_value
           end
@@ -114,7 +161,7 @@ module IJTAG
       end
 
       rule reg_port_signal_id
-        scalar_id / vector_id { 
+        SCALAR_ID / vector_id { 
           def to_ast
             n1 :id, text_value
           end
@@ -185,7 +232,7 @@ module IJTAG
         }
       end
 
-      rule shift_en_signal
+      rule shiftEn_signal
         signal { 
           def to_ast
             n1 :signal, text_value
@@ -193,7 +240,7 @@ module IJTAG
         }
       end
 
-      rule capture_en_signal
+      rule captureEn_signal
         signal { 
           def to_ast
             n1 :signal, text_value
@@ -201,7 +248,7 @@ module IJTAG
         }
       end
 
-      rule update_en_signal
+      rule updateEn_signal
         signal { 
           def to_ast
             n1 :signal, text_value
@@ -249,16 +296,16 @@ module IJTAG
         }
       end
 
-      rule concat_shift_en_signal
-        (shift_en_signal / data_signal) ("," shift_en_signal / data_signal)* { 
+      rule concat_shiftEn_signal
+        (shiftEn_signal / data_signal) ("," shiftEn_signal / data_signal)* { 
           def to_ast
             n1 :signal, text_value
           end
         }
       end
 
-      rule concat_capture_en_signal
-        (capture_en_signal / data_signal) ("," capture_en_signal / data_signal)* { 
+      rule concat_captureEn_signal
+        (captureEn_signal / data_signal) ("," captureEn_signal / data_signal)* { 
           def to_ast
             n1 :signal, text_value
           end
@@ -288,72 +335,76 @@ module IJTAG
       #    \  / (_| | | |_| |  __/ | | | (_) | |  | | | | | | (_| | |_\__ \
       #     \/ \__,_|_|\__,_|\___| |_|  \___/|_|  |_| |_| |_|\__,_|\__|___/      
 
-      rule scalar_id
-        [a-zA-Z] ([a-zA-Z_] / dec_digit)*
+      rule SCALAR_ID
+        [a-zA-Z] ([a-zA-Z_] / DEC_DIGIT)*
       end
 
       rule pos_int
-        dec_digit ('_' / dec_digit)*
+        "0" / "1" / POS_INT
+      end
+
+      rule POS_INT
+        DEC_DIGIT ('_' / DEC_DIGIT)*
       end
 
       rule size
-        pos_int / '$' scalar_id
+        pos_int / '$' SCALAR_ID
       end
 
-      rule unknown_digit
+      rule UNKNOWN_DIGIT
         'X' / 'x'
       end
 
-      rule dec_digit
+      rule DEC_DIGIT
         [0-9]
       end
 
-      rule bin_digit
-        [0-1] / unknown_digit
+      rule BIN_DIGIT
+        [0-1] / UNKNOWN_DIGIT
       end
 
-      rule hex_digit
-        [0-9a-fA-F] / unknown_digit
+      rule HEX_DIGIT
+        [0-9a-fA-F] / UNKNOWN_DIGIT
       end
 
-      rule dec_base
+      rule DEC_BASE
         "'" ('d' / 'D') (" " / "\t")*
       end
 
-      rule bin_base
+      rule BIN_BASE
         "'" ('b' / 'B') (" " / "\t")*
       end
 
-      rule hex_base
+      rule HEX_BASE
         "'" ('h' / 'H') (" " / "\t")*
       end
 
-      rule unsized_dec_number
-        dec_base pos_int
+      rule UNSIZED_DEC_NUMBER
+        DEC_BASE POS_INT
       end
 
-      rule unsized_bin_number
-        bin_base ("_" / bin_digit)*
+      rule UNSIZED_BIN_NUMBER
+        BIN_BASE BIN_DIGIT ("_" / BIN_DIGIT)*
       end
 
-      rule unsized_hex_number
-        hex_base ("_" / hex_digit)*
+      rule UNSIZED_HEX_NUMBER
+        HEX_BASE HEX_DIGIT ("_" / HEX_DIGIT)*
       end
 
       rule sized_dec_number
-        size unsized_dec_number
+        size UNSIZED_DEC_NUMBER
       end
 
       rule sized_bin_number
-        size unsized_bin_number
+        size UNSIZED_BIN_NUMBER
       end
 
       rule sized_hex_number
-        size unsized_hex_number
+        size UNSIZED_HEX_NUMBER
       end
 
       rule vector_id
-        scalar_id "[" (index / range) "]"
+        SCALAR_ID "[" (index / range) "]"
       end
 
       rule index
@@ -389,11 +440,11 @@ module IJTAG
       end
 
       rule parameter_ref
-        "$" scalar_id
+        "$" SCALAR_ID
       end
 
       rule unsized_number
-        pos_int / unsized_dec_number / unsized_bin_number / unsized_hex_number
+        pos_int / UNSIZED_DEC_NUMBER / UNSIZED_BIN_NUMBER / UNSIZED_HEX_NUMBER
       end
 
       rule sized_number
