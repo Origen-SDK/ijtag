@@ -53,6 +53,8 @@ Module Context {     // Some module
 
   it "to_ast works for a simple module def" do
     icl = <<-END
+// Here is a module    
+// That doesn't do much
 Module Context {     // Some module
   // And another comment
   UseNameSpace ATX;  // Just because
@@ -64,11 +66,11 @@ Module Context {     // Some module
     ast = @parser.parse(icl).to_ast
     ast.should ==
       s(:icl,
-        s(:module,
-          s(:name, "Context"),
-          s(:use_namespace,
-            s(:name, "ATX")),
-          s(:use_namespace,
-            s(:name, "Blah"))))
+        s(:module_def,
+          s(:module_name, "Context"),
+          s(:useNameSpace_def,
+            s(:namespace_name, "ATX")),
+          s(:useNameSpace_def,
+            s(:namespace_name, "Blah"))))
   end
 end

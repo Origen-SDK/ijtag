@@ -4,7 +4,7 @@ module IJTAG
       rule icl_source
         iclSource_items+ {
           def to_ast
-            n :icl, elements.map{ |e| e.to_ast }
+            n :icl, *elements.map{ |e| e.to_ast if e.respond_to?(:to_ast) }.compact
           end
         }
       end
@@ -13,14 +13,9 @@ module IJTAG
         S / ml_comment / sl_comment / nameSpace_def / useNameSpace_def / module_def
       end
 
-      #  _______            _                    _   _   _           _           
-      # |__   __|          | |                  | | | \ | |         | |          
-      #    | | ___  _ __   | |     _____   _____| | |  \| | ___   __| | ___  ___ 
-      #    | |/ _ \| '_ \  | |    / _ \ \ / / _ \ | | . ` |/ _ \ / _` |/ _ \/ __|
-      #    | | (_) | |_) | | |___|  __/\ V /  __/ | | |\  | (_) | (_| |  __/\__ \
-      #    |_|\___/| .__/  |______\___| \_/ \___|_| |_| \_|\___/ \__,_|\___||___/
-      #            | |                                                           
-      #            |_|
+      ####################################################
+      # TOP LEVEL NODES
+      ####################################################
 
       rule ml_comment
         "/*" (!end_of_comment .)* end_of_comment s
@@ -41,7 +36,7 @@ module IJTAG
       rule useNameSpace_def
         "UseNameSpace" s name:namespace_name? s ";" s {
           def to_ast
-            n1 :use_namespace, name.to_ast
+            n1 :useNameSpace_def, name.to_ast
           end
         }
       end
@@ -49,14 +44,13 @@ module IJTAG
       rule module_def
         "Module" S name:module_name S "{" s items:module_item* s "}" s {
           def to_ast
-            n :module, [name.to_ast, *items.elements.map{ |e| e.to_ast }]
+            n :module_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
           end
         }
       end
 
       rule module_item
-        useNameSpace_def
-        #useNameSpace_def /
+        useNameSpace_def# /
         #port_def /
         #instance_def /
         #scanRegister_def /
@@ -105,17 +99,18 @@ module IJTAG
         readEnPort_def
       end
 
-      #  _______                  _             _   _   _           _           
-      # |__   __|                (_)           | | | \ | |         | |          
-      #    | | ___ _ __ _ __ ___  _ _ __   __ _| | |  \| | ___   __| | ___  ___ 
-      #    | |/ _ \ '__| '_ ` _ \| | '_ \ / _` | | | . ` |/ _ \ / _` |/ _ \/ __|
-      #    | |  __/ |  | | | | | | | | | | (_| | | | |\  | (_) | (_| |  __/\__ \
-      #    |_|\___|_|  |_| |_| |_|_|_| |_|\__,_|_| |_| \_|\___/ \__,_|\___||___/      
+      ####################################################
+      # INTERMEDIATE NODES
+      ####################################################
+
+      ####################################################
+      # TERMINAL NODES
+      ####################################################
 
       rule hier_port
         (instance_name ".")+ port_name {
           def to_ast
-            n1 :port, text_value
+            n1 :hier_port, text_value
           end
         }
       end
@@ -123,7 +118,7 @@ module IJTAG
       rule port_name
         SCALAR_ID / vector_id { 
           def to_ast
-            n1 :name, text_value
+            n1 :port_name, text_value
           end
         }
       end
@@ -131,7 +126,7 @@ module IJTAG
       rule register_name
         SCALAR_ID / vector_id { 
           def to_ast
-            n1 :name, text_value
+            n1 :register_name, text_value
           end
         }
       end
@@ -139,7 +134,7 @@ module IJTAG
       rule instance_name
         SCALAR_ID {
           def to_ast
-            n1 :name, text_value
+            n1 :instance_name, text_value
           end
         }
       end
@@ -147,7 +142,7 @@ module IJTAG
       rule namespace_name
         SCALAR_ID {
           def to_ast
-            n1 :name, text_value
+            n1 :namespace_name, text_value
           end
         }
       end
@@ -155,7 +150,7 @@ module IJTAG
       rule module_name
         SCALAR_ID {
           def to_ast
-            n1 :name, text_value
+            n1 :module_name, text_value
           end
         }
       end
@@ -163,7 +158,7 @@ module IJTAG
       rule reg_port_signal_id
         SCALAR_ID / vector_id { 
           def to_ast
-            n1 :id, text_value
+            n1 :reg_port_signal_id, text_value
           end
         }
       end
@@ -179,7 +174,7 @@ module IJTAG
       rule reset_signal
         "~"? signal { 
           def to_ast
-            n1 :signal, text_value
+            n1 :reset_signal, text_value
           end
         }
       end
@@ -187,7 +182,7 @@ module IJTAG
       rule scan_signal
         "~"? signal { 
           def to_ast
-            n1 :signal, text_value
+            n1 :scan_signal, text_value
           end
         }
       end
@@ -195,7 +190,7 @@ module IJTAG
       rule data_signal
         "~"? signal { 
           def to_ast
-            n1 :signal, text_value
+            n1 :data_signal, text_value
           end
         }
       end
@@ -203,7 +198,7 @@ module IJTAG
       rule clock_signal
         "~"? signal { 
           def to_ast
-            n1 :signal, text_value
+            n1 :clock_signal, text_value
           end
         }
       end
@@ -211,7 +206,7 @@ module IJTAG
       rule tck_signal
         signal { 
           def to_ast
-            n1 :signal, text_value
+            n1 :tck_signal, text_value
           end
         }
       end
@@ -219,7 +214,7 @@ module IJTAG
       rule tms_signal
         signal { 
           def to_ast
-            n1 :signal, text_value
+            n1 :tms_signal, text_value
           end
         }
       end
@@ -227,7 +222,7 @@ module IJTAG
       rule trst_signal
         signal { 
           def to_ast
-            n1 :signal, text_value
+            n1 :trst_signal, text_value
           end
         }
       end
@@ -235,7 +230,7 @@ module IJTAG
       rule shiftEn_signal
         signal { 
           def to_ast
-            n1 :signal, text_value
+            n1 :signalEn_signal, text_value
           end
         }
       end
@@ -243,7 +238,7 @@ module IJTAG
       rule captureEn_signal
         signal { 
           def to_ast
-            n1 :signal, text_value
+            n1 :captureEn_signal, text_value
           end
         }
       end
@@ -251,7 +246,7 @@ module IJTAG
       rule updateEn_signal
         signal { 
           def to_ast
-            n1 :signal, text_value
+            n1 :updateEn_signal, text_value
           end
         }
       end
@@ -259,7 +254,7 @@ module IJTAG
       rule concat_reset_signal
         (reset_signal / data_signal) ("," reset_signal / data_signal)* { 
           def to_ast
-            n1 :signal, text_value
+            n1 :concat_reset_signal, text_value
           end
         }
       end
@@ -267,7 +262,7 @@ module IJTAG
       rule concat_scan_signal
         (scan_signal / data_signal) ("," scan_signal / data_signal)* { 
           def to_ast
-            n1 :signal, text_value
+            n1 :concat_scan_signal, text_value
           end
         }
       end
@@ -275,7 +270,7 @@ module IJTAG
       rule concat_data_signal
         (data_signal) ("," data_signal)* { 
           def to_ast
-            n1 :signal, text_value
+            n1 :concat_data_signal, text_value
           end
         }
       end
@@ -283,7 +278,7 @@ module IJTAG
       rule concat_clock_signal
         (clock_signal / data_signal) ("," clock_signal / data_signal)* { 
           def to_ast
-            n1 :signal, text_value
+            n1 :concat_clock_signal, text_value
           end
         }
       end
@@ -291,7 +286,7 @@ module IJTAG
       rule concat_tck_signal
         (tck_signal / data_signal) ("," tck_signal / data_signal)* { 
           def to_ast
-            n1 :signal, text_value
+            n1 :concat_tck_signal, text_value
           end
         }
       end
@@ -299,7 +294,7 @@ module IJTAG
       rule concat_shiftEn_signal
         (shiftEn_signal / data_signal) ("," shiftEn_signal / data_signal)* { 
           def to_ast
-            n1 :signal, text_value
+            n1 :concat_shiftEn_signal, text_value
           end
         }
       end
@@ -307,7 +302,7 @@ module IJTAG
       rule concat_captureEn_signal
         (captureEn_signal / data_signal) ("," captureEn_signal / data_signal)* { 
           def to_ast
-            n1 :signal, text_value
+            n1 :concat_captureEn_signal, text_value
           end
         }
       end
@@ -315,7 +310,7 @@ module IJTAG
       rule concat_tms_signal
         (tms_signal / data_signal) ("," tms_signal / data_signal)* { 
           def to_ast
-            n1 :signal, text_value
+            n1 :concat_tms_signal, text_value
           end
         }
       end
@@ -323,17 +318,14 @@ module IJTAG
       rule concat_trst_signal
         (trst_signal / data_signal) ("," trst_signal / data_signal)* { 
           def to_ast
-            n1 :signal, text_value
+            n1 :concat_trst_signal, text_value
           end
         }
       end
 
-      # __      __   _              ______                         _       
-      # \ \    / /  | |            |  ____|                       | |      
-      #  \ \  / /_ _| |_   _  ___  | |__ ___  _ __ _ __ ___   __ _| |_ ___ 
-      #   \ \/ / _` | | | | |/ _ \ |  __/ _ \| '__| '_ ` _ \ / _` | __/ __|
-      #    \  / (_| | | |_| |  __/ | | | (_) | |  | | | | | | (_| | |_\__ \
-      #     \/ \__,_|_|\__,_|\___| |_|  \___/|_|  |_| |_| |_|\__,_|\__|___/      
+      ####################################################
+      # VALUE FORMATS
+      ####################################################
 
       rule SCALAR_ID
         [a-zA-Z] ([a-zA-Z_] / DEC_DIGIT)*
@@ -459,14 +451,9 @@ module IJTAG
         concat_number ("|" concat_number)*
       end
 
-      #  _    _      _                     
-      # | |  | |    | |                    
-      # | |__| | ___| |_ __   ___ _ __ ___ 
-      # |  __  |/ _ \ | '_ \ / _ \ '__/ __|
-      # | |  | |  __/ | |_) |  __/ |  \__ \
-      # |_|  |_|\___|_| .__/ \___|_|  |___/
-      #               | |                  
-      #               |_|
+      ####################################################
+      # HELPERS
+      ####################################################
 
       # Optional space, including new lines and comments
       rule s

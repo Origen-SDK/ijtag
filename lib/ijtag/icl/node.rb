@@ -11,16 +11,16 @@ end
 module Treetop
   module Runtime
     class SyntaxNode
-      def n(type, children)
+      def n(type, *children)
         IJTAG::ICL::Node.new(type, children)
       end
 
       def n0(type)
-        n(type, [])
+        n(type, *[])
       end
 
       def n1(type, arg)
-        n(type, [arg])
+        n(type, *[arg])
       end
     end
   end
