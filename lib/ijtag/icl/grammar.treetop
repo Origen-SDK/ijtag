@@ -50,24 +50,24 @@ module IJTAG
       end
 
       rule module_item
-        useNameSpace_def# /
-        #port_def /
-        #instance_def /
-        #scanRegister_def /
-        #dataRegister_def /
-        #logicSignal_def /
-        #scanMux_def /
-        #dataMux_def /
-        #clockMux_def /
-        #oneHotDataGroup_def /
-        #oneHotScanGroup_def /
-        #scanInterface_def /
-        #accessLink_def /
-        #alias_def /
-        #enum_def /
-        #parameter_def /
-        #localParameter_def /
-        #attribute_def
+        useNameSpace_def /
+        port_def /
+        instance_def /
+        scanRegister_def /
+        dataRegister_def /
+        logicSignal_def /
+        scanMux_def /
+        dataMux_def /
+        clockMux_def /
+        oneHotDataGroup_def /
+        oneHotScanGroup_def /
+        scanInterface_def /
+        accessLink_def /
+        alias_def /
+        enum_def /
+        parameter_def /
+        localParameter_def /
+        attribute_def
       end
 
       rule port_def
@@ -103,9 +103,45 @@ module IJTAG
       # INTERMEDIATE NODES
       ####################################################
 
+      rule scanInPort_def
+        'ScanInPort' S name:scanInPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+          def to_ast
+            n :scanInPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule scanOutPort_def
+        'ScanOutPort' S name:scanOutPort_name s (';' / ('{' s items:scanOutPort_item* s '}')) s {
+          def to_ast
+            n :scanOutPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule scanOutPort_item 
+        attribute_def / scanOutPort_source / scanOutPort_enable
+      end
+
       ####################################################
       # TERMINAL NODES
       ####################################################
+
+      rule scanInPort_name
+        port_name {
+          def to_ast
+            n1 :scanInPort_name, text_value
+          end
+        }
+      end
+
+      rule scanOutPort_name
+        port_name {
+          def to_ast
+            n1 :scanOutPort_name, text_value
+          end
+        }
+      end
 
       rule hier_port
         (instance_name ".")+ port_name {
