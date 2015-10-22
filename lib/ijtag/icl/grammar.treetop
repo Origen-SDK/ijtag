@@ -4,7 +4,7 @@ module IJTAG
       rule icl_source
         icl_source_items+ {
           def to_ast
-            Node.new(:icl, elements.map{ |e| e.to_ast })
+            n :icl, elements.map{ |e| e.to_ast }
           end
         }
       end
@@ -20,7 +20,7 @@ module IJTAG
       rule use_namespace_def
         "UseNameSpace" s name:namespace_name? s ";" s {
           def to_ast
-            Node.new(:use_namespace, [name.to_ast])
+            n1 :use_namespace, name.to_ast
           end
         }
       end
@@ -28,7 +28,7 @@ module IJTAG
       rule module_def
         "Module" S name:module_name S "{" s items:module_item* s "}" s {
           def to_ast
-            Node.new(:module, [name.to_ast, *items.elements.map{ |e| e.to_ast }])
+            n :module, [name.to_ast, *items.elements.map{ |e| e.to_ast }]
           end
         }
       end
@@ -48,7 +48,7 @@ module IJTAG
       rule module_name
         scalar_id {
           def to_ast
-            Node.new(:name, [text_value])
+            n1 :name, text_value
           end
         }
       end
@@ -56,7 +56,7 @@ module IJTAG
       rule namespace_name
         scalar_id {
           def to_ast
-            Node.new(:name, [text_value])
+            n1 :name, text_value
           end
         }
       end
