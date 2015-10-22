@@ -123,9 +123,304 @@ module IJTAG
         attribute_def / scanOutPort_source / scanOutPort_enable
       end
 
+      rule scanOutPort_source
+        'Source' S signal:concat_scan_signal s ';' s {
+          def to_ast
+            n :scanOutPort_source, signal.to_ast
+          end
+        }
+      end
+
+      rule scanOutPort_enable
+        'Enable' S signal:data_signal s ';' s {
+          def to_ast
+            n :scanOutPort_enable, signal.to_ast
+          end
+        }
+      end
+
+      rule shiftEnPort_def
+        'ShiftEnPort' S name:shiftEnPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+          def to_ast
+            n :shiftEnPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule captureEnPort_def
+        'CaptureEnPort' S name:captureEnPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+          def to_ast
+            n :captureEnPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule updateEnPort_def
+        'UpdateEnPort' S name:updateEnPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+          def to_ast
+            n :updateEnPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule dataInPort_def
+        'DataInPort' S name:dataInPort_name s (';' / ('{' s items:dataInPort_item*  s '}')) s {
+          def to_ast
+            n :dataInPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+     
+      rule dataInPort_item
+        attribute_def /
+        dataInPort_refEnum /
+        dataInPort_defaultLoadValue
+      end
+
+      rule dataInPort_refEnum
+        'RefEnum' s name:enum_name s ';' s {
+          def to_ast
+            n :dataInPort_refEnum, name.to_ast
+          end
+        }
+      end
+
+      rule dataInPort_defaultLoadValue
+        'DefaultLoadValue' S val:(concat_number / enum_symbol) s ';' s {
+          def to_ast
+            n :dataInPort_defaultLoadValue, val.to_ast
+          end
+        }
+      end
+
+      rule dataOutPort_def
+        'DataOutPort' S name:dataOutPort_name s (';' / ('{' s items:dataOutPort_item*  s '}')) s {
+          def to_ast
+            n :dataOutPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule dataOutPort_item
+        attribute_def /
+        dataOutPort_source /
+        dataOutPort_enable /
+        dataOutPort_refEnum
+      end
+
+      rule dataOutPort_source
+        'Source' S signal:concat_data_signal s ';' s {
+          def to_ast
+            n :dataOutPort_source, signal.to_ast
+          end
+        }
+      end
+
+      rule dataOutPort_enable
+        'Enable' S signal:data_signal s ';' s {
+          def to_ast
+            n :dataOutPort_enable, signal.to_ast
+          end
+        }
+      end
+
+      rule dataOutPort_refEnum
+        'RefEnum' S name:enum_name s ';' s {
+          def to_ast
+            n :dataOutPort_refEnum, name.to_ast
+          end
+        }
+      end
+
+      rule toShiftEnPort_def
+        'ToShiftEnPort' S name:toShiftEnPort_name s (';' / ('{' s items:toShiftEnPort_items* s '}')) s {
+          def to_ast
+            n :toShiftEnPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule toShiftEnPort_items
+        attribute_def /
+        toShiftEnPort_source
+      end
+
+      rule toShiftEnPort_source
+        'Source' S signal:concat_shiftEn_signal s ';' s {
+          def to_ast
+            n :toShiftEnPort_source, signal.to_ast
+          end
+        }
+      end
+
+      rule toCaptureEnPort_def
+        'ToCaptureEnPort' S name:toCaptureEnPort_name s (';' / ('{' s items:toCaptureEnPort_items* s '}')) s {
+          def to_ast
+            n :toCaptureEnPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule toCaptureEnPort_items
+        attribute_def /
+        toCaptureEnPort_source
+      end
+
+      rule toCaptureEnPort_source
+        'Source' S signal:captureEn_signal s ';' s {
+          def to_ast
+            n :toCaptureEnPort_source, signal.to_ast
+          end
+        }
+      end
+
+      rule toUpdateEnPort_def
+        'ToUpdateEnPort' S name:toUpdateEnPort_name s (';' / ('{' s items:toUpdateEnPort_items* s '}')) s {
+          def to_ast
+            n :toUpdateEnPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end 
+
+      rule toUpdateEnPort_items
+        attribute_def / toUpdateEnPort_source
+      end
+
+      rule toUpdateEnPort_source
+        'Source' S signal:updateEn_signal s ';' s {
+          def to_ast
+            n :toUpdateEnPort_source, signal.to_ast
+          end
+        }
+      end
+
+      rule selectPort_def
+        'SelectPort' S name:selectPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+          def to_ast
+            n :selectPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule toSelectPort_def
+        'ToSelectPort' S name:toSelectPort_name s (';' / ('{' s items:toSelectPort_item+ s '}')) s {
+          def to_ast
+            n :toSelectPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule toSelectPort_item
+        attribute_def / toSelectPort_source
+      end
+
+      rule toSelectPort_source
+        'Source' S signal:concat_data_signal s ';' s {
+          def to_ast
+            n :toSelectPort_source, signal.to_ast
+          end
+        }
+      end
+
+      rule resetPort_def
+        'ResetPort' S name:resetPort_name s (';' / ('{' s items:resetPort_item* s '}')) s {
+          def to_ast
+            n :resetPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
       ####################################################
       # TERMINAL NODES
       ####################################################
+
+      rule resetPort_name
+        port_name {
+          def to_ast
+            n1 :resetPort_name, text_value
+          end
+        }
+      end
+
+      rule toSelectPort_name
+        port_name {
+          def to_ast
+            n1 :toSelectPort_name, text_value
+          end
+        }
+      end
+
+      rule selectPort_name
+        port_name {
+          def to_ast
+            n1 :selectPort_name, text_value
+          end
+        }
+      end
+
+      rule toUpdateEnPort_name
+        port_name {
+          def to_ast
+            n1 :toUpdateEnPort_name, text_value
+          end
+        }
+      end
+
+      rule toCaptureEnPort_name
+        port_name {
+          def to_ast
+            n1 :toCaptureEnPort_name, text_value
+          end
+        }
+      end
+      
+      rule toShiftEnPort_name
+        port_name {
+          def to_ast
+            n1 :toShiftEnPort_name, text_value
+          end
+        }
+      end
+
+      rule dataOutPort_name
+        port_name {
+          def to_ast
+            n1 :dataOutPort_name, text_value
+          end
+        }
+      end
+
+      rule dataInPort_name
+        port_name {
+          def to_ast
+            n1 :dataInPort_name, text_value
+          end
+        }
+      end
+
+      rule updateEnPort_name
+        port_name {
+          def to_ast
+            n1 :updateEnPort_name, text_value
+          end
+        }
+      end
+
+      rule captureEnPort_name
+        port_name {
+          def to_ast
+            n1 :captureEnPort_name, text_value
+          end
+        }
+      end
+
+      rule shiftEnPort_name
+        port_name {
+          def to_ast
+            n1 :shiftEnPort_name, text_value
+          end
+        }
+      end
 
       rule scanInPort_name
         port_name {
