@@ -330,9 +330,316 @@ module IJTAG
         }
       end
 
+      rule resetPort_item
+        attribute_def /
+        resetPort_polarity
+      end
+
+      rule resetPort_polarity
+        'ActivePolarity' S val:('0' / '1') s ';' s {
+          def to_ast
+            n :resetPort_polarity, val.text_value.to_i
+          end
+        }
+      end
+
+      rule toResetPort_def
+        'ToResetPort' S name:toResetPort_name s (';' / ('{' s items:toResetPort_item+ s '}')) s {
+          def to_ast
+            n :toResetPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule toResetPort_item
+        attribute_def /
+        toResetPort_source /
+        toResetPort_polarity
+      end
+
+      rule toResetPort_source
+        'Source' S signal:concat_reset_signal s ';' s {
+          def to_ast
+            n :toResetPort_source, signal.to_ast
+          end
+        }
+      end
+
+      rule toResetPort_polarity
+        'ActivePolarity' S ('0' / '1') s ';' s {
+          def to_ast
+            n :resetPort_polarity, val.text_value.to_i
+          end
+        }
+      end
+
+      rule tmsPort_def
+        'TMSPort' S name:tmsPort_name  s (';' / ('{' s attrs:attribute_def* s '}')) s {
+          def to_ast
+            n :tmsPort_name, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule toTmsPort_def
+        'ToTMSPort' S name:toTmsPort_name s (';' / ('{' s items:toTmsPort_item* s '}')) s {
+          def to_ast
+            n :toTmsPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule toTmsPort_item
+        attribute_def /
+        toTmsPort_source
+      end
+
+      rule toTmsPort_source
+        'Source' S signal:concat_tms_signal s ';' s {
+          def to_ast
+            n :toTmsPort_source, signal.to_ast
+          end
+        }
+      end
+
+      rule toIRSelectPort_def
+        'ToIRSelectPort' S name:toIRSelectPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+          def to_ast
+            n :toIRSelectPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule tckPort_def
+        'TCKPort' S name:tckPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+          def to_ast
+            n :tckPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule toTckPort_def
+        'ToTCKPort' S name:toTckPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+          def to_ast
+            n :toTckPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule clockPort_def
+        'ClockPort' S name:clockPort_name s (';' / ('{' s items:clockPort_item* s '}')) s {
+          def to_ast
+            n :clockPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule clockPort_item
+        attribute_def /
+        clockPort_diffPort
+      end
+
+      rule clockPort_diffPort
+        'DifferentialInvOf' S signal:concat_clock_signal s ';' s {
+          def to_ast
+            n :clockPort_diffPort, signal.to_ast
+          end
+        }
+      end
+
+      rule toClockPort_def
+        'ToClockPort' S name:toClockPort_name s (';' / ('{' s items:toClockPort_item+ s '}')) s {
+          def to_ast
+            n :toClockPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule toClockPort_item
+        attribute_def /
+        toClockPort_source /
+        freqMultiplier_def /
+        freqDivider_def /
+        differentialInvOf_def /
+        period_def
+      end
+
+      rule toClockPort_source
+        'Source' S signal:concat_clock_signal s ';' s {
+          def to_ast
+            n :toClockPort_source, signal.to_ast
+          end
+        }
+      end
+
+      rule freqMultiplier_def
+        'FreqMultiplier' S val:pos_int s ';' s {
+          def to_ast
+            n :freqMultiplier_def, val.to_ast
+          end
+        }
+      end
+
+      rule freqDivider_def
+        'FreqDivider' S val:pos_int s ';' s {
+          def to_ast
+            n :freqDivider_def, val.to_ast
+          end
+        }
+      end
+
+      rule differentialInvOf_def
+        'DifferentialInvOf' S val:concat_clock_signal s ';' s {
+          def to_ast
+            n :differentialInvOf_def, val.to_ast
+          end
+        }
+      end
+
+      rule period_def
+        'Period' S val:pos_int s unit:('s' / 'ms' / 'us' / 'ns' / 'ps' / 'fs' / 'as')? s ';' s {
+          def to_ast
+            n :period_def, "#{v.to_ast}#{unit}"
+          end
+        }
+      end
+
+      rule trstPort_def
+        'TRSTPort' S name:trstPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+          def to_ast
+            n :trstPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule toTrstPort_def
+        'ToTRSTPort' S name:toTrstPort_name s (';' / ('{' s items:toTrstPort_item+ s '}')) s {
+          def to_ast
+            n :toTrstPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule toTrstPort_item
+        attribute_def /
+        toTrstPort_source
+      end
+
+      rule toTrstPort_source
+        'Source' S signal:concat_trst_signal s ';' s {
+          def to_ast
+            n :toTrstPort_source, signal.to_ast
+          end
+        }
+      end
+
+      rule addressPort_def
+        'AddressPort' S name:addressPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+          def to_ast
+            n :addressPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule writeEnPort_def
+        'WriteEnPort' S name:writeEnPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+          def to_ast
+            n :writeEnPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
       ####################################################
       # TERMINAL NODES
       ####################################################
+
+      rule addressPort_name
+        port_name {
+          def to_ast
+            n1 :addressPort_name, text_value
+          end
+        }
+      end
+
+      rule toTrstPort_name
+        port_name {
+          def to_ast
+            n1 :toTrstPort_name, text_value
+          end
+        }
+      end
+
+      rule trstPort_name
+        port_name {
+          def to_ast
+            n1 :trstPort_name, text_value
+          end
+        }
+      end
+
+      rule toClockPort_name
+        port_name {
+          def to_ast
+            n1 :toClockPort_name, text_value
+          end
+        }
+      end
+
+      rule clockPort_name
+        port_name {
+          def to_ast
+            n1 :clockPort_name, text_value
+          end
+        }
+      end
+
+      rule toTckPort_name
+        port_name {
+          def to_ast
+            n1 :toTckPort_name, text_value
+          end
+        }
+      end
+
+      rule tckPort_name
+        port_name {
+          def to_ast
+            n1 :tckPort_name, text_value
+          end
+        }
+      end
+
+      rule toIRSelectPort_name
+        port_name {
+          def to_ast
+            n1 :toIRSelectPort_name, text_value
+          end
+        }
+      end
+
+      rule toTmsPort_name
+        port_name {
+          def to_ast
+            n1 :toTmsPort_name, text_value
+          end
+        }
+      end
+
+      rule tmsPort_name
+        port_name {
+          def to_ast
+            n1 :tmsPort_name, text_value
+          end
+        }
+      end
+
+      rule toResetPort_name
+        port_name {
+          def to_ast
+            n1 :toResetPort_name, text_value
+          end
+        }
+      end
 
       rule resetPort_name
         port_name {
@@ -663,7 +970,11 @@ module IJTAG
       end
 
       rule pos_int
-        "0" / "1" / POS_INT
+        "0" / "1" / POS_INT {
+          def to_ast
+            text_value.sub("_", "").to_i
+          end
+        }
       end
 
       rule POS_INT
