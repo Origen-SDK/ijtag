@@ -13,6 +13,27 @@ module IJTAG
         S / ml_comment / sl_comment / namespace_def / use_namespace_def / module_def
       end
 
+      #  _______            _                    _   _   _           _           
+      # |__   __|          | |                  | | | \ | |         | |          
+      #    | | ___  _ __   | |     _____   _____| | |  \| | ___   __| | ___  ___ 
+      #    | |/ _ \| '_ \  | |    / _ \ \ / / _ \ | | . ` |/ _ \ / _` |/ _ \/ __|
+      #    | | (_) | |_) | | |___|  __/\ V /  __/ | | |\  | (_) | (_| |  __/\__ \
+      #    |_|\___/| .__/  |______\___| \_/ \___|_| |_| \_|\___/ \__,_|\___||___/
+      #            | |                                                           
+      #            |_|
+
+      rule ml_comment
+        "/*" (!end_of_comment .)* end_of_comment s
+      end
+
+      rule end_of_comment
+        "*/"
+      end
+
+      rule sl_comment
+        "//" (!N .)* s
+      end
+
       rule namespace_def
         "NameSpace" s namespace_name? s ";" s
       end
@@ -37,15 +58,38 @@ module IJTAG
         use_namespace_def
       end
 
-      rule scalar_id
-        [a-zA-Z] ([a-zA-Z_] / dec_digit)*
+      #  _______                  _             _   _   _           _           
+      # |__   __|                (_)           | | | \ | |         | |          
+      #    | | ___ _ __ _ __ ___  _ _ __   __ _| | |  \| | ___   __| | ___  ___ 
+      #    | |/ _ \ '__| '_ ` _ \| | '_ \ / _` | | | . ` |/ _ \ / _` |/ _ \/ __|
+      #    | |  __/ |  | | | | | | | | | | (_| | | | |\  | (_) | (_| |  __/\__ \
+      #    |_|\___|_|  |_| |_| |_|_|_| |_|\__,_|_| |_| \_|\___/ \__,_|\___||___/      
+
+      rule hier_port
+        (instance_name ".")+ port_name {
+          def to_ast
+            n1 :port, text_value
+          end
+        }
       end
 
-      rule dec_digit
-        [0-9]
+      rule port_name
+        scalar_id / vector_id { 
+          def to_ast
+            n1 :name, text_value
+          end
+        }
       end
 
-      rule module_name
+      rule register_name
+        scalar_id / vector_id { 
+          def to_ast
+            n1 :name, text_value
+          end
+        }
+      end
+
+      rule instance_name
         scalar_id {
           def to_ast
             n1 :name, text_value
@@ -61,17 +105,317 @@ module IJTAG
         }
       end
 
-      rule ml_comment
-        "/*" (!end_of_comment .)* end_of_comment s
+      rule module_name
+        scalar_id {
+          def to_ast
+            n1 :name, text_value
+          end
+        }
       end
 
-      rule end_of_comment
-        "*/"
+      rule reg_port_signal_id
+        scalar_id / vector_id { 
+          def to_ast
+            n1 :id, text_value
+          end
+        }
       end
 
-      rule sl_comment
-        "//" (!N .)* s
+      rule signal
+        number / reg_port_signal_id / hier_port { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
       end
+
+      rule reset_signal
+        "~"? signal { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule scan_signal
+        "~"? signal { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+      
+      rule data_signal
+        "~"? signal { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule clock_signal
+        "~"? signal { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule tck_signal
+        signal { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule tms_signal
+        signal { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule trst_signal
+        signal { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule shift_en_signal
+        signal { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule capture_en_signal
+        signal { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule update_en_signal
+        signal { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule concat_reset_signal
+        (reset_signal / data_signal) ("," reset_signal / data_signal)* { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule concat_scan_signal
+        (scan_signal / data_signal) ("," scan_signal / data_signal)* { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule concat_data_signal
+        (data_signal) ("," data_signal)* { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule concat_clock_signal
+        (clock_signal / data_signal) ("," clock_signal / data_signal)* { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule concat_tck_signal
+        (tck_signal / data_signal) ("," tck_signal / data_signal)* { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule concat_shift_en_signal
+        (shift_en_signal / data_signal) ("," shift_en_signal / data_signal)* { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule concat_capture_en_signal
+        (capture_en_signal / data_signal) ("," capture_en_signal / data_signal)* { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule concat_tms_signal
+        (tms_signal / data_signal) ("," tms_signal / data_signal)* { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      rule concat_trst_signal
+        (trst_signal / data_signal) ("," trst_signal / data_signal)* { 
+          def to_ast
+            n1 :signal, text_value
+          end
+        }
+      end
+
+      # __      __   _              ______                         _       
+      # \ \    / /  | |            |  ____|                       | |      
+      #  \ \  / /_ _| |_   _  ___  | |__ ___  _ __ _ __ ___   __ _| |_ ___ 
+      #   \ \/ / _` | | | | |/ _ \ |  __/ _ \| '__| '_ ` _ \ / _` | __/ __|
+      #    \  / (_| | | |_| |  __/ | | | (_) | |  | | | | | | (_| | |_\__ \
+      #     \/ \__,_|_|\__,_|\___| |_|  \___/|_|  |_| |_| |_|\__,_|\__|___/      
+
+      rule scalar_id
+        [a-zA-Z] ([a-zA-Z_] / dec_digit)*
+      end
+
+      rule pos_int
+        dec_digit ('_' / dec_digit)*
+      end
+
+      rule size
+        pos_int / '$' scalar_id
+      end
+
+      rule unknown_digit
+        'X' / 'x'
+      end
+
+      rule dec_digit
+        [0-9]
+      end
+
+      rule bin_digit
+        [0-1] / unknown_digit
+      end
+
+      rule hex_digit
+        [0-9a-fA-F] / unknown_digit
+      end
+
+      rule dec_base
+        "'" ('d' / 'D') (" " / "\t")*
+      end
+
+      rule bin_base
+        "'" ('b' / 'B') (" " / "\t")*
+      end
+
+      rule hex_base
+        "'" ('h' / 'H') (" " / "\t")*
+      end
+
+      rule unsized_dec_number
+        dec_base pos_int
+      end
+
+      rule unsized_bin_number
+        bin_base ("_" / bin_digit)*
+      end
+
+      rule unsized_hex_number
+        hex_base ("_" / hex_digit)*
+      end
+
+      rule sized_dec_number
+        size unsized_dec_number
+      end
+
+      rule sized_bin_number
+        size unsized_bin_number
+      end
+
+      rule sized_hex_number
+        size unsized_hex_number
+      end
+
+      rule vector_id
+        scalar_id "[" (index / range) "]"
+      end
+
+      rule index
+        integer_expr
+      end
+
+      rule range
+        index ":" index
+      end
+
+      rule number
+        unsized_number / sized_number / integer_expr
+      end
+
+      rule integer_expr
+        integer_expr_lvl1
+      end
+
+      rule integer_expr_lvl1
+        integer_expr_lvl2 (("+" / "-") integer_expr_lvl1)?
+      end
+
+      rule integer_expr_lvl2
+        integer_expr_arg (("*" / "/" / "%") integer_expr_lvl2)?
+      end
+
+      rule integer_expr_paren
+        "(" integer_expr ")"
+      end
+
+      rule integer_expr_arg
+        integer_expr_paren / pos_int / parameter_ref
+      end
+
+      rule parameter_ref
+        "$" scalar_id
+      end
+
+      rule unsized_number
+        pos_int / unsized_dec_number / unsized_bin_number / unsized_hex_number
+      end
+
+      rule sized_number
+        sized_dec_number / sized_bin_number / sized_hex_number
+      end
+
+      rule concat_number
+        "~"? number ("," "~"? number)*
+      end
+
+      rule concat_number_list
+        concat_number ("|" concat_number)*
+      end
+
+      #  _    _      _                     
+      # | |  | |    | |                    
+      # | |__| | ___| |_ __   ___ _ __ ___ 
+      # |  __  |/ _ \ | '_ \ / _ \ '__/ __|
+      # | |  | |  __/ | |_) |  __/ |  \__ \
+      # |_|  |_|\___|_| .__/ \___|_|  |___/
+      #               | |                  
+      #               |_|
 
       # Optional space, including new lines and comments
       rule s

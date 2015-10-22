@@ -42,7 +42,8 @@ describe "The ICL Parser" do
     icl = "Module Context { UseNameSpace ATX;\n UseNameSpace Blah;\n }\n"
     p icl
     icl = <<-END
-Module Context {
+Module Context {     // Some module
+  // And another comment
   UseNameSpace ATX;  // Just because
   UseNameSpace Blah;
 }
@@ -52,9 +53,12 @@ Module Context {
 
   it "to_ast works for a simple module def" do
     icl = <<-END
-Module Context {
+Module Context {     // Some module
+  // And another comment
   UseNameSpace ATX;  // Just because
-  UseNameSpace Blah;
+  /* Some multi
+     line comment */
+  UseNameSpace Blah;  /* An inline comment */
 }
     END
     ast = @parser.parse(icl).to_ast
