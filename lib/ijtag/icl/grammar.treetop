@@ -549,9 +549,230 @@ module IJTAG
         }
       end
 
+      rule readEnPort_def
+        'ReadEnPort' S name:readEnPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+          def to_ast
+            n :readEnPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      # Instance WI1 Of NS::WrappedInstr {
+      #                 InputPort SI = SI;
+      #                 InputPort SEL = SEL1;
+      # }
+      rule instance_def
+        'Instance' S name:instance_name S 'Of' S mod:((namespace_name? '::')? module_name) s (';' / ('{' s items:instance_item* s '}')) s {
+          def to_ast
+            n :instance_def, name.to_ast, n(:module_name, mod.text_value), *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule instance_item
+        inputPort_connection /
+        allowBroadcast_def /
+        attribute_def /
+        parameter_override /
+        instance_addressValue
+      end
+
+      rule inputPort_connection
+        'InputPort' S name:inputPort_name s '=' s source:inputPort_source s ';' s {
+          def to_ast
+            n :inputPort_connection, name.to_ast, source.to_ast
+          end
+        }
+      end
+
+      rule allowBroadcast_def
+        'AllowBroadcastOnScanInterface' S name:scanInterface_name s ';' s {
+          def to_ast
+            n :allowBroadcast_def, name.to_ast
+          end
+        }
+      end
+
+      rule inputPort_source
+        concat_reset_signal /
+        concat_scan_signal /
+        concat_data_signal /
+        concat_clock_signal /
+        concat_tck_signal /
+        concat_shiftEn_signal /
+        concat_captureEn_signal /
+        concat_updateEn_signal /
+        concat_tms_signal /
+        concat_trst_signal
+      end
+
+      rule instance_addressValue
+        'AddressValue' S val:number s ';' s {
+          def to_ast
+            n :instance_addressValue, val.to_ast
+          end
+        }
+      end
+
+      rule scanRegister_def
+        'ScanRegister' S name:scanRegister_name s (';' / ('{' s items:scanRegister_item* s '}')) s {
+          def to_ast
+            n :scanRegister_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule scanRegister_item
+        attribute_def /
+        scanRegister_scanInSource /
+        scanRegister_defaultLoadValue /
+        scanRegister_captureSource /
+        scanRegister_resetValue /
+        scanRegister_refEnum
+      end
+
+      rule scanRegister_scanInSource
+        'ScanInSource' S signal:scan_signal s ';' s {
+          def to_ast
+            n :scanRegister_scanInSource, signal.to_ast
+          end
+        }
+      end
+
+      rule scanRegister_defaultLoadValue
+        'DefaultLoadValue' S val:(concat_number / enum_symbol) s ';' s {
+          def to_ast
+            n :scanRegister_defaultLoadValue, val.to_ast
+          end
+        }
+      end
+
+      rule scanRegister_captureSource
+        'CaptureSource' S source:(concat_data_signal / enum_symbol) s ';' s {
+          def to_ast
+            n :scanRegister_captureSource, source.to_ast
+          end
+        }
+      end
+
+      rule scanRegister_resetValue
+        'ResetValue' S val:(concat_number / enum_symbol) s ';' s {
+          def to_ast
+            n :scanRegister_resetValue, val.to_ast
+          end
+        }
+      end
+
+      rule scanRegister_refEnum
+        'RefEnum' S name:enum_name s ';' s {
+          def to_ast
+            n :scanRegister_refEnum, name.to_ast
+          end
+        }
+      end
+
+      rule dataRegister_def
+        'DataRegister' S name:dataRegister_name s (';' / ('{' s items:dataRegister_item+ s '}')) s {
+          def to_ast
+            n :dataRegister_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule dataRegister_item
+        dataRegister_type /
+        dataRegister_common
+      end
+
+      rule dataRegister_type
+        dataRegister_selectable /
+        dataRegister_addressable /
+        dataRegister_readCallBack /
+        dataRegister_writeCallBack
+      end
+
+      rule dataRegister_common
+        dataRegister_resetValue /
+        dataRegister_defaultLoadValue /
+        dataRegister_refEnum /
+        attribute_def
+      end
+
+      rule dataRegister_resetValue
+        'ResetValue' S val:(concat_number / enum_symbol) s ';' s {
+          def to_ast
+            n :dataRegister_resetValue, val.to_ast
+          end
+        }
+      end
+
+      rule dataRegister_defaultLoadValue
+        'DefaultLoadValue' S val:(concat_number / enum_symbol) s ';' s {
+          def to_ast
+            n :dataRegister_defaultLoadValue, val.to_ast
+          end
+        }
+      end
+
+      rule dataRegister_refEnum
+        'RefEnum' S name:enum_name s ';' s {
+          def to_ast
+            n :dataRegister_refEnum, name.to_ast
+          end
+        }
+      end
+
       ####################################################
       # TERMINAL NODES
       ####################################################
+
+      rule dataRegister_name
+        register_name {
+          def to_ast
+            n1 :dataRegister_name, text_value
+          end
+        }
+      end
+
+      rule scanRegister_name
+        register_name {
+          def to_ast
+            n1 :scanRegister_name, text_value
+          end
+        }
+      end
+
+      rule parameter_override
+        parameter_def {
+          def to_ast
+            n1 :parameter_override, text_value
+          end
+        }
+      end
+
+      rule inputPort_name
+        port_name {
+          def to_ast
+            n1 :inputPort_name, text_value
+          end
+        }
+      end
+
+      rule readEnPort_name
+        port_name {
+          def to_ast
+            n1 :readEnPort_name, text_value
+          end
+        }
+      end
+
+      rule writeEnPort_name
+        port_name {
+          def to_ast
+            n1 :writeEnPort_name, text_value
+          end
+        }
+      end
 
       rule addressPort_name
         port_name {
