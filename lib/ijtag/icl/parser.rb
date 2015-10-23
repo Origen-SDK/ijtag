@@ -24,7 +24,10 @@ module IJTAG
       end
 
       def self.parser
-        @parser ||= GrammarParser.new
+        @parser ||= begin
+          require "#{Origen.root!}/grammars/icl"
+          GrammarParser.new
+        end
       end
     end
   end

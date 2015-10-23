@@ -11,4 +11,14 @@ module IJTAG
   Dir.glob("#{File.dirname(__FILE__)}/**/*.rb").sort.each do |file|
     require file
   end
+
+  class << self
+
+    def icl_to_model(icl_str = nil, options = {})
+      icl_str, options = nil, icl_str if icl_str.is_a?(Hash)
+      icl_str ||= File.read(options[:file])
+      ICL::Builder.build(icl_str)
+    end
+    alias :icl_to_network :icl_to_model
+  end
 end
