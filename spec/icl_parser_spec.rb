@@ -46,6 +46,7 @@ Module Context {     // Some module
   // And another comment
   UseNameSpace ATX;  // Just because
   UseNameSpace Blah;
+  ScanOutPort SO { Source reg2.SO; }
 }
     END
     p icl
@@ -72,5 +73,11 @@ Module Context {     // Some module
             s(:namespace_name, "ATX")),
           s(:useNameSpace_def,
             s(:namespace_name, "Blah"))))
+  end
+
+  it "can parse some real examples" do
+    %w(e1).each do |fname|
+      p File.read("#{Origen.root}/examples/#{fname}.icl")
+    end
   end
 end

@@ -1544,7 +1544,7 @@ module IJTAG
       end
 
       rule hier_port
-        (instance_name ".")+ port_name {
+        (instance_name ".")+ port_name s {
           def to_ast
             n1 :hier_port, text_value
           end
@@ -1600,7 +1600,7 @@ module IJTAG
       end
 
       rule signal
-        number / reg_port_signal_id / hier_port { 
+        number / hier_port / reg_port_signal_id { 
           def to_ast
             n1 :signal, text_value
           end
@@ -1764,7 +1764,7 @@ module IJTAG
       ####################################################
 
       rule SCALAR_ID
-        [a-zA-Z] ([a-zA-Z_] / DEC_DIGIT)*
+        ([a-zA-Z] ([a-zA-Z_] / DEC_DIGIT)*)
       end
 
       rule pos_int
