@@ -722,9 +722,233 @@ module IJTAG
         }
       end
 
+      rule dataRegister_selectable
+        dataRegister_writeEnSource /
+        dataRegister_writeDataSource
+      end
+
+      rule dataRegister_writeEnSource
+        'WriteEnSource' S signal:data_signal s ';' s {
+          def to_ast
+            n :dataRegister_writeEnSource, signal.to_ast
+          end
+        }
+      end
+
+      rule dataRegister_writeDataSource
+        'WriteDataSource' S signal:concat_data_signal s ';' s {
+          def to_ast
+            n :dataRegister_writeDataSource, signal.to_ast
+          end
+        }
+      end
+
+      rule dataRegister_addressValue
+        'AddressValue' S val:number s ';' s {
+          def to_ast
+            n :dataRegister_addressValue, val.to_ast
+          end
+        }
+      end
+
+      rule dataRegister_readCallBack
+        dataRegister_readCallBack_proc /
+        dataRegister_readDataSource
+      end
+
+      rule dataRegister_readCallBack_proc
+        'ReadCallBack' S namespace:iProc_namespace S name:iProc_name S args:iProc_args* s ';' s {
+          def to_ast
+            n :dataRegister_readCallBack_proc, namespace.to_ast, name.to_ast, *args.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule dataRegister_readDataSource
+        'ReadDataSource' S signal:concat_data_signal s ';' s {
+          def to_ast
+            n :dataRegister_readDataSource, signal.to_ast
+          end
+        }
+      end
+
+      rule dataRegister_writeCallBack
+        'WriteCallBack' S namespace:iProc_namespace S name:iProc_name S args:iProc_args* s ';' s {
+          def to_ast
+            n :dataRegister_writeCallBack, namespace.to_ast, name.to_ast, *args.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule iProc_namespace
+        (namespace_name? '::')? ref_module_name ( '::' sub_namespace )? s {
+          def to_ast
+            n :iProc_namespace, text_value
+          end
+        }
+      end
+
+      rule iProc_name
+        SCALAR_ID / parameter_ref
+      end
+
+      rule iProc_args
+        '<D>' /
+        '<R>' /
+        number /
+        STRING /
+        parameter_ref
+      end
+
+      rule sub_namespace
+        SCALAR_ID /
+        parameter_ref
+      end
+
+      rule ref_module_name
+        SCALAR_ID /
+        parameter_ref
+      end
+
+      rule logicSignal_def
+        'LogicSignal' S name:logicSignal_name s '{' s expr:logic_expr s ';' s '}' s {
+          def to_ast
+            n :logicSignal_def, name.to_ast, expr.to_ast
+          end
+        }
+      end
+
+      rule scanMux_def
+        'ScanMux' S name:scanMux_name S 'SelectedBy' S select:scanMux_select s '{' s selections:scanMux_selection+ s '}' s {
+          def to_ast
+            n :scanMux_def, name.to_ast, select.to_ast, *selections.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule scanMux_selection
+        val:(concat_number_list ':' concat_scan_signal) s ';' s {
+          def to_ast
+            n :scanMux_selection, val.text_value
+          end
+        }
+      end
+
+      rule dataMux_def
+        'DataMux' S name:dataMux_name S 'SelectedBy' S select:dataMux_select s '{' s selections:dataMux_selection+ s '}' s {
+          def to_ast
+            n :dataMux_def, name.to_ast, select.to_ast, *selections.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule dataMux_selection
+        val:(concat_number_list ':' concat_data_signal) s ';' s {
+          def to_ast
+            n :dataMux_selection, val.text_value
+          end
+        }
+      end
+
+      rule clockMux_def
+        'ClockMux' S name:clockMux_name S 'SelectedBy' S select:clockMux_select s '{' s selections:clockMux_selection+ s '}' s {
+          def to_ast
+            n :clockMux_def, name.to_ast, select.to_ast, *selections.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule clockMux_selection
+        val:(concat_number_list ':' concat_clock_signal) s ';' s {
+          def to_ast
+            n :clockMux_selection, val.text_value
+          end
+        }
+      end
+
+      rule oneHotScanGroup_def
+        'OneHotScanGroup' S name:oneHotScanGroup_name s '{' s items:oneHotScanGroup_item+ s '}' s {
+          def to_ast
+            n :oneHotScanGroup_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
       ####################################################
       # TERMINAL NODES
       ####################################################
+
+      rule oneHotScanGroup_name
+        reg_port_signal_id {
+          def to_ast
+            n1 :oneHotScanGroup_name, text_value
+          end
+        }
+      end
+
+      rule clockMux_name
+        reg_port_signal_id {
+          def to_ast
+            n1 :clockMux_name, text_value
+          end
+        }
+      end
+
+      rule clockMux_select
+        concat_data_signal {
+          def to_ast
+            n1 :clockMux_select, text_value
+          end
+        }
+      end
+
+      rule dataMux_name
+        reg_port_signal_id {
+          def to_ast
+            n1 :dataMux_name, text_value
+          end
+        }
+      end
+
+      rule dataMux_select
+        concat_data_signal {
+          def to_ast
+            n1 :dataMux_select, text_value
+          end
+        }
+      end
+
+      rule scanMux_name
+        reg_port_signal_id {
+          def to_ast
+            n1 :scanMux_name, text_value
+          end
+        }
+      end
+
+      rule scanMux_select
+        concat_data_signal {
+          def to_ast
+            n1 :scanMux_select, text_value
+          end
+        }
+      end
+
+      rule logicSignal_name
+        reg_port_signal_id {
+          def to_ast
+            n1 :logicSignal_name, text_value
+          end
+        }
+      end
+
+      rule dataRegister_addressable
+        dataRegister_addressValue {
+          def to_ast
+            n1 :dataRegister_addressable, text_value
+          end
+        }
+      end
 
       rule dataRegister_name
         register_name {
@@ -1271,7 +1495,11 @@ module IJTAG
       end
 
       rule number
-        unsized_number / sized_number / integer_expr
+        unsized_number / sized_number / integer_expr {
+          def to_ast
+            text_value
+          end
+        }
       end
 
       rule integer_expr
@@ -1292,6 +1520,44 @@ module IJTAG
 
       rule integer_expr_arg
         integer_expr_paren / pos_int / parameter_ref
+      end
+
+      rule logic_expr
+        logic_expr_lvl1
+      end
+
+      rule logic_expr_lvl1
+        logic_expr_lvl2 (('&&' / '||') logic_expr_lvl1)?
+      end
+
+      rule logic_expr_lvl2
+        logic_expr_lvl3 (('&' / '|' / '^') logic_expr_lvl2)? / (('&' / '|' / '^') logic_expr_lvl2)
+      end
+
+      rule logic_expr_lvl3
+        logic_expr_lvl4 (('==' / '!=') logic_expr_num_arg)?
+      end
+
+      rule logic_expr_lvl4
+        logic_expr_arg (',' logic_expr_lvl4 )?
+      end
+
+      rule logic_unary_expr
+        ('~' / '!') logic_expr_arg
+      end
+
+      rule logic_expr_paren
+        '(' s logic_expr s ')'
+      end
+
+      rule logic_expr_arg
+        logic_expr_paren /
+        logic_unary_expr /
+        concat_data_signal
+      end
+
+      rule logic_expr_num_arg
+        concat_number / enum_name / '(' s logic_expr_num_arg s ')' 
       end
 
       rule parameter_ref
