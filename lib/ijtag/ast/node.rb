@@ -1,7 +1,7 @@
 require 'ast'
 require 'treetop'
 module IJTAG
-  module ICL
+  module AST
     class Node < ::AST::Node
     end
   end
@@ -12,7 +12,7 @@ module Treetop
   module Runtime
     class SyntaxNode
       def n(type, *children)
-        IJTAG::ICL::Node.new(type, children)
+        IJTAG::AST::Node.new(type, children)
       end
 
       def n0(type)

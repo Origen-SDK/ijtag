@@ -1,21 +1,12 @@
 require "spec_helper"
 
 describe "The ICL Parser" do
-
-  before :all do
-    @parser = IJTAG::ICL::Parser
-  end
-  
   def parse(string)
-    @parser.parse(string)
+    icl_parser.parse(string)
   end
 
   def p(string)
-    parse(string).should be, "parse(\"#{string}\")\n#{@parser.last_error_msg.join("\n")}"
-  end
-
-  def s(type, *children)
-    IJTAG::ICL::Node.new(type, children)
+    parse(string).should be, "parse(\"#{string}\")\n#{icl_parser.last_error_msg.join("\n")}"
   end
 
   it "can parse namespace defs" do
@@ -64,7 +55,7 @@ Module Context {     // Some module
   UseNameSpace Blah;  /* An inline comment */
 }
     END
-    ast = @parser.parse(icl).to_ast
+    ast = icl_parser.parse(icl).to_ast
     ast.should ==
       s(:icl,
         s(:module_def,
@@ -83,8 +74,7 @@ Module Context {     // Some module
   it "can parse some real examples" do
     %w(e1 e2).each do |fname|
       icl = File.read("#{Origen.root}/examples/#{fname}.icl")
-      p icl
-      ast = @parser.parse(icl).to_ast
+      ast = icl_parser.parse(icl).to_ast
     end
   end
 
@@ -94,7 +84,7 @@ Module Context {
   ScanOutPort SO { Source reg2.SO , reg1 , reg3 ; }
 }
 END
-    ast = @parser.parse(icl).to_ast
+    ast = icl_parser.parse(icl).to_ast
     ast.should ==
       s(:icl,
         s(:module_def,

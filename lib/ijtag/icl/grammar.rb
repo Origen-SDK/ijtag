@@ -19384,8 +19384,14 @@ module IJTAG
       end
 
       module Size0
-        def SCALAR_ID
-          elements[1]
+        def val
+          elements[0]
+        end
+      end
+
+      module Size1
+        def to_ast
+          n :size, val.to_ast
         end
       end
 
@@ -19400,44 +19406,41 @@ module IJTAG
           return cached
         end
 
-        i0 = index
-        r1 = _nt_POS_INT
-        if r1
-          r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
-          r0 = r1
+        i0, s0 = index, []
+        i1 = index
+        r2 = _nt_POS_INT
+        if r2
+          r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
+          r1 = r2
         else
-          i2, s2 = index, []
-          if (match_len = has_terminal?('$', false, index))
-            r3 = true
-            @index += match_len
-          else
-            terminal_parse_failure('\'$\'')
-            r3 = nil
-          end
-          s2 << r3
+          r3 = _nt_parameter_ref
           if r3
-            r4 = _nt_SCALAR_ID
-            s2 << r4
-          end
-          if s2.last
-            r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
-            r2.extend(Size0)
+            r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
+            r1 = r3
           else
-            @index = i2
-            r2 = nil
+            @index = i1
+            r1 = nil
           end
-          if r2
-            r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
-            r0 = r2
-          else
-            @index = i0
-            r0 = nil
-          end
+        end
+        s0 << r1
+        if s0.last
+          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(Size0)
+          r0.extend(Size1)
+        else
+          @index = i0
+          r0 = nil
         end
 
         node_cache[:size][start_index] = r0
 
         r0
+      end
+
+      module UNKNOWNDIGIT0
+        def to_ast
+          n0 :UNKNOWN_DIGIT
+        end
       end
 
       def _nt_UNKNOWN_DIGIT
@@ -19464,7 +19467,8 @@ module IJTAG
           r0 = r1
         else
           if (match_len = has_terminal?('x', false, index))
-            r2 = true
+            r2 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+            r2.extend(UNKNOWNDIGIT0)
             @index += match_len
           else
             terminal_parse_failure('\'x\'')

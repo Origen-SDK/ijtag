@@ -31,6 +31,14 @@ def load_target(target="default")
   Origen.target.load!
 end
 
+def icl_parser
+  @icl_parser ||= IJTAG::ICL::Parser
+end
+
+def s(type, *children)
+  IJTAG::AST::Node.new(type, children)
+end
+
 RSpec.configure do |config|
   config.formatter = OrigenFormatter
   # rspec-expectations config goes here. You can use an alternate

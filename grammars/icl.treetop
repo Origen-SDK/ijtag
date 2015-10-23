@@ -1972,11 +1972,19 @@ module IJTAG
       end
 
       rule size
-        POS_INT / '$' SCALAR_ID
+        val:(POS_INT / parameter_ref) {
+          def to_ast
+            n :size, val.to_ast
+          end
+        }
       end
 
       rule UNKNOWN_DIGIT
-        'X' / 'x'
+        'X' / 'x' {
+          def to_ast
+            n0 :UNKNOWN_DIGIT
+          end
+        }
       end
 
       rule DEC_DIGIT
