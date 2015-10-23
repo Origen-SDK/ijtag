@@ -30,7 +30,11 @@ module IJTAG
       end
 
       rule nameSpace_def
-        "NameSpace" s namespace_name? s ";" s
+        "NameSpace" s name:namespace_name? s ";" s {
+          def to_ast
+            n1 :nameSpace_def, name.to_ast
+          end
+        }
       end
 
       rule useNameSpace_def
@@ -54,7 +58,7 @@ module IJTAG
       end
 
       rule module_item
-        useNameSpace_def /
+        item:(useNameSpace_def /
         port_def /
         instance_def /
         scanRegister_def /
@@ -71,11 +75,15 @@ module IJTAG
         enum_def /
         parameter_def /
         localParameter_def /
-        attribute_def
+        attribute_def) s {
+          def to_ast
+            n :module_item, item.to_ast
+          end
+        }
       end
 
       rule port_def
-        scanInPort_def /
+        port:(scanInPort_def /
         scanOutPort_def /
         shiftEnPort_def /
         captureEnPort_def /
@@ -100,7 +108,11 @@ module IJTAG
         toIRSelectPort_def /
         addressPort_def /
         writeEnPort_def /
-        readEnPort_def
+        readEnPort_def) s {
+          def to_ast
+            n :port_def, port.to_ast
+          end
+        }
       end
 
       ####################################################
@@ -108,10 +120,10 @@ module IJTAG
       ####################################################
 
       rule scanInPort_def
-        'ScanInPort' S name:scanInPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+        'ScanInPort' S name:scanInPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
-            if respond_to?(:attrs)
-              n :scanInPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:attrs)
+              n :scanInPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
             else
               n :scanInPort_def, name.to_ast
             end
@@ -120,10 +132,10 @@ module IJTAG
       end
 
       rule scanOutPort_def
-        'ScanOutPort' S name:scanOutPort_name s (';' / ('{' s items:scanOutPort_item* s '}')) s {
+        'ScanOutPort' S name:scanOutPort_name s d:(';' / ('{' s items:scanOutPort_item* s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :scanOutPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :scanOutPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
             else
               n :scanOutPort_def, name.to_ast
             end
@@ -152,10 +164,10 @@ module IJTAG
       end
 
       rule shiftEnPort_def
-        'ShiftEnPort' S name:shiftEnPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+        'ShiftEnPort' S name:shiftEnPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
-            if respond_to?(:attrs)
-              n :shiftEnPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:attrs)
+              n :shiftEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
             else
               n :shiftEnPort_def, name.to_ast
             end
@@ -164,10 +176,10 @@ module IJTAG
       end
 
       rule captureEnPort_def
-        'CaptureEnPort' S name:captureEnPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+        'CaptureEnPort' S name:captureEnPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
-            if respond_to?(:attrs)
-              n :captureEnPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:attrs)
+              n :captureEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
             else
               n :captureEnPort_def, name.to_ast
             end
@@ -176,10 +188,10 @@ module IJTAG
       end
 
       rule updateEnPort_def
-        'UpdateEnPort' S name:updateEnPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+        'UpdateEnPort' S name:updateEnPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
-            if respond_to?(:attrs)
-              n :updateEnPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:attrs)
+              n :updateEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
             else
               n :updateEnPort_def, name.to_ast
             end
@@ -188,10 +200,10 @@ module IJTAG
       end
 
       rule dataInPort_def
-        'DataInPort' S name:dataInPort_name s (';' / ('{' s items:dataInPort_item* s '}')) s {
+        'DataInPort' S name:dataInPort_name s d:(';' / ('{' s items:dataInPort_item* s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :dataInPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :dataInPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
             else
               n :dataInPort_def, name.to_ast
             end
@@ -222,10 +234,10 @@ module IJTAG
       end
 
       rule dataOutPort_def
-        'DataOutPort' S name:dataOutPort_name s (';' / ('{' s items:dataOutPort_item*  s '}')) s {
+        'DataOutPort' S name:dataOutPort_name s d:(';' / ('{' s items:dataOutPort_item*  s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :dataOutPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :dataOutPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
             else
               n :dataOutPort_def, name.to_ast
             end
@@ -265,10 +277,10 @@ module IJTAG
       end
 
       rule toShiftEnPort_def
-        'ToShiftEnPort' S name:toShiftEnPort_name s (';' / ('{' s items:toShiftEnPort_items* s '}')) s {
+        'ToShiftEnPort' S name:toShiftEnPort_name s d:(';' / ('{' s items:toShiftEnPort_items* s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :toShiftEnPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :toShiftEnPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
             else
               n :toShiftEnPort_def, name.to_ast
             end
@@ -290,10 +302,10 @@ module IJTAG
       end
 
       rule toCaptureEnPort_def
-        'ToCaptureEnPort' S name:toCaptureEnPort_name s (';' / ('{' s items:toCaptureEnPort_items* s '}')) s {
+        'ToCaptureEnPort' S name:toCaptureEnPort_name s d:(';' / ('{' s items:toCaptureEnPort_items* s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :toCaptureEnPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :toCaptureEnPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
             else
               n :toCaptureEnPort_def, name.to_ast
             end
@@ -315,10 +327,10 @@ module IJTAG
       end
 
       rule toUpdateEnPort_def
-        'ToUpdateEnPort' S name:toUpdateEnPort_name s (';' / ('{' s items:toUpdateEnPort_items* s '}')) s {
+        'ToUpdateEnPort' S name:toUpdateEnPort_name s d:(';' / ('{' s items:toUpdateEnPort_items* s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :toUpdateEnPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :toUpdateEnPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
             else
               n :toUpdateEnPort_def, name.to_ast
             end
@@ -339,10 +351,10 @@ module IJTAG
       end
 
       rule selectPort_def
-        'SelectPort' S name:selectPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+        'SelectPort' S name:selectPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
-            if respond_to?(:attrs)
-              n :selectPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:attrs)
+              n :selectPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
             else
               n :selectPort_def, name.to_ast
             end
@@ -351,10 +363,10 @@ module IJTAG
       end
 
       rule toSelectPort_def
-        'ToSelectPort' S name:toSelectPort_name s (';' / ('{' s items:toSelectPort_item+ s '}')) s {
+        'ToSelectPort' S name:toSelectPort_name s d:(';' / ('{' s items:toSelectPort_item+ s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :toSelectPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :toSelectPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
             else
               n :toSelectPort_def, name.to_ast
             end
@@ -375,10 +387,10 @@ module IJTAG
       end
 
       rule resetPort_def
-        'ResetPort' S name:resetPort_name s (';' / ('{' s items:resetPort_item* s '}')) s {
+        'ResetPort' S name:resetPort_name s d:(';' / ('{' s items:resetPort_item* s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :resetPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :resetPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
             else
               n :resetPort_def, name.to_ast
             end
@@ -400,10 +412,10 @@ module IJTAG
       end
 
       rule toResetPort_def
-        'ToResetPort' S name:toResetPort_name s (';' / ('{' s items:toResetPort_item+ s '}')) s {
+        'ToResetPort' S name:toResetPort_name s d:(';' / ('{' s items:toResetPort_item+ s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :toResetPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :toResetPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
             else
               n :toResetPort_def, name.to_ast
             end
@@ -434,10 +446,10 @@ module IJTAG
       end
 
       rule tmsPort_def
-        'TMSPort' S name:tmsPort_name  s (';' / ('{' s attrs:attribute_def* s '}')) s {
+        'TMSPort' S name:tmsPort_name  s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
-            if respond_to?(:attrs)
-              n :tmsPort_name, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:attrs)
+              n :tmsPort_name, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
             else
               n :tmsPort_name, name.to_ast
             end
@@ -446,10 +458,10 @@ module IJTAG
       end
 
       rule toTmsPort_def
-        'ToTMSPort' S name:toTmsPort_name s (';' / ('{' s items:toTmsPort_item* s '}')) s {
+        'ToTMSPort' S name:toTmsPort_name s d:(';' / ('{' s items:toTmsPort_item* s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :toTmsPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :toTmsPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
             else
               n :toTmsPort_def, name.to_ast
             end
@@ -471,10 +483,10 @@ module IJTAG
       end
 
       rule toIRSelectPort_def
-        'ToIRSelectPort' S name:toIRSelectPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+        'ToIRSelectPort' S name:toIRSelectPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
-            if respond_to?(:attrs)
-              n :toIRSelectPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:attrs)
+              n :toIRSelectPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
             else
               n :toIRSelectPort_def, name.to_ast
             end
@@ -483,10 +495,10 @@ module IJTAG
       end
 
       rule tckPort_def
-        'TCKPort' S name:tckPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+        'TCKPort' S name:tckPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
-            if respond_to?(:attrs)
-              n :tckPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:attrs)
+              n :tckPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
             else
               n :tckPort_def, name.to_ast
             end
@@ -495,10 +507,10 @@ module IJTAG
       end
 
       rule toTckPort_def
-        'ToTCKPort' S name:toTckPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+        'ToTCKPort' S name:toTckPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
-            if respond_to?(:attrs)
-              n :toTckPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:attrs)
+              n :toTckPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
             else
               n :toTckPort_def, name.to_ast
             end
@@ -507,10 +519,10 @@ module IJTAG
       end
 
       rule clockPort_def
-        'ClockPort' S name:clockPort_name s (';' / ('{' s items:clockPort_item* s '}')) s {
+        'ClockPort' S name:clockPort_name s d:(';' / ('{' s items:clockPort_item* s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :clockPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :clockPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
             else
               n :clockPort_def, name.to_ast
             end
@@ -532,10 +544,10 @@ module IJTAG
       end
 
       rule toClockPort_def
-        'ToClockPort' S name:toClockPort_name s (';' / ('{' s items:toClockPort_item+ s '}')) s {
+        'ToClockPort' S name:toClockPort_name s d:(';' / ('{' s items:toClockPort_item+ s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :toClockPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :toClockPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
             else
               n :toClockPort_def, name.to_ast
             end
@@ -593,10 +605,10 @@ module IJTAG
       end
 
       rule trstPort_def
-        'TRSTPort' S name:trstPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+        'TRSTPort' S name:trstPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :trstPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :trstPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
             else
               n :trstPort_def, name.to_ast
             end
@@ -605,10 +617,10 @@ module IJTAG
       end
 
       rule toTrstPort_def
-        'ToTRSTPort' S name:toTrstPort_name s (';' / ('{' s items:toTrstPort_item+ s '}')) s {
+        'ToTRSTPort' S name:toTrstPort_name s d:(';' / ('{' s items:toTrstPort_item+ s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :toTrstPort_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :toTrstPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
             else
               n :toTrstPort_def, name.to_ast
             end
@@ -630,10 +642,10 @@ module IJTAG
       end
 
       rule addressPort_def
-        'AddressPort' S name:addressPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+        'AddressPort' S name:addressPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
-            if respond_to?(:attrs)
-              n :addressPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:attrs)
+              n :addressPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
             else
               n :addressPort_def, name.to_ast
             end
@@ -642,10 +654,10 @@ module IJTAG
       end
 
       rule writeEnPort_def
-        'WriteEnPort' S name:writeEnPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+        'WriteEnPort' S name:writeEnPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
-            if respond_to?(:attrs)
-              n :writeEnPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:attrs)
+              n :writeEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
             else
               n :writeEnPort_def, name.to_ast
             end
@@ -654,10 +666,10 @@ module IJTAG
       end
 
       rule readEnPort_def
-        'ReadEnPort' S name:readEnPort_name s (';' / ('{' s attrs:attribute_def* s '}')) s {
+        'ReadEnPort' S name:readEnPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
-            if respond_to?(:attrs)
-              n :readEnPort_def, name.to_ast, *attrs.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:attrs)
+              n :readEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
             else
               n :readEnPort_def, name.to_ast
             end
@@ -670,10 +682,10 @@ module IJTAG
       #                 InputPort SEL = SEL1;
       # }
       rule instance_def
-        'Instance' S name:instance_name S 'Of' S mod:((namespace_name? '::')? module_name) s (';' / ('{' s items:instance_item* s '}')) s {
+        'Instance' S name:instance_name S 'Of' S mod:((namespace_name? '::')? module_name) s d:(';' / ('{' s items:instance_item* s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :instance_def, name.to_ast, n(:module_name, mod.text_value), *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :instance_def, name.to_ast, n(:module_name, mod.text_value), *d.items.elements.map{ |e| e.to_ast }
             else
               n :instance_def, name.to_ast, n(:module_name, mod.text_value)
             end
@@ -727,10 +739,10 @@ module IJTAG
       end
 
       rule scanRegister_def
-        'ScanRegister' S name:scanRegister_name s (';' / ('{' s items:scanRegister_item* s '}')) s {
+        'ScanRegister' S name:scanRegister_name s d:(';' / ('{' s items:scanRegister_item* s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :scanRegister_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :scanRegister_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
             else
               n :scanRegister_def, name.to_ast
             end
@@ -788,10 +800,10 @@ module IJTAG
       end
 
       rule dataRegister_def
-        'DataRegister' S name:dataRegister_name s (';' / ('{' s items:dataRegister_item+ s '}')) s {
+        'DataRegister' S name:dataRegister_name s d:(';' / ('{' s items:dataRegister_item+ s '}')) s {
           def to_ast
-            if respond_to?(:items)
-              n :dataRegister_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            if d.respond_to?(:items)
+              n :dataRegister_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
             else
               n :dataRegister_def, name.to_ast
             end
@@ -1119,9 +1131,9 @@ module IJTAG
       end
 
       rule bsdl_instr_selected_item
-        (('ScanInterface' s '{' s names:(accessLink1149_ScanInterface_name ';')+ s '}')  / ('ActiveSignals' s '{' s names:(accessLink1149_ActiveSignal_name ';')+ s '}')) s {
+        d:(('ScanInterface' s '{' s names:(accessLink1149_ScanInterface_name ';')+ s '}')  / ('ActiveSignals' s '{' s names:(accessLink1149_ActiveSignal_name ';')+ s '}')) s {
           def to_ast
-            n :bsdl_instr_selected_item, *names.elements.map{ |e| e.to_ast }
+            n :bsdl_instr_selected_item, *d.names.elements.map{ |e| e.to_ast }
           end
         }
       end
@@ -1248,369 +1260,369 @@ module IJTAG
       ####################################################
 
       rule enum_name
-        SCALAR_ID {
+        val:SCALAR_ID {
           def to_ast
-            n1 :enum_name, text_value
+            n1 :enum_name, val.to_ast
           end
         }
       end
 
       rule enum_symbol
-        SCALAR_ID {
+        val:SCALAR_ID {
           def to_ast
-            n1 :enum_symbol, text_value
+            n1 :enum_symbol, val.to_ast
           end
         }
       end
 
       rule parameter_name
-        SCALAR_ID {
+        val:SCALAR_ID {
           def to_ast
-            n1 :parameter_name, text_value
+            n1 :parameter_name, val.to_ast
           end
         }
       end
 
       rule attribute_name
-        SCALAR_ID {
+        val:SCALAR_ID {
           def to_ast
-            n1 :attribute_name, text_value
+            n1 :attribute_name, val.to_ast
           end
         }
       end
 
       rule enum_value
-        concat_number {
+        val:concat_number {
           def to_ast
-            n1 :enum_value, text_value
+            n1 :enum_value, val.to_ast
           end
         }
       end
 
       rule alias_name
-        reg_port_signal_id {
+        val:reg_port_signal_id {
           def to_ast
-            n1 :alias_name, text_value
+            n1 :alias_name, val.to_ast
           end
         }
       end
 
       rule accessLink1149_ActiveSignal_name
-        reg_port_signal_id {
+        val:reg_port_signal_id {
           def to_ast
-            n1 :accessLink1149_ActiveSignal_name, text_value
+            n1 :accessLink1149_ActiveSignal_name, val.to_ast
           end
         }
       end
 
       rule accessLink_name
-        SCALAR_ID {
+        val:SCALAR_ID {
           def to_ast
-            n1 :accessLink_name, text_value
+            n1 :accessLink_name, val.to_ast
           end
         }
       end
 
       rule bsdlEntity_name
-        SCALAR_ID {
+        val:SCALAR_ID {
           def to_ast
-            n1 :bsdlEntity_name, text_value
+            n1 :bsdlEntity_name, val.to_ast
           end
         }
       end
 
       rule bsdl_instr_name
-        SCALAR_ID {
+        val:SCALAR_ID {
           def to_ast
-            n1 :bsdl_instr_name, text_value
+            n1 :bsdl_instr_name, val.to_ast
           end
         }
       end
 
       rule accessLink_genericID
-        SCALAR_ID {
+        val:SCALAR_ID {
           def to_ast
-            n1 :scanInterfaceChain_name, text_value
+            n1 :scanInterfaceChain_name, val.to_ast
           end
         }
       end
 
       rule scanInterfaceChain_name
-        SCALAR_ID {
+        val:SCALAR_ID {
           def to_ast
-            n1 :scanInterfaceChain_name, text_value
+            n1 :scanInterfaceChain_name, val.to_ast
           end
         }
       end
 
       rule scanInterface_name
-        SCALAR_ID {
+        val:SCALAR_ID {
           def to_ast
-            n1 :scanInterface_name, text_value
+            n1 :scanInterface_name, val.to_ast
           end
         }
       end
 
       rule oneHotDataGroup_name
-        reg_port_signal_id {
+        val:reg_port_signal_id {
           def to_ast
-            n1 :oneHotDataGroup_name, text_value
+            n1 :oneHotDataGroup_name, val.to_ast
           end
         }
       end
 
       rule oneHotScanGroup_name
-        reg_port_signal_id {
+        val:reg_port_signal_id {
           def to_ast
-            n1 :oneHotScanGroup_name, text_value
+            n1 :oneHotScanGroup_name, val.to_ast
           end
         }
       end
 
       rule clockMux_name
-        reg_port_signal_id {
+        val:reg_port_signal_id {
           def to_ast
-            n1 :clockMux_name, text_value
+            n1 :clockMux_name, val.to_ast
           end
         }
       end
 
       rule clockMux_select
-        concat_data_signal {
+        val:concat_data_signal {
           def to_ast
-            n1 :clockMux_select, text_value
+            n1 :clockMux_select, val.to_ast
           end
         }
       end
 
       rule dataMux_name
-        reg_port_signal_id {
+        val:reg_port_signal_id {
           def to_ast
-            n1 :dataMux_name, text_value
+            n1 :dataMux_name, val.to_ast
           end
         }
       end
 
       rule dataMux_select
-        concat_data_signal {
+        val:concat_data_signal {
           def to_ast
-            n1 :dataMux_select, text_value
+            n1 :dataMux_select, val.to_ast
           end
         }
       end
 
       rule scanMux_name
-        reg_port_signal_id {
+        val:reg_port_signal_id {
           def to_ast
-            n1 :scanMux_name, text_value
+            n1 :scanMux_name, val.to_ast
           end
         }
       end
 
       rule scanMux_select
-        concat_data_signal {
+        val:concat_data_signal {
           def to_ast
-            n1 :scanMux_select, text_value
+            n1 :scanMux_select, val.to_ast
           end
         }
       end
 
       rule logicSignal_name
-        reg_port_signal_id {
+        val:reg_port_signal_id {
           def to_ast
-            n1 :logicSignal_name, text_value
+            n1 :logicSignal_name, val.to_ast
           end
         }
       end
 
       rule dataRegister_addressable
-        dataRegister_addressValue {
+        val:dataRegister_addressValue {
           def to_ast
-            n1 :dataRegister_addressable, text_value
+            n1 :dataRegister_addressable, val.to_ast
           end
         }
       end
 
       rule dataRegister_name
-        register_name {
+        val:register_name {
           def to_ast
-            n1 :dataRegister_name, text_value
+            n1 :dataRegister_name, val.to_ast
           end
         }
       end
 
       rule scanRegister_name
-        register_name {
+        val:register_name {
           def to_ast
-            n1 :scanRegister_name, text_value
+            n1 :scanRegister_name, val.to_ast
           end
         }
       end
 
       rule parameter_override
-        parameter_def {
+        val:parameter_def {
           def to_ast
-            n1 :parameter_override, text_value
+            n1 :parameter_override, val.to_ast
           end
         }
       end
 
       rule inputPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :inputPort_name, text_value
+            n1 :inputPort_name, val.to_ast
           end
         }
       end
 
       rule readEnPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :readEnPort_name, text_value
+            n1 :readEnPort_name, val.to_ast
           end
         }
       end
 
       rule writeEnPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :writeEnPort_name, text_value
+            n1 :writeEnPort_name, val.to_ast
           end
         }
       end
 
       rule addressPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :addressPort_name, text_value
+            n1 :addressPort_name, val.to_ast
           end
         }
       end
 
       rule toTrstPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :toTrstPort_name, text_value
+            n1 :toTrstPort_name, val.to_ast
           end
         }
       end
 
       rule trstPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :trstPort_name, text_value
+            n1 :trstPort_name, val.to_ast
           end
         }
       end
 
       rule toClockPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :toClockPort_name, text_value
+            n1 :toClockPort_name, val.to_ast
           end
         }
       end
 
       rule clockPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :clockPort_name, text_value
+            n1 :clockPort_name, val.to_ast
           end
         }
       end
 
       rule toTckPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :toTckPort_name, text_value
+            n1 :toTckPort_name, val.to_ast
           end
         }
       end
 
       rule tckPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :tckPort_name, text_value
+            n1 :tckPort_name, val.to_ast
           end
         }
       end
 
       rule toIRSelectPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :toIRSelectPort_name, text_value
+            n1 :toIRSelectPort_name, val.to_ast
           end
         }
       end
 
       rule toTmsPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :toTmsPort_name, text_value
+            n1 :toTmsPort_name, val.to_ast
           end
         }
       end
 
       rule tmsPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :tmsPort_name, text_value
+            n1 :tmsPort_name, val.to_ast
           end
         }
       end
 
       rule toResetPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :toResetPort_name, text_value
+            n1 :toResetPort_name, val.to_ast
           end
         }
       end
 
       rule resetPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :resetPort_name, text_value
+            n1 :resetPort_name, val.to_ast
           end
         }
       end
 
       rule toSelectPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :toSelectPort_name, text_value
+            n1 :toSelectPort_name, val.to_ast
           end
         }
       end
 
       rule selectPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :selectPort_name, text_value
+            n1 :selectPort_name, val.to_ast
           end
         }
       end
 
       rule toUpdateEnPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :toUpdateEnPort_name, text_value
+            n1 :toUpdateEnPort_name, val.to_ast
           end
         }
       end
 
       rule toCaptureEnPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :toCaptureEnPort_name, text_value
+            n1 :toCaptureEnPort_name, val.to_ast
           end
         }
       end
       
       rule toShiftEnPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :toShiftEnPort_name, text_value
+            n1 :toShiftEnPort_name, val.to_ast
           end
         }
       end
@@ -1632,41 +1644,41 @@ module IJTAG
       end
 
       rule updateEnPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :updateEnPort_name, text_value
+            n1 :updateEnPort_name, val.to_ast
           end
         }
       end
 
       rule captureEnPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :captureEnPort_name, text_value
+            n1 :captureEnPort_name, val.to_ast
           end
         }
       end
 
       rule shiftEnPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :shiftEnPort_name, text_value
+            n1 :shiftEnPort_name, val.to_ast
           end
         }
       end
 
       rule scanInPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :scanInPort_name, text_value
+            n1 :scanInPort_name, val.to_ast
           end
         }
       end
 
       rule scanOutPort_name
-        port_name {
+        val:port_name {
           def to_ast
-            n1 :scanOutPort_name, text_value
+            n1 :scanOutPort_name, val.to_ast
           end
         }
       end
@@ -1704,9 +1716,9 @@ module IJTAG
       end
 
       rule namespace_name
-        SCALAR_ID {
+        id:SCALAR_ID {
           def to_ast
-            n1 :namespace_name, text_value
+            n1 :namespace_name, id.to_ast
           end
         }
       end

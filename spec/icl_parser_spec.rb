@@ -69,10 +69,14 @@ Module Context {     // Some module
       s(:icl,
         s(:module_def,
           s(:module_name, "Context"),
-          s(:useNameSpace_def,
-            s(:namespace_name, "ATX")),
-          s(:useNameSpace_def,
-            s(:namespace_name, "Blah"))))
+          s(:module_item,
+            s(:useNameSpace_def,
+              s(:namespace_name,
+                s(:SCALAR_ID, "ATX")))),
+          s(:module_item,
+            s(:useNameSpace_def,
+              s(:namespace_name,
+                s(:SCALAR_ID, "Blah"))))))
   end
 
   it "can parse some real examples" do
@@ -81,5 +85,26 @@ Module Context {     // Some module
       p icl
       ast = @parser.parse(icl).to_ast
     end
+  end
+
+  it "hierarchical ports parse correctly" do
+    icl = <<-END
+Module Context {
+  ScanOutPort SO { Source reg2.SO; }
+}
+END
+    ast = @parser.parse(icl).to_ast
+    ast.should ==
+      s(:icl,
+        s(:module_def,
+          s(:module_name, "Context"),
+          s(:module_item,
+            s(:port_def,
+              s(:scanOutPort_def,
+                s(:scanOutPort_name,
+                  s(:port_name,
+                    s(:SCALAR_ID, "SO"))),
+                s(:scanOutPort_source,
+                  s(:concat_scan_signal, "reg2.SO")))))))
   end
 end
