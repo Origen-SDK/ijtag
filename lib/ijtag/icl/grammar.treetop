@@ -561,7 +561,7 @@ module IJTAG
       end
 
       rule freqMultiplier_def
-        'FreqMultiplier' S val:pos_int s ';' s {
+        'FreqMultiplier' S val:POS_INT s ';' s {
           def to_ast
             n :freqMultiplier_def, val.to_ast
           end
@@ -569,7 +569,7 @@ module IJTAG
       end
 
       rule freqDivider_def
-        'FreqDivider' S val:pos_int s ';' s {
+        'FreqDivider' S val:POS_INT s ';' s {
           def to_ast
             n :freqDivider_def, val.to_ast
           end
@@ -585,7 +585,7 @@ module IJTAG
       end
 
       rule period_def
-        'Period' S val:pos_int s unit:('s' / 'ms' / 'us' / 'ns' / 'ps' / 'fs' / 'as')? s ';' s {
+        'Period' S val:POS_INT s unit:('s' / 'ms' / 'us' / 'ns' / 'ps' / 'fs' / 'as')? s ';' s {
           def to_ast
             n :period_def, "#{v.to_ast}#{unit}"
           end
@@ -1616,17 +1616,17 @@ module IJTAG
       end
 
       rule dataOutPort_name
-        port_name {
+        name:port_name {
           def to_ast
-            n1 :dataOutPort_name, text_value
+            n1 :dataOutPort_name, name.to_ast
           end
         }
       end
 
       rule dataInPort_name
-        port_name {
+        name:port_name {
           def to_ast
-            n1 :dataInPort_name, text_value
+            n1 :dataInPort_name, name.to_ast
           end
         }
       end
@@ -1680,9 +1680,9 @@ module IJTAG
       end
 
       rule port_name
-        vector_id / SCALAR_ID { 
+        name:(vector_id / SCALAR_ID) { 
           def to_ast
-            n1 :port_name, text_value
+            n1 :port_name, name.to_ast
           end
         }
       end
@@ -1892,23 +1892,23 @@ module IJTAG
       ####################################################
 
       rule SCALAR_ID
-        [a-zA-Z] ([a-zA-Z_] / DEC_DIGIT)*
-      end
-
-      rule pos_int
-        "0" / "1" / POS_INT {
+        [a-zA-Z] ([a-zA-Z_] / DEC_DIGIT)* {
           def to_ast
-            text_value.sub("_", "").to_i
+            n :SCALAR_ID, text_value
           end
         }
       end
 
       rule POS_INT
-        DEC_DIGIT ('_' / DEC_DIGIT)*
+        DEC_DIGIT ('_' / DEC_DIGIT)* {
+          def to_ast
+            n :POS_INT, text_value.sub("_", "").to_i
+          end
+        }
       end
 
       rule size
-        pos_int / '$' SCALAR_ID
+        POS_INT / '$' SCALAR_ID
       end
 
       rule UNKNOWN_DIGIT
@@ -1964,15 +1964,27 @@ module IJTAG
       end
 
       rule vector_id
-        SCALAR_ID "[" (range / index) "]"
+        name:SCALAR_ID "[" val:(range / index) "]" {
+          def to_ast
+            n :vector_id, name.to_ast, val.to_ast
+          end
+        }
       end
 
       rule index
-        integer_expr
+        val:integer_expr {
+          def to_ast
+            n :index, val.to_ast
+          end
+        }
       end
 
       rule range
-        index ":" index
+        start:index ":" stop:index {
+          def to_ast
+            n :range, start.to_ast, stop.to_ast
+          end
+        }
       end
 
       rule number
@@ -1984,23 +1996,57 @@ module IJTAG
       end
 
       rule integer_expr
-        integer_expr_lvl1
+        expr:integer_expr_lvl1 {
+          def to_ast
+            n :integer_expr, expr.to_ast
+          end
+        }
       end
 
       rule integer_expr_lvl1
-        integer_expr_lvl2 (("+" / "-") integer_expr_lvl1)?
+        left:integer_expr_lvl2 (op:("+" / "-") right:integer_expr_lvl1)? {
+          def to_ast
+            if respond_to?(:op)
+              if op.text_value == "+"
+                n :add, left.to_ast, right.to_ast
+              else
+                n :subtract, left.to_ast, right.to_ast
+              end
+            else
+              n :integer_expr_lvl1, left.to_ast
+            end
+          end
+        }
       end
 
       rule integer_expr_lvl2
-        integer_expr_arg (("*" / "/" / "%") integer_expr_lvl2)?
+        left:integer_expr_arg (op:("*" / "/" / "%") right:integer_expr_lvl2)? {
+          def to_ast
+            if respond_to?(:op)
+              if op.text_value == "*"
+                n :multiply, left.to_ast, right.to_ast
+              elsif op.text_value == "/"
+                n :divide, left.to_ast, right.to_ast
+              else
+                n :modulus, left.to_ast, right.to_ast
+              end
+            else
+              n :integer_expr_lvl2, left.to_ast
+            end
+          end
+        }
       end
 
       rule integer_expr_paren
-        "(" integer_expr ")"
+        "(" expr:integer_expr ")" {
+          def to_ast
+            n :integer_expr_paren, expr.to_ast
+          end
+        }
       end
 
       rule integer_expr_arg
-        integer_expr_paren / pos_int / parameter_ref
+        integer_expr_paren / POS_INT / parameter_ref
       end
 
       rule logic_expr
@@ -2042,11 +2088,15 @@ module IJTAG
       end
 
       rule parameter_ref
-        "$" SCALAR_ID
+        "$" id:SCALAR_ID {
+          def to_ast
+            n :parameter_ref, id.to_ast
+          end
+        }
       end
 
       rule unsized_number
-        pos_int / UNSIZED_DEC_NUMBER / UNSIZED_BIN_NUMBER / UNSIZED_HEX_NUMBER
+        POS_INT / UNSIZED_DEC_NUMBER / UNSIZED_BIN_NUMBER / UNSIZED_HEX_NUMBER
       end
 
       rule sized_number

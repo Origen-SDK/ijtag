@@ -79,7 +79,7 @@ Module Context {     // Some module
     %w(e1 e2).each do |fname|
       icl = File.read("#{Origen.root}/examples/#{fname}.icl")
       p icl
-      @parser.parse(icl).to_ast
+      ast = @parser.parse(icl).to_ast
     end
   end
 end
