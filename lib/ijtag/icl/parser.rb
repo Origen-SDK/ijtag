@@ -24,11 +24,7 @@ module IJTAG
       end
 
       def self.parser
-        @parser ||= begin
-          grammar = File.join(File.expand_path(File.dirname(__FILE__)), 'grammar.treetop')
-          Treetop.load(grammar)
-          GrammarParser.new
-        end
+        @parser ||= GrammarParser.new
       end
     end
   end

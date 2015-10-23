@@ -68,7 +68,8 @@ Module Context {     // Some module
     ast.should ==
       s(:icl,
         s(:module_def,
-          s(:module_name, "Context"),
+          s(:module_name,
+            s(:SCALAR_ID, "Context")),
           s(:module_item,
             s(:useNameSpace_def,
               s(:namespace_name,
@@ -90,14 +91,15 @@ Module Context {     // Some module
   it "hierarchical ports parse correctly" do
     icl = <<-END
 Module Context {
-  ScanOutPort SO { Source reg2.SO; }
+  ScanOutPort SO { Source reg2.SO , reg1 , reg3 ; }
 }
 END
     ast = @parser.parse(icl).to_ast
     ast.should ==
       s(:icl,
         s(:module_def,
-          s(:module_name, "Context"),
+          s(:module_name,
+            s(:SCALAR_ID, "Context")),
           s(:module_item,
             s(:port_def,
               s(:scanOutPort_def,
@@ -105,6 +107,24 @@ END
                   s(:port_name,
                     s(:SCALAR_ID, "SO"))),
                 s(:scanOutPort_source,
-                  s(:concat_scan_signal, "reg2.SO")))))))
+                  s(:concat_scan_signal,
+                    s(:scan_signal,
+                      s(:signal,
+                        s(:hier_port,
+                          s(:instance_name,
+                            s(:SCALAR_ID, "reg2")),
+                          s(:port_name,
+                            s(:SCALAR_ID, "SO"))))),
+                    s(:scan_signal,
+                      s(:signal,
+                        s(:reg_port_signal_id,
+                          s(:SCALAR_ID, "reg1")))),
+                    s(:scan_signal,
+                      s(:signal,
+                        s(:reg_port_signal_id,
+                          s(:SCALAR_ID, "reg3")))))))))))
+
+
+
   end
 end

@@ -1684,9 +1684,9 @@ module IJTAG
       end
 
       rule hier_port
-        (instance_name ".")+ port_name s {
+        ins:(name:instance_name ".")+ port:port_name s {
           def to_ast
-            n1 :hier_port, text_value
+            n :hier_port, *ins.elements.map{ |e| e.name.to_ast }, port.to_ast
           end
         }
       end
@@ -1700,17 +1700,17 @@ module IJTAG
       end
 
       rule register_name
-        SCALAR_ID / vector_id { 
+        name:(SCALAR_ID / vector_id) { 
           def to_ast
-            n1 :register_name, text_value
+            n1 :register_name, name.to_ast
           end
         }
       end
 
       rule instance_name
-        SCALAR_ID {
+        val:SCALAR_ID {
           def to_ast
-            n1 :instance_name, text_value
+            n1 :instance_name, val.to_ast
           end
         }
       end
@@ -1724,177 +1724,229 @@ module IJTAG
       end
 
       rule module_name
-        SCALAR_ID {
+        val:SCALAR_ID {
           def to_ast
-            n1 :module_name, text_value
+            n1 :module_name, val.to_ast
           end
         }
       end
 
       rule reg_port_signal_id
-        SCALAR_ID / vector_id { 
+        val:(SCALAR_ID / vector_id) { 
           def to_ast
-            n1 :reg_port_signal_id, text_value
+            n1 :reg_port_signal_id, val.to_ast
           end
         }
       end
 
       rule signal
-        number / hier_port / reg_port_signal_id { 
+        val:(number / hier_port / reg_port_signal_id) { 
           def to_ast
-            n1 :signal, text_value
+            n1 :signal, val.to_ast
           end
         }
       end
 
       rule reset_signal
-        "~"? signal { 
+        invert:"~"? val:signal { 
           def to_ast
-            n1 :reset_signal, text_value
+            if !invert.empty?
+              n :reset_signal, n0(:invert), val.to_ast
+            else
+              n :reset_signal, val.to_ast
+            end
           end
         }
       end
 
       rule scan_signal
-        "~"? signal { 
+        invert:"~"? val:signal { 
           def to_ast
-            n1 :scan_signal, text_value
+            if !invert.empty?
+              n :scan_signal, n0(:invert), val.to_ast
+            else
+              n :scan_signal, val.to_ast
+            end
           end
         }
       end
       
       rule data_signal
-        "~"? signal { 
+        invert:"~"? val:signal { 
           def to_ast
-            n1 :data_signal, text_value
+            if !invert.empty?
+              n :data_signal, n0(:invert), val.to_ast
+            else
+              n :data_signal, val.to_ast
+            end
           end
         }
       end
 
       rule clock_signal
-        "~"? signal { 
+        invert:"~"? val:signal { 
           def to_ast
-            n1 :clock_signal, text_value
+            if !invert.empty?
+              n :clock_signal, n0(:invert), val.to_ast
+            else
+              n :clock_signal, val.to_ast
+            end
           end
         }
       end
 
       rule tck_signal
-        signal { 
+        val:signal { 
           def to_ast
-            n1 :tck_signal, text_value
+            n1 :tck_signal, val.to_ast
           end
         }
       end
 
       rule tms_signal
-        signal { 
+        val:signal { 
           def to_ast
-            n1 :tms_signal, text_value
+            n1 :tms_signal, val.to_ast
           end
         }
       end
 
       rule trst_signal
-        signal { 
+        val:signal { 
           def to_ast
-            n1 :trst_signal, text_value
+            n1 :trst_signal, val.to_ast
           end
         }
       end
 
       rule shiftEn_signal
-        signal { 
+        val:signal { 
           def to_ast
-            n1 :signalEn_signal, text_value
+            n1 :signalEn_signal, val.to_ast
           end
         }
       end
 
       rule captureEn_signal
-        signal { 
+        val:signal { 
           def to_ast
-            n1 :captureEn_signal, text_value
+            n1 :captureEn_signal, val.to_ast
           end
         }
       end
 
       rule updateEn_signal
-        signal { 
+        val:signal { 
           def to_ast
-            n1 :updateEn_signal, text_value
+            n1 :updateEn_signal, val.to_ast
           end
         }
       end
 
       rule concat_reset_signal
-        (reset_signal / data_signal) ("," reset_signal / data_signal)* { 
+        s1:(reset_signal / data_signal) s2:(s "," s signal:(reset_signal / data_signal))* { 
           def to_ast
-            n1 :concat_reset_signal, text_value
+            if s2.empty?
+              n :concat_reset_signal, s1.to_ast
+            else
+              n :concat_reset_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            end
           end
         }
       end
 
       rule concat_scan_signal
-        (scan_signal / data_signal) ("," scan_signal / data_signal)* { 
+        s1:(scan_signal / data_signal) s2:(s "," s signal:(scan_signal / data_signal))* { 
           def to_ast
-            n1 :concat_scan_signal, text_value
+            if s2.empty?
+              n :concat_scan_signal, s1.to_ast
+            else
+              n :concat_scan_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            end
           end
         }
       end
 
       rule concat_data_signal
-        (data_signal) ("," data_signal)* { 
+        s1:(data_signal) s2:(s "," s signal:data_signal)* { 
           def to_ast
-            n1 :concat_data_signal, text_value
+            if s2.empty?
+              n :concat_data_signal, s1.to_ast
+            else
+              n :concat_data_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            end
           end
         }
       end
 
       rule concat_clock_signal
-        (clock_signal / data_signal) ("," clock_signal / data_signal)* { 
+        s1:(clock_signal / data_signal) s2:(s "," s signal:(clock_signal / data_signal))* { 
           def to_ast
-            n1 :concat_clock_signal, text_value
+            if s2.empty?
+              n :concat_clock_signal, s1.to_ast
+            else
+              n :concat_clock_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            end
           end
         }
       end
 
       rule concat_tck_signal
-        (tck_signal / data_signal) ("," tck_signal / data_signal)* { 
+        s1:(tck_signal / data_signal) s2:(s "," s signal:(tck_signal / data_signal))* { 
           def to_ast
-            n1 :concat_tck_signal, text_value
+            if s2.empty?
+              n :concat_tck_signal, s1.to_ast
+            else
+              n :concat_tck_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            end
           end
         }
       end
 
       rule concat_shiftEn_signal
-        (shiftEn_signal / data_signal) ("," shiftEn_signal / data_signal)* { 
+        s1:(shiftEn_signal / data_signal) s2:(s "," s signal:(shiftEn_signal / data_signal))* { 
           def to_ast
-            n1 :concat_shiftEn_signal, text_value
+            if s2.empty?
+              n :concat_shiftEn_signal, s1.to_ast
+            else
+              n :concat_shiftEn_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            end
           end
         }
       end
 
       rule concat_captureEn_signal
-        (captureEn_signal / data_signal) ("," captureEn_signal / data_signal)* { 
+        s1:(captureEn_signal / data_signal) s2:(s "," s signal:(captureEn_signal / data_signal))* {
           def to_ast
-            n1 :concat_captureEn_signal, text_value
+            if s2.empty?
+              n :concat_captureEn_signal, s1.to_ast
+            else
+              n :concat_captureEn_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            end
           end
         }
       end
 
       rule concat_tms_signal
-        (tms_signal / data_signal) ("," tms_signal / data_signal)* { 
+        s1:(tms_signal / data_signal) s2:("," signal:(tms_signal / data_signal))* { 
           def to_ast
-            n1 :concat_tms_signal, text_value
+            if s2.empty?
+              n :concat_tms_signal, s1.to_ast
+            else
+              n :concat_tms_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            end
           end
         }
       end
 
       rule concat_trst_signal
-        (trst_signal / data_signal) ("," trst_signal / data_signal)* { 
+        s1:(trst_signal / data_signal) s2:("," signal:(trst_signal / data_signal))* { 
           def to_ast
-            n1 :concat_trst_signal, text_value
+            if s2.empty?
+              n :concat_trst_signal, s1.to_ast
+            else
+              n :concat_trst_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            end
           end
         }
       end

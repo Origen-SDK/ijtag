@@ -1,5 +1,6 @@
 require 'origen'
 require_relative '../config/application.rb'
+require 'treetop'
 module IJTAG
   # Load all files in the lib directory via a wildcard, if your project becomes
   # large or load order dependencies start to creep in then you may need to
