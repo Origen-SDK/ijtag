@@ -57,7 +57,7 @@ Module Context {     // Some module
     END
     ast = icl_parser.parse(icl).to_ast
     ast.should ==
-      s(:icl,
+      s(:icl_source,
         s(:module_def,
           s(:module_name,
             s(:SCALAR_ID, "Context")),
@@ -86,7 +86,7 @@ Module Context {
 END
     ast = icl_parser.parse(icl).to_ast
     ast.should ==
-      s(:icl,
+      s(:icl_source,
         s(:module_def,
           s(:module_name,
             s(:SCALAR_ID, "Context")),

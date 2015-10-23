@@ -13,12 +13,13 @@ module IJTAG
   end
 
   class << self
-
     def icl_to_model(icl_str = nil, options = {})
       icl_str, options = nil, icl_str if icl_str.is_a?(Hash)
       icl_str ||= File.read(options[:file])
-      ICL::Builder.build(icl_str)
+      builder = ICL::Builder.new
+      builder.process(ICL::Parser.parse(icl_str).to_ast)
+      builder.network
     end
-    alias :icl_to_network :icl_to_model
+    alias_method :icl_to_network, :icl_to_model
   end
 end

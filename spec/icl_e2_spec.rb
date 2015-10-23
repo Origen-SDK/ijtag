@@ -14,6 +14,8 @@ describe "ICL Example 2 from the 1687 spec" do
   it 'instantiates a model named "Instrument"' do
     network = IJTAG.icl_to_model(file: file)
     network.is_a?(IJTAG::Network).should == true
+    network.sub_blocks.size.should == 1
+    network.Instrument.is_a?(IJTAG::Instrument).should == true
   end 
 
 end

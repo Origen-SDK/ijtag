@@ -12,7 +12,7 @@ module IJTAG
 
       module IclSource0
         def to_ast
-          n :icl, *elements.map{ |e| e.to_ast if e.respond_to?(:to_ast) }.compact
+          n :icl_source, *elements.map{ |e| e.to_ast if e.respond_to?(:to_ast) }.compact
         end
       end
 
