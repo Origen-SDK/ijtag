@@ -874,9 +874,362 @@ module IJTAG
         }
       end
 
+      rule oneHotScanGroup_item
+        'Port' S signal:concat_scan_signal s ';' s {
+          def to_ast
+            n :oneHotScanGroup_item, signal.to_ast
+          end
+        }
+      end
+
+      rule oneHotDataGroup_def
+        'OneHotDataGroup' S name:oneHotDataGroup_name s '{' s items:oneHotDataGroup_item+ s '}' s {
+          def to_ast
+            n :oneHotDataGroup_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule oneHotDataGroup_item
+        instance_def /
+        dataRegister_def /
+        oneHotDataGroup_portSource
+      end
+
+      rule oneHotDataGroup_portSource
+        'Port' S signal:concat_data_signal s ';' s {
+          def to_ast
+            n :oneHotDataGroup_portSource, signal.to_ast
+          end
+        }
+      end
+
+      rule scanInterface_def
+        'ScanInterface' S name:scanInterface_name s '{' s items:scanInterface_item+ s '}' s {
+          def to_ast
+            n :scanInterface_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule scanInterface_item
+        attribute_def /
+        scanInterfacePort_def /
+        defaultLoad_def /
+        scanInterfaceChain_def
+      end
+
+      rule scanInterfacePort_def
+        'Port' S signal:reg_port_signal_id s ';' s {
+          def to_ast
+            n :scanInterfacePort_def, signal.to_ast
+          end
+        }
+      end
+
+      rule scanInterfaceChain_def
+        'Chain' S name:scanInterfaceChain_name s '{' s items:scanInterfaceChain_item+ s '}' s {
+          def to_ast
+            n :scanInterfaceChain_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule scanInterfaceChain_item
+        attribute_def /
+        scanInterfacePort_def /
+        defaultLoad_def
+      end
+
+      rule defaultLoad_def
+        'DefaultLoadValue' S val:concat_number s ';' s {
+          def to_ast
+            n :defaultLoad_def, val.to_ast
+          end
+        }
+      end
+
+      rule accessLink_def
+        accessLink1149_def /
+        AccessLinkGeneric_def
+      end
+
+      rule AccessLinkGeneric_def
+        'AccessLink' S v1:SCALAR_ID S 'Of' S v2:SCALAR_ID s {
+          def to_ast
+            n :AccessLinkGeneric_def, v1.to_ast, v2.to_ast
+          end
+        }
+      end
+
+      #rule AccessLinkGeneric_block
+      #  '{' s (AccessLinkGeneric_block / AccessLinkGeneric_text / S / STRING)* s '}' s {
+      #    def to_ast
+      #      fail "AccessLinkGeneric_block not implemented yet!"
+      #    end
+      #  }
+      #end
+
+      #rule AccessLinkGeneric_text
+      #  #[^{}"\t\n\r ]+
+      #end
+
+      rule accessLink1149_def
+        'AccessLink' S link:accessLink_name S 'Of' S type:('STD_1149_1_2001' / 'STD_1149_1_2013') s '{' s 'BSDLEntity' S bname:bsdlEntity_name s ';' s refs:bsdl_instr_ref+  s '}' s {
+          def to_ast
+            n :accessLink1149_def, ling.to_ast, type.text_value, bname.to_ast, *refs.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule bsdl_instr_ref
+        name:bsdl_instr_name s '{' s items:bsdl_instr_selected_item+ s '}' s {
+          def to_ast
+            n :bsdl_instr_ref, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule bsdl_instr_selected_item
+        (('ScanInterface' s '{' s names:(accessLink1149_ScanInterface_name ';')+ s '}')  / ('ActiveSignals' s '{' s names:(accessLink1149_ActiveSignal_name ';')+ s '}')) s {
+          def to_ast
+            n :bsdl_instr_selected_item, *names.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule accessLink1149_ScanInterface_name
+        val:(instance_name ('.' scanInterface_name)?) s {
+          def to_ast
+            n :accessLink1149_ScanInterface_name, val.text_value
+          end
+        }
+      end
+
+      rule alias_def
+        'Alias' S name:alias_name s '=' s signal:(concat_hier_data_signal (';' / ('{' s alias_item+ s '}' s ))) s {
+          def to_ast
+            fail "alias_def not implemented yet!"
+          end
+        }
+      end
+
+      rule alias_item
+        attribute_def /
+        'AccessTogether' s ';' /
+        alias_iApplyEndState /
+        alias_refEnum
+      end
+
+      rule alias_iApplyEndState
+        'iApplyEndState' S num:concat_number s ';' s {
+          def to_ast
+            n :alias_iApplyEndState, num.to_ast
+          end
+        }
+      end
+
+      rule alias_refEnum
+        'RefEnum' S name:enum_name s ';' s {
+          def to_ast
+            n :alias_refEnum, name.to_ast
+          end
+        }
+      end
+
+      rule concat_hier_data_signal
+        '~'? hier_data_signal (',' s '~'? hier_data_signal)* s {
+          def to_ast
+            n :concat_hier_data_signal, text_value
+          end
+        }
+      end
+
+      rule hier_data_signal
+        (instance_name '.')* reg_port_signal_id s {
+          def to_ast
+            n :hier_data_signal, text_value
+          end
+        }
+      end
+
+      rule enum_def
+        'Enum' S name:enum_name s '{' s items:enum_item+ s '}' s {
+          def to_ast
+            n :enum_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          end
+        }
+      end
+
+      rule enum_item
+        sym:enum_symbol s '=' s val:enum_value s ';' s {
+          def to_ast
+            n :enum_item, sym.to_ast, val.to_ast
+          end
+        }
+      end
+
+      rule parameter_def
+        'Parameter' S name:parameter_name s '=' s val:parameter_value s ';' s {
+          def to_ast
+            n :parameter_def, name.to_ast, val.to_ast
+          end
+        }
+      end
+
+      rule localParameter_def
+        'LocalParameter' S name:parameter_name s '=' s val:parameter_value s ';' s {
+          def to_ast
+            n :localParameter_def, name.to_ast, val.to_ast
+          end
+        }
+      end
+
+      rule parameter_value
+        concat_string /
+        concat_number
+      end
+
+      rule concat_string
+        (STRING / parameter_ref) (',' s (STRING / parameter_ref))* s {
+          def to_ast
+            n :concat_string, text_value
+          end
+        }
+      end
+
+      rule attribute_def
+        'Attribute' S name:attribute_name s ('=' s val:attribute_value s)? ';' s {
+          def to_ast
+            n :attribute_def, name.to_ast, val.to_ast
+          end
+        }
+      end
+
+      rule attribute_value
+        concat_string /
+        concat_number
+      end
+
+      rule STRING
+        '"' (!('"' / '\\') / '\\\\' / '\\"')* '"'
+      end
+
       ####################################################
       # TERMINAL NODES
       ####################################################
+
+      rule enum_name
+        SCALAR_ID {
+          def to_ast
+            n1 :enum_name, text_value
+          end
+        }
+      end
+
+      rule enum_symbol
+        SCALAR_ID {
+          def to_ast
+            n1 :enum_symbol, text_value
+          end
+        }
+      end
+
+      rule parameter_name
+        SCALAR_ID {
+          def to_ast
+            n1 :parameter_name, text_value
+          end
+        }
+      end
+
+      rule attribute_name
+        SCALAR_ID {
+          def to_ast
+            n1 :attribute_name, text_value
+          end
+        }
+      end
+
+      rule enum_value
+        concat_number {
+          def to_ast
+            n1 :enum_value, text_value
+          end
+        }
+      end
+
+      rule alias_name
+        reg_port_signal_id {
+          def to_ast
+            n1 :alias_name, text_value
+          end
+        }
+      end
+
+      rule accessLink1149_ActiveSignal_name
+        reg_port_signal_id {
+          def to_ast
+            n1 :accessLink1149_ActiveSignal_name, text_value
+          end
+        }
+      end
+
+      rule accessLink_name
+        SCALAR_ID {
+          def to_ast
+            n1 :accessLink_name, text_value
+          end
+        }
+      end
+
+      rule bsdlEntity_name
+        SCALAR_ID {
+          def to_ast
+            n1 :bsdlEntity_name, text_value
+          end
+        }
+      end
+
+      rule bsdl_instr_name
+        SCALAR_ID {
+          def to_ast
+            n1 :bsdl_instr_name, text_value
+          end
+        }
+      end
+
+      rule accessLink_genericID
+        SCALAR_ID {
+          def to_ast
+            n1 :scanInterfaceChain_name, text_value
+          end
+        }
+      end
+
+      rule scanInterfaceChain_name
+        SCALAR_ID {
+          def to_ast
+            n1 :scanInterfaceChain_name, text_value
+          end
+        }
+      end
+
+      rule scanInterface_name
+        SCALAR_ID {
+          def to_ast
+            n1 :scanInterface_name, text_value
+          end
+        }
+      end
+
+      rule oneHotDataGroup_name
+        reg_port_signal_id {
+          def to_ast
+            n1 :oneHotDataGroup_name, text_value
+          end
+        }
+      end
 
       rule oneHotScanGroup_name
         reg_port_signal_id {
