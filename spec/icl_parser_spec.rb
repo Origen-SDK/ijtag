@@ -76,8 +76,10 @@ Module Context {     // Some module
   end
 
   it "can parse some real examples" do
-    %w(e1).each do |fname|
-      p File.read("#{Origen.root}/examples/#{fname}.icl")
+    %w(e1 e2).each do |fname|
+      icl = File.read("#{Origen.root}/examples/#{fname}.icl")
+      p icl
+      @parser.parse(icl).to_ast
     end
   end
 end
