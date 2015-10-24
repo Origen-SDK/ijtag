@@ -16031,18 +16031,6 @@ module IJTAG
         r0
       end
 
-      module InputPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module InputPortName1
-        def to_ast
-          n1 :inputPort_name, val.to_ast
-        end
-      end
-
       def _nt_inputPort_name
         start_index = index
         if node_cache[:inputPort_name].has_key?(index)
@@ -16054,33 +16042,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(InputPortName0)
-          r0.extend(InputPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:inputPort_name][start_index] = r0
 
         r0
-      end
-
-      module ReadEnPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ReadEnPortName1
-        def to_ast
-          n1 :readEnPort_name, val.to_ast
-        end
       end
 
       def _nt_readEnPort_name
@@ -16094,33 +16060,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ReadEnPortName0)
-          r0.extend(ReadEnPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:readEnPort_name][start_index] = r0
 
         r0
-      end
-
-      module WriteEnPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module WriteEnPortName1
-        def to_ast
-          n1 :writeEnPort_name, val.to_ast
-        end
       end
 
       def _nt_writeEnPort_name
@@ -16134,33 +16078,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(WriteEnPortName0)
-          r0.extend(WriteEnPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:writeEnPort_name][start_index] = r0
 
         r0
-      end
-
-      module AddressPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module AddressPortName1
-        def to_ast
-          n1 :addressPort_name, val.to_ast
-        end
       end
 
       def _nt_addressPort_name
@@ -16174,33 +16096,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(AddressPortName0)
-          r0.extend(AddressPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:addressPort_name][start_index] = r0
 
         r0
-      end
-
-      module ToTrstPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ToTrstPortName1
-        def to_ast
-          n1 :toTrstPort_name, val.to_ast
-        end
       end
 
       def _nt_toTrstPort_name
@@ -16214,33 +16114,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ToTrstPortName0)
-          r0.extend(ToTrstPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:toTrstPort_name][start_index] = r0
 
         r0
-      end
-
-      module TrstPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module TrstPortName1
-        def to_ast
-          n1 :trstPort_name, val.to_ast
-        end
       end
 
       def _nt_trstPort_name
@@ -16254,33 +16132,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(TrstPortName0)
-          r0.extend(TrstPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:trstPort_name][start_index] = r0
 
         r0
-      end
-
-      module ToClockPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ToClockPortName1
-        def to_ast
-          n1 :toClockPort_name, val.to_ast
-        end
       end
 
       def _nt_toClockPort_name
@@ -16294,33 +16150,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ToClockPortName0)
-          r0.extend(ToClockPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:toClockPort_name][start_index] = r0
 
         r0
-      end
-
-      module ClockPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ClockPortName1
-        def to_ast
-          n1 :clockPort_name, val.to_ast
-        end
       end
 
       def _nt_clockPort_name
@@ -16334,33 +16168,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ClockPortName0)
-          r0.extend(ClockPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:clockPort_name][start_index] = r0
 
         r0
-      end
-
-      module ToTckPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ToTckPortName1
-        def to_ast
-          n1 :toTckPort_name, val.to_ast
-        end
       end
 
       def _nt_toTckPort_name
@@ -16374,33 +16186,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ToTckPortName0)
-          r0.extend(ToTckPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:toTckPort_name][start_index] = r0
 
         r0
-      end
-
-      module TckPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module TckPortName1
-        def to_ast
-          n1 :tckPort_name, val.to_ast
-        end
       end
 
       def _nt_tckPort_name
@@ -16414,33 +16204,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(TckPortName0)
-          r0.extend(TckPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:tckPort_name][start_index] = r0
 
         r0
-      end
-
-      module ToIRSelectPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ToIRSelectPortName1
-        def to_ast
-          n1 :toIRSelectPort_name, val.to_ast
-        end
       end
 
       def _nt_toIRSelectPort_name
@@ -16454,33 +16222,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ToIRSelectPortName0)
-          r0.extend(ToIRSelectPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:toIRSelectPort_name][start_index] = r0
 
         r0
-      end
-
-      module ToTmsPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ToTmsPortName1
-        def to_ast
-          n1 :toTmsPort_name, val.to_ast
-        end
       end
 
       def _nt_toTmsPort_name
@@ -16494,33 +16240,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ToTmsPortName0)
-          r0.extend(ToTmsPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:toTmsPort_name][start_index] = r0
 
         r0
-      end
-
-      module TmsPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module TmsPortName1
-        def to_ast
-          n1 :tmsPort_name, val.to_ast
-        end
       end
 
       def _nt_tmsPort_name
@@ -16534,33 +16258,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(TmsPortName0)
-          r0.extend(TmsPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:tmsPort_name][start_index] = r0
 
         r0
-      end
-
-      module ToResetPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ToResetPortName1
-        def to_ast
-          n1 :toResetPort_name, val.to_ast
-        end
       end
 
       def _nt_toResetPort_name
@@ -16574,33 +16276,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ToResetPortName0)
-          r0.extend(ToResetPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:toResetPort_name][start_index] = r0
 
         r0
-      end
-
-      module ResetPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ResetPortName1
-        def to_ast
-          n1 :resetPort_name, val.to_ast
-        end
       end
 
       def _nt_resetPort_name
@@ -16614,33 +16294,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ResetPortName0)
-          r0.extend(ResetPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:resetPort_name][start_index] = r0
 
         r0
-      end
-
-      module ToSelectPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ToSelectPortName1
-        def to_ast
-          n1 :toSelectPort_name, val.to_ast
-        end
       end
 
       def _nt_toSelectPort_name
@@ -16654,33 +16312,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ToSelectPortName0)
-          r0.extend(ToSelectPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:toSelectPort_name][start_index] = r0
 
         r0
-      end
-
-      module SelectPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module SelectPortName1
-        def to_ast
-          n1 :selectPort_name, val.to_ast
-        end
       end
 
       def _nt_selectPort_name
@@ -16694,33 +16330,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(SelectPortName0)
-          r0.extend(SelectPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:selectPort_name][start_index] = r0
 
         r0
-      end
-
-      module ToUpdateEnPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ToUpdateEnPortName1
-        def to_ast
-          n1 :toUpdateEnPort_name, val.to_ast
-        end
       end
 
       def _nt_toUpdateEnPort_name
@@ -16734,33 +16348,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ToUpdateEnPortName0)
-          r0.extend(ToUpdateEnPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:toUpdateEnPort_name][start_index] = r0
 
         r0
-      end
-
-      module ToCaptureEnPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ToCaptureEnPortName1
-        def to_ast
-          n1 :toCaptureEnPort_name, val.to_ast
-        end
       end
 
       def _nt_toCaptureEnPort_name
@@ -16774,33 +16366,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ToCaptureEnPortName0)
-          r0.extend(ToCaptureEnPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:toCaptureEnPort_name][start_index] = r0
 
         r0
-      end
-
-      module ToShiftEnPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ToShiftEnPortName1
-        def to_ast
-          n1 :toShiftEnPort_name, val.to_ast
-        end
       end
 
       def _nt_toShiftEnPort_name
@@ -16814,33 +16384,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ToShiftEnPortName0)
-          r0.extend(ToShiftEnPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:toShiftEnPort_name][start_index] = r0
 
         r0
-      end
-
-      module DataOutPortName0
-        def name
-          elements[0]
-        end
-      end
-
-      module DataOutPortName1
-        def to_ast
-          n1 :dataOutPort_name, name.to_ast
-        end
       end
 
       def _nt_dataOutPort_name
@@ -16854,33 +16402,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(DataOutPortName0)
-          r0.extend(DataOutPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:dataOutPort_name][start_index] = r0
 
         r0
-      end
-
-      module DataInPortName0
-        def name
-          elements[0]
-        end
-      end
-
-      module DataInPortName1
-        def to_ast
-          n1 :dataInPort_name, name.to_ast
-        end
       end
 
       def _nt_dataInPort_name
@@ -16894,33 +16420,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(DataInPortName0)
-          r0.extend(DataInPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:dataInPort_name][start_index] = r0
 
         r0
-      end
-
-      module UpdateEnPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module UpdateEnPortName1
-        def to_ast
-          n1 :updateEnPort_name, val.to_ast
-        end
       end
 
       def _nt_updateEnPort_name
@@ -16934,33 +16438,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(UpdateEnPortName0)
-          r0.extend(UpdateEnPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:updateEnPort_name][start_index] = r0
 
         r0
-      end
-
-      module CaptureEnPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module CaptureEnPortName1
-        def to_ast
-          n1 :captureEnPort_name, val.to_ast
-        end
       end
 
       def _nt_captureEnPort_name
@@ -16974,33 +16456,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(CaptureEnPortName0)
-          r0.extend(CaptureEnPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:captureEnPort_name][start_index] = r0
 
         r0
-      end
-
-      module ShiftEnPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ShiftEnPortName1
-        def to_ast
-          n1 :shiftEnPort_name, val.to_ast
-        end
       end
 
       def _nt_shiftEnPort_name
@@ -17014,33 +16474,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ShiftEnPortName0)
-          r0.extend(ShiftEnPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:shiftEnPort_name][start_index] = r0
 
         r0
-      end
-
-      module ScanInPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ScanInPortName1
-        def to_ast
-          n1 :scanInPort_name, val.to_ast
-        end
       end
 
       def _nt_scanInPort_name
@@ -17054,33 +16492,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ScanInPortName0)
-          r0.extend(ScanInPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:scanInPort_name][start_index] = r0
 
         r0
-      end
-
-      module ScanOutPortName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ScanOutPortName1
-        def to_ast
-          n1 :scanOutPort_name, val.to_ast
-        end
       end
 
       def _nt_scanOutPort_name
@@ -17094,17 +16510,7 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_port_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ScanOutPortName0)
-          r0.extend(ScanOutPortName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_port_name
 
         node_cache[:scanOutPort_name][start_index] = r0
 
@@ -19855,7 +19261,7 @@ module IJTAG
 
       module UNSIZEDDECNUMBER1
         def to_ast
-          n :UNSIZED_DEC_NUMBER, val.to_ast
+          val.to_ast
         end
       end
 
@@ -19910,7 +19316,7 @@ module IJTAG
 
       module UNSIZEDBINNUMBER2
         def to_ast
-          n :UNSIZED_BIN_NUMBER, n(:STRING, val.text_value.sub("_", ""))
+          n :UNSIZED_BIN_NUMBER, val.text_value.sub("_", "")
         end
       end
 
@@ -20007,7 +19413,7 @@ module IJTAG
 
       module UNSIZEDHEXNUMBER2
         def to_ast
-          n :UNSIZED_HEX_NUMBER, n(:STRING, val.text_value.sub("_", "").upcase)
+          n :UNSIZED_HEX_NUMBER, val.text_value.sub("_", "").upcase
         end
       end
 

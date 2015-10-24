@@ -1460,219 +1460,111 @@ module IJTAG
       end
 
       rule inputPort_name
-        val:port_name {
-          def to_ast
-            n1 :inputPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule readEnPort_name
-        val:port_name {
-          def to_ast
-            n1 :readEnPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule writeEnPort_name
-        val:port_name {
-          def to_ast
-            n1 :writeEnPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule addressPort_name
-        val:port_name {
-          def to_ast
-            n1 :addressPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule toTrstPort_name
-        val:port_name {
-          def to_ast
-            n1 :toTrstPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule trstPort_name
-        val:port_name {
-          def to_ast
-            n1 :trstPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule toClockPort_name
-        val:port_name {
-          def to_ast
-            n1 :toClockPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule clockPort_name
-        val:port_name {
-          def to_ast
-            n1 :clockPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule toTckPort_name
-        val:port_name {
-          def to_ast
-            n1 :toTckPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule tckPort_name
-        val:port_name {
-          def to_ast
-            n1 :tckPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule toIRSelectPort_name
-        val:port_name {
-          def to_ast
-            n1 :toIRSelectPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule toTmsPort_name
-        val:port_name {
-          def to_ast
-            n1 :toTmsPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule tmsPort_name
-        val:port_name {
-          def to_ast
-            n1 :tmsPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule toResetPort_name
-        val:port_name {
-          def to_ast
-            n1 :toResetPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule resetPort_name
-        val:port_name {
-          def to_ast
-            n1 :resetPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule toSelectPort_name
-        val:port_name {
-          def to_ast
-            n1 :toSelectPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule selectPort_name
-        val:port_name {
-          def to_ast
-            n1 :selectPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule toUpdateEnPort_name
-        val:port_name {
-          def to_ast
-            n1 :toUpdateEnPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule toCaptureEnPort_name
-        val:port_name {
-          def to_ast
-            n1 :toCaptureEnPort_name, val.to_ast
-          end
-        }
+        port_name
       end
       
       rule toShiftEnPort_name
-        val:port_name {
-          def to_ast
-            n1 :toShiftEnPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule dataOutPort_name
-        name:port_name {
-          def to_ast
-            n1 :dataOutPort_name, name.to_ast
-          end
-        }
+        port_name
       end
 
       rule dataInPort_name
-        name:port_name {
-          def to_ast
-            n1 :dataInPort_name, name.to_ast
-          end
-        }
+        port_name
       end
 
       rule updateEnPort_name
-        val:port_name {
-          def to_ast
-            n1 :updateEnPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule captureEnPort_name
-        val:port_name {
-          def to_ast
-            n1 :captureEnPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule shiftEnPort_name
-        val:port_name {
-          def to_ast
-            n1 :shiftEnPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule scanInPort_name
-        val:port_name {
-          def to_ast
-            n1 :scanInPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule scanOutPort_name
-        val:port_name {
-          def to_ast
-            n1 :scanOutPort_name, val.to_ast
-          end
-        }
+        port_name
       end
 
       rule hier_port
@@ -2006,7 +1898,7 @@ module IJTAG
       rule UNSIZED_DEC_NUMBER
         DEC_BASE val:POS_INT {
           def to_ast
-            n :UNSIZED_DEC_NUMBER, val.to_ast
+            val.to_ast
           end
         }
       end
@@ -2014,7 +1906,7 @@ module IJTAG
       rule UNSIZED_BIN_NUMBER
         BIN_BASE val:(BIN_DIGIT ("_" / BIN_DIGIT)*) {
           def to_ast
-            n :UNSIZED_BIN_NUMBER, n(:STRING, val.text_value.sub("_", ""))
+            n :UNSIZED_BIN_NUMBER, val.text_value.sub("_", "")
           end
         }
       end
@@ -2022,7 +1914,7 @@ module IJTAG
       rule UNSIZED_HEX_NUMBER
         HEX_BASE val:(HEX_DIGIT ("_" / HEX_DIGIT)*) {
           def to_ast
-            n :UNSIZED_HEX_NUMBER, n(:STRING, val.text_value.sub("_", "").upcase)
+            n :UNSIZED_HEX_NUMBER, val.text_value.sub("_", "").upcase
           end
         }
       end

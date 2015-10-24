@@ -3,6 +3,21 @@ require 'treetop'
 module IJTAG
   module AST
     class Node < ::AST::Node
+      # Returns the value at the root of an AST node like this:
+      #
+      #   node # => (module-def
+      #               (module-name
+      #                 (SCALAR-ID "Instrument"))
+      #
+      #   node.value  # => "Instrument"
+      #
+      # No error checking is done and the caller is responsible for calling
+      # this only on compatible nodes
+      def value
+        val = children.first
+        val = val.children.first while val.respond_to?(:children)
+        val
+      end
     end
   end
 end

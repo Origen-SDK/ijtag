@@ -6,24 +6,15 @@ module IJTAG
     class Processor
       include ::AST::Processor::Mixin
 
-      # Use to get a single value at the root of an AST node like this:
-      #
-      #   node # => (module-def
-      #               (module-name
-      #                 (SCALAR-ID "Instrument"))
-      # 
-      #   root_value(node)  # => "Instrument"
-      #
-      def root_value(node)
-        node = node.children.first while node.respond_to?(:children)
-        node
+      # Helper to create new nodes
+      def n(type, *children)
+        IJTAG::AST::Node.new(type, children)
       end
 
       # Default handler for the terminal nodes, do nothing
       def process_terminal(node)
       end
       alias_method :on_SCALAR_ID, :process_terminal
-      alias_method :on_index, :process_terminal
       alias_method :on_POS_INT, :process_terminal
 
       # Most of the ICL nodes are non-terminals, so process them all by default
