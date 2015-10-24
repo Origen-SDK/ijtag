@@ -618,22 +618,6 @@ module IJTAG
         r0
       end
 
-      module ModuleItem0
-        def item
-          elements[0]
-        end
-
-        def s
-          elements[1]
-        end
-      end
-
-      module ModuleItem1
-        def to_ast
-          n :module_item, item.to_ast
-        end
-      end
-
       def _nt_module_item
         start_index = index
         if node_cache[:module_item].has_key?(index)
@@ -645,100 +629,99 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        i1 = index
-        r2 = _nt_useNameSpace_def
-        if r2
-          r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
-          r1 = r2
+        i0 = index
+        r1 = _nt_useNameSpace_def
+        if r1
+          r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
+          r0 = r1
         else
-          r3 = _nt_port_def
-          if r3
-            r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
-            r1 = r3
+          r2 = _nt_port_def
+          if r2
+            r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
+            r0 = r2
           else
-            r4 = _nt_instance_def
-            if r4
-              r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
-              r1 = r4
+            r3 = _nt_instance_def
+            if r3
+              r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
+              r0 = r3
             else
-              r5 = _nt_scanRegister_def
-              if r5
-                r5 = SyntaxNode.new(input, (index-1)...index) if r5 == true
-                r1 = r5
+              r4 = _nt_scanRegister_def
+              if r4
+                r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
+                r0 = r4
               else
-                r6 = _nt_dataRegister_def
-                if r6
-                  r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
-                  r1 = r6
+                r5 = _nt_dataRegister_def
+                if r5
+                  r5 = SyntaxNode.new(input, (index-1)...index) if r5 == true
+                  r0 = r5
                 else
-                  r7 = _nt_logicSignal_def
-                  if r7
-                    r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
-                    r1 = r7
+                  r6 = _nt_logicSignal_def
+                  if r6
+                    r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
+                    r0 = r6
                   else
-                    r8 = _nt_scanMux_def
-                    if r8
-                      r8 = SyntaxNode.new(input, (index-1)...index) if r8 == true
-                      r1 = r8
+                    r7 = _nt_scanMux_def
+                    if r7
+                      r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
+                      r0 = r7
                     else
-                      r9 = _nt_dataMux_def
-                      if r9
-                        r9 = SyntaxNode.new(input, (index-1)...index) if r9 == true
-                        r1 = r9
+                      r8 = _nt_dataMux_def
+                      if r8
+                        r8 = SyntaxNode.new(input, (index-1)...index) if r8 == true
+                        r0 = r8
                       else
-                        r10 = _nt_clockMux_def
-                        if r10
-                          r10 = SyntaxNode.new(input, (index-1)...index) if r10 == true
-                          r1 = r10
+                        r9 = _nt_clockMux_def
+                        if r9
+                          r9 = SyntaxNode.new(input, (index-1)...index) if r9 == true
+                          r0 = r9
                         else
-                          r11 = _nt_oneHotDataGroup_def
-                          if r11
-                            r11 = SyntaxNode.new(input, (index-1)...index) if r11 == true
-                            r1 = r11
+                          r10 = _nt_oneHotDataGroup_def
+                          if r10
+                            r10 = SyntaxNode.new(input, (index-1)...index) if r10 == true
+                            r0 = r10
                           else
-                            r12 = _nt_oneHotScanGroup_def
-                            if r12
-                              r12 = SyntaxNode.new(input, (index-1)...index) if r12 == true
-                              r1 = r12
+                            r11 = _nt_oneHotScanGroup_def
+                            if r11
+                              r11 = SyntaxNode.new(input, (index-1)...index) if r11 == true
+                              r0 = r11
                             else
-                              r13 = _nt_scanInterface_def
-                              if r13
-                                r13 = SyntaxNode.new(input, (index-1)...index) if r13 == true
-                                r1 = r13
+                              r12 = _nt_scanInterface_def
+                              if r12
+                                r12 = SyntaxNode.new(input, (index-1)...index) if r12 == true
+                                r0 = r12
                               else
-                                r14 = _nt_accessLink_def
-                                if r14
-                                  r14 = SyntaxNode.new(input, (index-1)...index) if r14 == true
-                                  r1 = r14
+                                r13 = _nt_accessLink_def
+                                if r13
+                                  r13 = SyntaxNode.new(input, (index-1)...index) if r13 == true
+                                  r0 = r13
                                 else
-                                  r15 = _nt_alias_def
-                                  if r15
-                                    r15 = SyntaxNode.new(input, (index-1)...index) if r15 == true
-                                    r1 = r15
+                                  r14 = _nt_alias_def
+                                  if r14
+                                    r14 = SyntaxNode.new(input, (index-1)...index) if r14 == true
+                                    r0 = r14
                                   else
-                                    r16 = _nt_enum_def
-                                    if r16
-                                      r16 = SyntaxNode.new(input, (index-1)...index) if r16 == true
-                                      r1 = r16
+                                    r15 = _nt_enum_def
+                                    if r15
+                                      r15 = SyntaxNode.new(input, (index-1)...index) if r15 == true
+                                      r0 = r15
                                     else
-                                      r17 = _nt_parameter_def
-                                      if r17
-                                        r17 = SyntaxNode.new(input, (index-1)...index) if r17 == true
-                                        r1 = r17
+                                      r16 = _nt_parameter_def
+                                      if r16
+                                        r16 = SyntaxNode.new(input, (index-1)...index) if r16 == true
+                                        r0 = r16
                                       else
-                                        r18 = _nt_localParameter_def
-                                        if r18
-                                          r18 = SyntaxNode.new(input, (index-1)...index) if r18 == true
-                                          r1 = r18
+                                        r17 = _nt_localParameter_def
+                                        if r17
+                                          r17 = SyntaxNode.new(input, (index-1)...index) if r17 == true
+                                          r0 = r17
                                         else
-                                          r19 = _nt_attribute_def
-                                          if r19
-                                            r19 = SyntaxNode.new(input, (index-1)...index) if r19 == true
-                                            r1 = r19
+                                          r18 = _nt_attribute_def
+                                          if r18
+                                            r18 = SyntaxNode.new(input, (index-1)...index) if r18 == true
+                                            r0 = r18
                                           else
-                                            @index = i1
-                                            r1 = nil
+                                            @index = i0
+                                            r0 = nil
                                           end
                                         end
                                       end
@@ -757,39 +740,10 @@ module IJTAG
             end
           end
         end
-        s0 << r1
-        if r1
-          r20 = _nt_s
-          s0 << r20
-        end
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ModuleItem0)
-          r0.extend(ModuleItem1)
-        else
-          @index = i0
-          r0 = nil
-        end
 
         node_cache[:module_item][start_index] = r0
 
         r0
-      end
-
-      module PortDef0
-        def port
-          elements[0]
-        end
-
-        def s
-          elements[1]
-        end
-      end
-
-      module PortDef1
-        def to_ast
-          n :port_def, port.to_ast
-        end
       end
 
       def _nt_port_def
@@ -803,140 +757,139 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        i1 = index
-        r2 = _nt_scanInPort_def
-        if r2
-          r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
-          r1 = r2
+        i0 = index
+        r1 = _nt_scanInPort_def
+        if r1
+          r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
+          r0 = r1
         else
-          r3 = _nt_scanOutPort_def
-          if r3
-            r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
-            r1 = r3
+          r2 = _nt_scanOutPort_def
+          if r2
+            r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
+            r0 = r2
           else
-            r4 = _nt_shiftEnPort_def
-            if r4
-              r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
-              r1 = r4
+            r3 = _nt_shiftEnPort_def
+            if r3
+              r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
+              r0 = r3
             else
-              r5 = _nt_captureEnPort_def
-              if r5
-                r5 = SyntaxNode.new(input, (index-1)...index) if r5 == true
-                r1 = r5
+              r4 = _nt_captureEnPort_def
+              if r4
+                r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
+                r0 = r4
               else
-                r6 = _nt_updateEnPort_def
-                if r6
-                  r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
-                  r1 = r6
+                r5 = _nt_updateEnPort_def
+                if r5
+                  r5 = SyntaxNode.new(input, (index-1)...index) if r5 == true
+                  r0 = r5
                 else
-                  r7 = _nt_dataInPort_def
-                  if r7
-                    r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
-                    r1 = r7
+                  r6 = _nt_dataInPort_def
+                  if r6
+                    r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
+                    r0 = r6
                   else
-                    r8 = _nt_dataOutPort_def
-                    if r8
-                      r8 = SyntaxNode.new(input, (index-1)...index) if r8 == true
-                      r1 = r8
+                    r7 = _nt_dataOutPort_def
+                    if r7
+                      r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
+                      r0 = r7
                     else
-                      r9 = _nt_toShiftEnPort_def
-                      if r9
-                        r9 = SyntaxNode.new(input, (index-1)...index) if r9 == true
-                        r1 = r9
+                      r8 = _nt_toShiftEnPort_def
+                      if r8
+                        r8 = SyntaxNode.new(input, (index-1)...index) if r8 == true
+                        r0 = r8
                       else
-                        r10 = _nt_toUpdateEnPort_def
-                        if r10
-                          r10 = SyntaxNode.new(input, (index-1)...index) if r10 == true
-                          r1 = r10
+                        r9 = _nt_toUpdateEnPort_def
+                        if r9
+                          r9 = SyntaxNode.new(input, (index-1)...index) if r9 == true
+                          r0 = r9
                         else
-                          r11 = _nt_toCaptureEnPort_def
-                          if r11
-                            r11 = SyntaxNode.new(input, (index-1)...index) if r11 == true
-                            r1 = r11
+                          r10 = _nt_toCaptureEnPort_def
+                          if r10
+                            r10 = SyntaxNode.new(input, (index-1)...index) if r10 == true
+                            r0 = r10
                           else
-                            r12 = _nt_selectPort_def
-                            if r12
-                              r12 = SyntaxNode.new(input, (index-1)...index) if r12 == true
-                              r1 = r12
+                            r11 = _nt_selectPort_def
+                            if r11
+                              r11 = SyntaxNode.new(input, (index-1)...index) if r11 == true
+                              r0 = r11
                             else
-                              r13 = _nt_toSelectPort_def
-                              if r13
-                                r13 = SyntaxNode.new(input, (index-1)...index) if r13 == true
-                                r1 = r13
+                              r12 = _nt_toSelectPort_def
+                              if r12
+                                r12 = SyntaxNode.new(input, (index-1)...index) if r12 == true
+                                r0 = r12
                               else
-                                r14 = _nt_resetPort_def
-                                if r14
-                                  r14 = SyntaxNode.new(input, (index-1)...index) if r14 == true
-                                  r1 = r14
+                                r13 = _nt_resetPort_def
+                                if r13
+                                  r13 = SyntaxNode.new(input, (index-1)...index) if r13 == true
+                                  r0 = r13
                                 else
-                                  r15 = _nt_toResetPort_def
-                                  if r15
-                                    r15 = SyntaxNode.new(input, (index-1)...index) if r15 == true
-                                    r1 = r15
+                                  r14 = _nt_toResetPort_def
+                                  if r14
+                                    r14 = SyntaxNode.new(input, (index-1)...index) if r14 == true
+                                    r0 = r14
                                   else
-                                    r16 = _nt_tmsPort_def
-                                    if r16
-                                      r16 = SyntaxNode.new(input, (index-1)...index) if r16 == true
-                                      r1 = r16
+                                    r15 = _nt_tmsPort_def
+                                    if r15
+                                      r15 = SyntaxNode.new(input, (index-1)...index) if r15 == true
+                                      r0 = r15
                                     else
-                                      r17 = _nt_toTmsPort_def
-                                      if r17
-                                        r17 = SyntaxNode.new(input, (index-1)...index) if r17 == true
-                                        r1 = r17
+                                      r16 = _nt_toTmsPort_def
+                                      if r16
+                                        r16 = SyntaxNode.new(input, (index-1)...index) if r16 == true
+                                        r0 = r16
                                       else
-                                        r18 = _nt_tckPort_def
-                                        if r18
-                                          r18 = SyntaxNode.new(input, (index-1)...index) if r18 == true
-                                          r1 = r18
+                                        r17 = _nt_tckPort_def
+                                        if r17
+                                          r17 = SyntaxNode.new(input, (index-1)...index) if r17 == true
+                                          r0 = r17
                                         else
-                                          r19 = _nt_toTckPort_def
-                                          if r19
-                                            r19 = SyntaxNode.new(input, (index-1)...index) if r19 == true
-                                            r1 = r19
+                                          r18 = _nt_toTckPort_def
+                                          if r18
+                                            r18 = SyntaxNode.new(input, (index-1)...index) if r18 == true
+                                            r0 = r18
                                           else
-                                            r20 = _nt_clockPort_def
-                                            if r20
-                                              r20 = SyntaxNode.new(input, (index-1)...index) if r20 == true
-                                              r1 = r20
+                                            r19 = _nt_clockPort_def
+                                            if r19
+                                              r19 = SyntaxNode.new(input, (index-1)...index) if r19 == true
+                                              r0 = r19
                                             else
-                                              r21 = _nt_toClockPort_def
-                                              if r21
-                                                r21 = SyntaxNode.new(input, (index-1)...index) if r21 == true
-                                                r1 = r21
+                                              r20 = _nt_toClockPort_def
+                                              if r20
+                                                r20 = SyntaxNode.new(input, (index-1)...index) if r20 == true
+                                                r0 = r20
                                               else
-                                                r22 = _nt_trstPort_def
-                                                if r22
-                                                  r22 = SyntaxNode.new(input, (index-1)...index) if r22 == true
-                                                  r1 = r22
+                                                r21 = _nt_trstPort_def
+                                                if r21
+                                                  r21 = SyntaxNode.new(input, (index-1)...index) if r21 == true
+                                                  r0 = r21
                                                 else
-                                                  r23 = _nt_toTrstPort_def
-                                                  if r23
-                                                    r23 = SyntaxNode.new(input, (index-1)...index) if r23 == true
-                                                    r1 = r23
+                                                  r22 = _nt_toTrstPort_def
+                                                  if r22
+                                                    r22 = SyntaxNode.new(input, (index-1)...index) if r22 == true
+                                                    r0 = r22
                                                   else
-                                                    r24 = _nt_toIRSelectPort_def
-                                                    if r24
-                                                      r24 = SyntaxNode.new(input, (index-1)...index) if r24 == true
-                                                      r1 = r24
+                                                    r23 = _nt_toIRSelectPort_def
+                                                    if r23
+                                                      r23 = SyntaxNode.new(input, (index-1)...index) if r23 == true
+                                                      r0 = r23
                                                     else
-                                                      r25 = _nt_addressPort_def
-                                                      if r25
-                                                        r25 = SyntaxNode.new(input, (index-1)...index) if r25 == true
-                                                        r1 = r25
+                                                      r24 = _nt_addressPort_def
+                                                      if r24
+                                                        r24 = SyntaxNode.new(input, (index-1)...index) if r24 == true
+                                                        r0 = r24
                                                       else
-                                                        r26 = _nt_writeEnPort_def
-                                                        if r26
-                                                          r26 = SyntaxNode.new(input, (index-1)...index) if r26 == true
-                                                          r1 = r26
+                                                        r25 = _nt_writeEnPort_def
+                                                        if r25
+                                                          r25 = SyntaxNode.new(input, (index-1)...index) if r25 == true
+                                                          r0 = r25
                                                         else
-                                                          r27 = _nt_readEnPort_def
-                                                          if r27
-                                                            r27 = SyntaxNode.new(input, (index-1)...index) if r27 == true
-                                                            r1 = r27
+                                                          r26 = _nt_readEnPort_def
+                                                          if r26
+                                                            r26 = SyntaxNode.new(input, (index-1)...index) if r26 == true
+                                                            r0 = r26
                                                           else
-                                                            @index = i1
-                                                            r1 = nil
+                                                            @index = i0
+                                                            r0 = nil
                                                           end
                                                         end
                                                       end
@@ -962,19 +915,6 @@ module IJTAG
               end
             end
           end
-        end
-        s0 << r1
-        if r1
-          r28 = _nt_s
-          s0 << r28
-        end
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(PortDef0)
-          r0.extend(PortDef1)
-        else
-          @index = i0
-          r0 = nil
         end
 
         node_cache[:port_def][start_index] = r0
@@ -19908,8 +19848,14 @@ module IJTAG
           elements[0]
         end
 
-        def POS_INT
+        def val
           elements[1]
+        end
+      end
+
+      module UNSIZEDDECNUMBER1
+        def to_ast
+          n :UNSIZED_DEC_NUMBER, val.to_ast
         end
       end
 
@@ -19934,6 +19880,7 @@ module IJTAG
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
           r0.extend(UNSIZEDDECNUMBER0)
+          r0.extend(UNSIZEDDECNUMBER1)
         else
           @index = i0
           r0 = nil
@@ -19945,14 +19892,26 @@ module IJTAG
       end
 
       module UNSIZEDBINNUMBER0
+        def BIN_DIGIT
+          elements[0]
+        end
+
+      end
+
+      module UNSIZEDBINNUMBER1
         def BIN_BASE
           elements[0]
         end
 
-        def BIN_DIGIT
+        def val
           elements[1]
         end
+      end
 
+      module UNSIZEDBINNUMBER2
+        def to_ast
+          n :UNSIZED_BIN_NUMBER, n(:STRING, val.text_value.sub("_", ""))
+        end
       end
 
       def _nt_UNSIZED_BIN_NUMBER
@@ -19970,45 +19929,55 @@ module IJTAG
         r1 = _nt_BIN_BASE
         s0 << r1
         if r1
-          r2 = _nt_BIN_DIGIT
-          s0 << r2
-          if r2
-            s3, i3 = [], index
+          i2, s2 = index, []
+          r3 = _nt_BIN_DIGIT
+          s2 << r3
+          if r3
+            s4, i4 = [], index
             loop do
-              i4 = index
+              i5 = index
               if (match_len = has_terminal?("_", false, index))
-                r5 = true
+                r6 = true
                 @index += match_len
               else
                 terminal_parse_failure('"_"')
-                r5 = nil
+                r6 = nil
               end
-              if r5
-                r5 = SyntaxNode.new(input, (index-1)...index) if r5 == true
-                r4 = r5
+              if r6
+                r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
+                r5 = r6
               else
-                r6 = _nt_BIN_DIGIT
-                if r6
-                  r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
-                  r4 = r6
+                r7 = _nt_BIN_DIGIT
+                if r7
+                  r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
+                  r5 = r7
                 else
-                  @index = i4
-                  r4 = nil
+                  @index = i5
+                  r5 = nil
                 end
               end
-              if r4
-                s3 << r4
+              if r5
+                s4 << r5
               else
                 break
               end
             end
-            r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
-            s0 << r3
+            r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
+            s2 << r4
           end
+          if s2.last
+            r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
+            r2.extend(UNSIZEDBINNUMBER0)
+          else
+            @index = i2
+            r2 = nil
+          end
+          s0 << r2
         end
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(UNSIZEDBINNUMBER0)
+          r0.extend(UNSIZEDBINNUMBER1)
+          r0.extend(UNSIZEDBINNUMBER2)
         else
           @index = i0
           r0 = nil
@@ -20020,14 +19989,26 @@ module IJTAG
       end
 
       module UNSIZEDHEXNUMBER0
+        def HEX_DIGIT
+          elements[0]
+        end
+
+      end
+
+      module UNSIZEDHEXNUMBER1
         def HEX_BASE
           elements[0]
         end
 
-        def HEX_DIGIT
+        def val
           elements[1]
         end
+      end
 
+      module UNSIZEDHEXNUMBER2
+        def to_ast
+          n :UNSIZED_HEX_NUMBER, n(:STRING, val.text_value.sub("_", "").upcase)
+        end
       end
 
       def _nt_UNSIZED_HEX_NUMBER
@@ -20045,45 +20026,55 @@ module IJTAG
         r1 = _nt_HEX_BASE
         s0 << r1
         if r1
-          r2 = _nt_HEX_DIGIT
-          s0 << r2
-          if r2
-            s3, i3 = [], index
+          i2, s2 = index, []
+          r3 = _nt_HEX_DIGIT
+          s2 << r3
+          if r3
+            s4, i4 = [], index
             loop do
-              i4 = index
+              i5 = index
               if (match_len = has_terminal?("_", false, index))
-                r5 = true
+                r6 = true
                 @index += match_len
               else
                 terminal_parse_failure('"_"')
-                r5 = nil
+                r6 = nil
               end
-              if r5
-                r5 = SyntaxNode.new(input, (index-1)...index) if r5 == true
-                r4 = r5
+              if r6
+                r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
+                r5 = r6
               else
-                r6 = _nt_HEX_DIGIT
-                if r6
-                  r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
-                  r4 = r6
+                r7 = _nt_HEX_DIGIT
+                if r7
+                  r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
+                  r5 = r7
                 else
-                  @index = i4
-                  r4 = nil
+                  @index = i5
+                  r5 = nil
                 end
               end
-              if r4
-                s3 << r4
+              if r5
+                s4 << r5
               else
                 break
               end
             end
-            r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
-            s0 << r3
+            r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
+            s2 << r4
           end
+          if s2.last
+            r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
+            r2.extend(UNSIZEDHEXNUMBER0)
+          else
+            @index = i2
+            r2 = nil
+          end
+          s0 << r2
         end
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(UNSIZEDHEXNUMBER0)
+          r0.extend(UNSIZEDHEXNUMBER1)
+          r0.extend(UNSIZEDHEXNUMBER2)
         else
           @index = i0
           r0 = nil
@@ -20095,12 +20086,18 @@ module IJTAG
       end
 
       module SizedDecNumber0
-        def size
+        def v1
           elements[0]
         end
 
-        def UNSIZED_DEC_NUMBER
+        def v2
           elements[1]
+        end
+      end
+
+      module SizedDecNumber1
+        def to_ast
+          n :sized_dec_number, v1.to_ast, v2.to_ast
         end
       end
 
@@ -20125,6 +20122,7 @@ module IJTAG
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
           r0.extend(SizedDecNumber0)
+          r0.extend(SizedDecNumber1)
         else
           @index = i0
           r0 = nil
@@ -20136,12 +20134,18 @@ module IJTAG
       end
 
       module SizedBinNumber0
-        def size
+        def v1
           elements[0]
         end
 
-        def UNSIZED_BIN_NUMBER
+        def v2
           elements[1]
+        end
+      end
+
+      module SizedBinNumber1
+        def to_ast
+          n :sized_bin_number, v1.to_ast, v2.to_ast
         end
       end
 
@@ -20166,6 +20170,7 @@ module IJTAG
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
           r0.extend(SizedBinNumber0)
+          r0.extend(SizedBinNumber1)
         else
           @index = i0
           r0 = nil
@@ -20177,12 +20182,18 @@ module IJTAG
       end
 
       module SizedHexNumber0
-        def size
+        def v1
           elements[0]
         end
 
-        def UNSIZED_HEX_NUMBER
+        def v2
           elements[1]
+        end
+      end
+
+      module SizedHexNumber1
+        def to_ast
+          n :sized_hex_number, v1.to_ast, v2.to_ast
         end
       end
 
@@ -20207,6 +20218,7 @@ module IJTAG
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
           r0.extend(SizedHexNumber0)
+          r0.extend(SizedHexNumber1)
         else
           @index = i0
           r0 = nil
@@ -20398,12 +20410,6 @@ module IJTAG
         r0
       end
 
-      module Number0
-        def to_ast
-          text_value
-        end
-      end
-
       def _nt_number
         start_index = index
         if node_cache[:number].has_key?(index)
@@ -20427,7 +20433,6 @@ module IJTAG
             r0 = r2
           else
             r3 = _nt_integer_expr
-            r3.extend(Number0)
             if r3
               r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
               r0 = r3
@@ -20451,7 +20456,7 @@ module IJTAG
 
       module IntegerExpr1
         def to_ast
-          n :integer_expr, expr.to_ast
+          expr.to_ast
         end
       end
 
@@ -20488,7 +20493,7 @@ module IJTAG
           elements[0]
         end
 
-        def right
+        def expr
           elements[1]
         end
       end
@@ -20498,18 +20503,21 @@ module IJTAG
           elements[0]
         end
 
+        def right
+          elements[1]
+        end
       end
 
       module IntegerExprLvl12
         def to_ast
-          if respond_to?(:op)
-            if op.text_value == "+"
-              n :add, left.to_ast, right.to_ast
+          if right.respond_to?(:op)
+            if right.op.text_value == "+"
+              n :add, left.to_ast, right.expr.to_ast
             else
-              n :subtract, left.to_ast, right.to_ast
+              n :subtract, left.to_ast, right.expr.to_ast
             end
           else
-            n :integer_expr_lvl1, left.to_ast
+            left.to_ast
           end
         end
       end
@@ -20595,7 +20603,7 @@ module IJTAG
           elements[0]
         end
 
-        def right
+        def expr
           elements[1]
         end
       end
@@ -20605,20 +20613,23 @@ module IJTAG
           elements[0]
         end
 
+        def right
+          elements[1]
+        end
       end
 
       module IntegerExprLvl22
         def to_ast
-          if respond_to?(:op)
-            if op.text_value == "*"
-              n :multiply, left.to_ast, right.to_ast
-            elsif op.text_value == "/"
-              n :divide, left.to_ast, right.to_ast
+          if right.respond_to?(:op)
+            if right.op.text_value == "*"
+              n :multiply, left.to_ast, right.expr.to_ast
+            elsif right.op.text_value == "/"
+              n :divide, left.to_ast, right.expr.to_ast
             else
-              n :modulus, left.to_ast, right.to_ast
+              n :modulus, left.to_ast, right.expr.to_ast
             end
           else
-            n :integer_expr_lvl2, left.to_ast
+            left.to_ast
           end
         end
       end
@@ -20720,7 +20731,7 @@ module IJTAG
 
       module IntegerExprParen1
         def to_ast
-          n :integer_expr_paren, expr.to_ast
+          expr.to_ast
         end
       end
 

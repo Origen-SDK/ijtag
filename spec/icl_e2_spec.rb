@@ -16,6 +16,9 @@ describe "ICL Example 2 from the 1687 spec" do
     network.is_a?(IJTAG::Network).should == true
     network.sub_blocks.size.should == 1
     network.Instrument.is_a?(IJTAG::Instrument).should == true
+    network.Instrument.ports.size.should == 2
+    network.Instrument.DO.width.should == 8
+    network.Instrument.DI.width.should == 8
   end 
 
 end

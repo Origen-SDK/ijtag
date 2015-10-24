@@ -58,7 +58,7 @@ module IJTAG
       end
 
       rule module_item
-        item:(useNameSpace_def /
+        useNameSpace_def /
         port_def /
         instance_def /
         scanRegister_def /
@@ -75,15 +75,11 @@ module IJTAG
         enum_def /
         parameter_def /
         localParameter_def /
-        attribute_def) s {
-          def to_ast
-            n :module_item, item.to_ast
-          end
-        }
+        attribute_def
       end
 
       rule port_def
-        port:(scanInPort_def /
+        scanInPort_def /
         scanOutPort_def /
         shiftEnPort_def /
         captureEnPort_def /
@@ -108,11 +104,7 @@ module IJTAG
         toIRSelectPort_def /
         addressPort_def /
         writeEnPort_def /
-        readEnPort_def) s {
-          def to_ast
-            n :port_def, port.to_ast
-          end
-        }
+        readEnPort_def
       end
 
       ####################################################
@@ -2012,27 +2004,51 @@ module IJTAG
       end
 
       rule UNSIZED_DEC_NUMBER
-        DEC_BASE POS_INT
+        DEC_BASE val:POS_INT {
+          def to_ast
+            n :UNSIZED_DEC_NUMBER, val.to_ast
+          end
+        }
       end
 
       rule UNSIZED_BIN_NUMBER
-        BIN_BASE BIN_DIGIT ("_" / BIN_DIGIT)*
+        BIN_BASE val:(BIN_DIGIT ("_" / BIN_DIGIT)*) {
+          def to_ast
+            n :UNSIZED_BIN_NUMBER, n(:STRING, val.text_value.sub("_", ""))
+          end
+        }
       end
 
       rule UNSIZED_HEX_NUMBER
-        HEX_BASE HEX_DIGIT ("_" / HEX_DIGIT)*
+        HEX_BASE val:(HEX_DIGIT ("_" / HEX_DIGIT)*) {
+          def to_ast
+            n :UNSIZED_HEX_NUMBER, n(:STRING, val.text_value.sub("_", "").upcase)
+          end
+        }
       end
 
       rule sized_dec_number
-        size UNSIZED_DEC_NUMBER
+        v1:size v2:UNSIZED_DEC_NUMBER {
+          def to_ast
+            n :sized_dec_number, v1.to_ast, v2.to_ast
+          end
+        }
       end
 
       rule sized_bin_number
-        size UNSIZED_BIN_NUMBER
+        v1:size v2:UNSIZED_BIN_NUMBER {
+          def to_ast
+            n :sized_bin_number, v1.to_ast, v2.to_ast
+          end
+        }
       end
 
       rule sized_hex_number
-        size UNSIZED_HEX_NUMBER
+        v1:size v2:UNSIZED_HEX_NUMBER {
+          def to_ast
+            n :sized_hex_number, v1.to_ast, v2.to_ast
+          end
+        }
       end
 
       rule vector_id
@@ -2060,50 +2076,46 @@ module IJTAG
       end
 
       rule number
-        unsized_number / sized_number / integer_expr {
-          def to_ast
-            text_value
-          end
-        }
+        unsized_number / sized_number / integer_expr
       end
 
       rule integer_expr
         expr:integer_expr_lvl1 {
           def to_ast
-            n :integer_expr, expr.to_ast
+            expr.to_ast
           end
         }
       end
 
       rule integer_expr_lvl1
-        left:integer_expr_lvl2 (op:("+" / "-") right:integer_expr_lvl1)? {
+        left:integer_expr_lvl2 right:(op:("+" / "-") expr:integer_expr_lvl1)? {
           def to_ast
-            if respond_to?(:op)
-              if op.text_value == "+"
-                n :add, left.to_ast, right.to_ast
+            if right.respond_to?(:op)
+              if right.op.text_value == "+"
+                n :add, left.to_ast, right.expr.to_ast
               else
-                n :subtract, left.to_ast, right.to_ast
+                n :subtract, left.to_ast, right.expr.to_ast
               end
             else
-              n :integer_expr_lvl1, left.to_ast
+              left.to_ast
             end
           end
         }
       end
 
       rule integer_expr_lvl2
-        left:integer_expr_arg (op:("*" / "/" / "%") right:integer_expr_lvl2)? {
+        left:integer_expr_arg right:(op:("*" / "/" / "%") expr:integer_expr_lvl2)? {
           def to_ast
-            if respond_to?(:op)
-              if op.text_value == "*"
-                n :multiply, left.to_ast, right.to_ast
-              elsif op.text_value == "/"
-                n :divide, left.to_ast, right.to_ast
+            if right.respond_to?(:op)
+              if right.op.text_value == "*"
+                n :multiply, left.to_ast, right.expr.to_ast
+              elsif right.op.text_value == "/"
+                n :divide, left.to_ast, right.expr.to_ast
               else
-                n :modulus, left.to_ast, right.to_ast
+                n :modulus, left.to_ast, right.expr.to_ast
               end
             else
-              n :integer_expr_lvl2, left.to_ast
+              left.to_ast
             end
           end
         }
@@ -2112,7 +2124,7 @@ module IJTAG
       rule integer_expr_paren
         "(" expr:integer_expr ")" {
           def to_ast
-            n :integer_expr_paren, expr.to_ast
+            expr.to_ast
           end
         }
       end

@@ -20,6 +20,10 @@ module IJTAG
         network.sub_block name, class_name: 'IJTAG::Instrument'
         process_all(node.children)
       end
+
+      def on_port_def(node)
+        node = process_all(node)
+      end
     end
   end
 end

@@ -61,14 +61,12 @@ Module Context {     // Some module
         s(:module_def,
           s(:module_name,
             s(:SCALAR_ID, "Context")),
-          s(:module_item,
-            s(:useNameSpace_def,
-              s(:namespace_name,
-                s(:SCALAR_ID, "ATX")))),
-          s(:module_item,
-            s(:useNameSpace_def,
-              s(:namespace_name,
-                s(:SCALAR_ID, "Blah"))))))
+          s(:useNameSpace_def,
+            s(:namespace_name,
+              s(:SCALAR_ID, "ATX"))),
+          s(:useNameSpace_def,
+            s(:namespace_name,
+              s(:SCALAR_ID, "Blah")))))
   end
 
   it "can parse some real examples" do
@@ -90,31 +88,27 @@ END
         s(:module_def,
           s(:module_name,
             s(:SCALAR_ID, "Context")),
-          s(:module_item,
-            s(:port_def,
-              s(:scanOutPort_def,
-                s(:scanOutPort_name,
-                  s(:port_name,
-                    s(:SCALAR_ID, "SO"))),
-                s(:scanOutPort_source,
-                  s(:concat_scan_signal,
-                    s(:scan_signal,
-                      s(:signal,
-                        s(:hier_port,
-                          s(:instance_name,
-                            s(:SCALAR_ID, "reg2")),
-                          s(:port_name,
-                            s(:SCALAR_ID, "SO"))))),
-                    s(:scan_signal,
-                      s(:signal,
-                        s(:reg_port_signal_id,
-                          s(:SCALAR_ID, "reg1")))),
-                    s(:scan_signal,
-                      s(:signal,
-                        s(:reg_port_signal_id,
-                          s(:SCALAR_ID, "reg3")))))))))))
-
-
+          s(:scanOutPort_def,
+            s(:scanOutPort_name,
+              s(:port_name,
+                s(:SCALAR_ID, "SO"))),
+            s(:scanOutPort_source,
+              s(:concat_scan_signal,
+                s(:scan_signal,
+                  s(:signal,
+                    s(:hier_port,
+                      s(:instance_name,
+                        s(:SCALAR_ID, "reg2")),
+                      s(:port_name,
+                        s(:SCALAR_ID, "SO"))))),
+                s(:scan_signal,
+                  s(:signal,
+                    s(:reg_port_signal_id,
+                      s(:SCALAR_ID, "reg1")))),
+                s(:scan_signal,
+                  s(:signal,
+                    s(:reg_port_signal_id,
+                      s(:SCALAR_ID, "reg3")))))))))
 
   end
 end
