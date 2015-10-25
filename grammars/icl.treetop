@@ -1732,11 +1732,7 @@ module IJTAG
       end
 
       rule size
-        val:(POS_INT / parameter_ref) {
-          def to_ast
-            n :size, val.to_ast
-          end
-        }
+        POS_INT / parameter_ref
       end
 
       rule UNKNOWN_DIGIT
@@ -1840,7 +1836,7 @@ module IJTAG
       end
 
       rule number
-        unsized_number / sized_number / integer_expr
+        sized_number / unsized_number / integer_expr
       end
 
       rule integer_expr
@@ -1944,7 +1940,7 @@ module IJTAG
       end
 
       rule unsized_number
-        POS_INT / UNSIZED_DEC_NUMBER / UNSIZED_BIN_NUMBER / UNSIZED_HEX_NUMBER
+        UNSIZED_DEC_NUMBER / UNSIZED_BIN_NUMBER / UNSIZED_HEX_NUMBER / POS_INT
       end
 
       rule sized_number
@@ -1952,7 +1948,16 @@ module IJTAG
       end
 
       rule concat_number
-        "~"? number ("," "~"? number)*
+        invert:"~"? s1:number s2:("," "~"? val:number)* {
+          def to_ast
+            fail "concat_number invert not handled yet!" unless invert.empty?
+            if s2.empty?
+              s1.to_ast
+            else
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.val.to_ast }
+            end
+          end
+        }
       end
 
       rule concat_number_list

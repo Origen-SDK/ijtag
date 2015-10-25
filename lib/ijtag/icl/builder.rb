@@ -29,7 +29,7 @@ module IJTAG
         end
 
         if items.size > 0
-          fail "Port def items not implemented yet!"
+          fail 'Port def items not implemented yet!'
         end
       end
       alias_method :on_dataInPort_def, :on_port_def

@@ -18000,18 +18000,6 @@ module IJTAG
         r0
       end
 
-      module Size0
-        def val
-          elements[0]
-        end
-      end
-
-      module Size1
-        def to_ast
-          n :size, val.to_ast
-        end
-      end
-
       def _nt_size
         start_index = index
         if node_cache[:size].has_key?(index)
@@ -18023,30 +18011,20 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        i1 = index
-        r2 = _nt_POS_INT
-        if r2
-          r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
-          r1 = r2
+        i0 = index
+        r1 = _nt_POS_INT
+        if r1
+          r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
+          r0 = r1
         else
-          r3 = _nt_parameter_ref
-          if r3
-            r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
-            r1 = r3
+          r2 = _nt_parameter_ref
+          if r2
+            r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
+            r0 = r2
           else
-            @index = i1
-            r1 = nil
+            @index = i0
+            r0 = nil
           end
-        end
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(Size0)
-          r0.extend(Size1)
-        else
-          @index = i0
-          r0 = nil
         end
 
         node_cache[:size][start_index] = r0
@@ -19077,12 +19055,12 @@ module IJTAG
         end
 
         i0 = index
-        r1 = _nt_unsized_number
+        r1 = _nt_sized_number
         if r1
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
         else
-          r2 = _nt_sized_number
+          r2 = _nt_unsized_number
           if r2
             r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
             r0 = r2
@@ -20232,22 +20210,22 @@ module IJTAG
         end
 
         i0 = index
-        r1 = _nt_POS_INT
+        r1 = _nt_UNSIZED_DEC_NUMBER
         if r1
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
         else
-          r2 = _nt_UNSIZED_DEC_NUMBER
+          r2 = _nt_UNSIZED_BIN_NUMBER
           if r2
             r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
             r0 = r2
           else
-            r3 = _nt_UNSIZED_BIN_NUMBER
+            r3 = _nt_UNSIZED_HEX_NUMBER
             if r3
               r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
               r0 = r3
             else
-              r4 = _nt_UNSIZED_HEX_NUMBER
+              r4 = _nt_POS_INT
               if r4
                 r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
                 r0 = r4
@@ -20303,16 +20281,34 @@ module IJTAG
       end
 
       module ConcatNumber0
-        def number
+        def val
           elements[2]
         end
       end
 
       module ConcatNumber1
-        def number
+        def invert
+          elements[0]
+        end
+
+        def s1
           elements[1]
         end
 
+        def s2
+          elements[2]
+        end
+      end
+
+      module ConcatNumber2
+        def to_ast
+          fail "concat_number invert not handled yet!" unless invert.empty?
+          if s2.empty?
+            s1.to_ast
+          else
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.val.to_ast }
+          end
+        end
       end
 
       def _nt_concat_number
@@ -20394,6 +20390,7 @@ module IJTAG
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
           r0.extend(ConcatNumber1)
+          r0.extend(ConcatNumber2)
         else
           @index = i0
           r0 = nil

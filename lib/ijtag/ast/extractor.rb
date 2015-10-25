@@ -7,11 +7,11 @@ module IJTAG
       attr_reader :types
       attr_reader :results
 
-      def process(node, types=nil)
+      def process(node, types = nil)
         if types
-          @types = types 
+          @types = types
           @results = []
-          #node = AST::Node.new(:wrapper, node) unless node.respond_to?(:to_ast)
+          # node = AST::Node.new(:wrapper, node) unless node.respond_to?(:to_ast)
         end
         super(node) if node.respond_to?(:to_ast)
         results
