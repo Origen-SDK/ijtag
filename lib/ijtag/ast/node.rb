@@ -18,6 +18,16 @@ module IJTAG
         val = val.children.first while val.respond_to?(:children)
         val
       end
+
+      # Returns the first child node of the given type that is found
+      def find(type)
+        find_all(type).first
+      end
+
+      # Returns an array containing all child nodes of the given type(s)
+      def find_all(*types)
+        Extractor.new.process(self, types)
+      end
     end
   end
 end

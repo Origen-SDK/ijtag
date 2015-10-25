@@ -15,19 +15,14 @@ module IJTAG
       end
 
       def compute_op(node)
-        # Process all child nodes to convert everything to INTs and
-        # resolve parameters
+        # Process all child nodes to convert everything to INTs and resolve parameters,
+        # this will return something like this: [(POS-INT 2), (POS-INT 5)]
         nodes = process_all(node)
 
-        if nodes.all? { |node| node.type == :POS_INT }
-          values = nodes.map { |node| node.children.first }
-          AST::Node.new(:POS_INT, [
-            yield(values)
-          ])
-        else
-          # Should this really be an error, no where to go from here really?
-          node.updated(nil, nodes)
-        end
+        values = nodes.map { |node| node.children.first }
+        AST::Node.new(:POS_INT, [
+          yield(values)
+        ])
       end
 
       def on_add(node)

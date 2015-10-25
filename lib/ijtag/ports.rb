@@ -3,7 +3,7 @@ module IJTAG
   # become part of Origen core in future
   module Ports
     def ports
-      @ports ||= {}
+      @ports ||= {}.with_indifferent_access
     end
 
     def add_port(name, options = {})
