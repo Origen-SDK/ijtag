@@ -11,23 +11,25 @@ module IJTAG
       end
 
       def on_module_def(node)
-        name = node.find(:module_name).value
-        model = network.sub_block name, class_name: 'IJTAG::Instrument'
+        name, *items = *node
+        model = network.sub_block name.value, class_name: 'IJTAG::Instrument'
         define_module(model) do
-          process_all(node.children)
+          process_all(items)
         end
       end
 
       def on_port_def(node)
-        nodes = process_all(node)
-        port_name = node.find(:port_name)
-        name = port_name.to_a[0]
+        name, *items = *process_all(node)
 
         if name.type == :vector_id && name.to_a[1].type == :range
           v = name.to_a
           current_module.add_port(v[0].value, size: size_of(v[1]))
         else
           current_module.add_port(name.value)
+        end
+
+        if items.size > 0
+          fail "Port def items not implemented yet!"
         end
       end
       alias_method :on_dataInPort_def, :on_port_def

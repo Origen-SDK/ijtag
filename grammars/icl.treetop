@@ -1139,16 +1139,20 @@ module IJTAG
       end
 
       rule alias_def
-        'Alias' S name:alias_name s '=' s signal:(concat_hier_data_signal (';' / ('{' s alias_item+ s '}' s ))) s {
+        'Alias' S name:alias_name s '=' s signal:concat_hier_data_signal s d:(';' / ('{' s items:alias_item+ s '}' s )) s {
           def to_ast
-            fail "alias_def not implemented yet!"
+            if d.respond_to?(:items)
+              n :alias_def, name.to_ast, signal.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            else
+              n :alias_def, name.to_ast, signal.to_ast
+            end
           end
         }
       end
 
       rule alias_item
         attribute_def /
-        'AccessTogether' s ';' /
+        access_together /
         alias_iApplyEndState /
         alias_refEnum
       end
@@ -1169,18 +1173,46 @@ module IJTAG
         }
       end
 
-      rule concat_hier_data_signal
-        '~'? hier_data_signal (',' s '~'? hier_data_signal)* s {
+      rule access_together
+        'AccessTogether' s ';' s {
           def to_ast
-            n :concat_hier_data_signal, text_value
+            n0 :access_together
+          end
+        }
+      end
+
+      rule concat_hier_data_signal
+        s1:(inverted_hier_data_signal / hier_data_signal) s2:(s ',' s signal:(inverted_hier_data_signal / hier_data_signal))* {
+          def to_ast
+            if s2.empty?
+              s1.to_ast
+            else
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            end
           end
         }
       end
 
       rule hier_data_signal
-        (instance_name '.')* reg_port_signal_id s {
+        instances:(name:instance_name '.')* signal:reg_port_signal_id {
           def to_ast
-            n :hier_data_signal, text_value
+            if !instances.empty?
+              n :hier_data_signal, *instances.elements.map{ |e| e.name.to_ast }, signal.to_ast
+            else
+              signal.to_ast
+            end
+          end
+        }
+      end
+
+      rule inverted_hier_data_signal
+        '~' instances:(name:instance_name '.')* signal:reg_port_signal_id {
+          def to_ast
+            if !instances.empty?
+              n :inverted_hier_data_signal, *instances.elements.map{ |e| e.name.to_ast }, signal.to_ast
+            else
+              n :inverted_signal, signal.to_ast
+            end
           end
         }
       end
@@ -1252,211 +1284,107 @@ module IJTAG
       ####################################################
 
       rule enum_name
-        val:SCALAR_ID {
-          def to_ast
-            n1 :enum_name, val.to_ast
-          end
-        }
+        SCALAR_ID
       end
 
       rule enum_symbol
-        val:SCALAR_ID {
-          def to_ast
-            n1 :enum_symbol, val.to_ast
-          end
-        }
+        SCALAR_ID
       end
 
       rule parameter_name
-        val:SCALAR_ID {
-          def to_ast
-            n1 :parameter_name, val.to_ast
-          end
-        }
+        SCALAR_ID
       end
 
       rule attribute_name
-        val:SCALAR_ID {
-          def to_ast
-            n1 :attribute_name, val.to_ast
-          end
-        }
+        SCALAR_ID
       end
 
       rule enum_value
-        val:concat_number {
-          def to_ast
-            n1 :enum_value, val.to_ast
-          end
-        }
+        concat_number
       end
 
       rule alias_name
-        val:reg_port_signal_id {
-          def to_ast
-            n1 :alias_name, val.to_ast
-          end
-        }
+        reg_port_signal_id
       end
 
       rule accessLink1149_ActiveSignal_name
-        val:reg_port_signal_id {
-          def to_ast
-            n1 :accessLink1149_ActiveSignal_name, val.to_ast
-          end
-        }
+        reg_port_signal_id
       end
 
       rule accessLink_name
-        val:SCALAR_ID {
-          def to_ast
-            n1 :accessLink_name, val.to_ast
-          end
-        }
+        SCALAR_ID
       end
 
       rule bsdlEntity_name
-        val:SCALAR_ID {
-          def to_ast
-            n1 :bsdlEntity_name, val.to_ast
-          end
-        }
+        SCALAR_ID
       end
 
       rule bsdl_instr_name
-        val:SCALAR_ID {
-          def to_ast
-            n1 :bsdl_instr_name, val.to_ast
-          end
-        }
+        SCALAR_ID
       end
 
       rule accessLink_genericID
-        val:SCALAR_ID {
-          def to_ast
-            n1 :scanInterfaceChain_name, val.to_ast
-          end
-        }
+        SCALAR_ID
       end
 
       rule scanInterfaceChain_name
-        val:SCALAR_ID {
-          def to_ast
-            n1 :scanInterfaceChain_name, val.to_ast
-          end
-        }
+        SCALAR_ID
       end
 
       rule scanInterface_name
-        val:SCALAR_ID {
-          def to_ast
-            n1 :scanInterface_name, val.to_ast
-          end
-        }
+        SCALAR_ID
       end
 
       rule oneHotDataGroup_name
-        val:reg_port_signal_id {
-          def to_ast
-            n1 :oneHotDataGroup_name, val.to_ast
-          end
-        }
+        reg_port_signal_id
       end
 
       rule oneHotScanGroup_name
-        val:reg_port_signal_id {
-          def to_ast
-            n1 :oneHotScanGroup_name, val.to_ast
-          end
-        }
+        reg_port_signal_id
       end
 
       rule clockMux_name
-        val:reg_port_signal_id {
-          def to_ast
-            n1 :clockMux_name, val.to_ast
-          end
-        }
+        reg_port_signal_id
       end
 
       rule clockMux_select
-        val:concat_data_signal {
-          def to_ast
-            n1 :clockMux_select, val.to_ast
-          end
-        }
+        concat_data_signal
       end
 
       rule dataMux_name
-        val:reg_port_signal_id {
-          def to_ast
-            n1 :dataMux_name, val.to_ast
-          end
-        }
+        reg_port_signal_id
       end
 
       rule dataMux_select
-        val:concat_data_signal {
-          def to_ast
-            n1 :dataMux_select, val.to_ast
-          end
-        }
+        concat_data_signal
       end
 
       rule scanMux_name
-        val:reg_port_signal_id {
-          def to_ast
-            n1 :scanMux_name, val.to_ast
-          end
-        }
+        reg_port_signal_id
       end
 
       rule scanMux_select
-        val:concat_data_signal {
-          def to_ast
-            n1 :scanMux_select, val.to_ast
-          end
-        }
+        concat_data_signal
       end
 
       rule logicSignal_name
-        val:reg_port_signal_id {
-          def to_ast
-            n1 :logicSignal_name, val.to_ast
-          end
-        }
+        reg_port_signal_id
       end
 
       rule dataRegister_addressable
-        val:dataRegister_addressValue {
-          def to_ast
-            n1 :dataRegister_addressable, val.to_ast
-          end
-        }
+        dataRegister_addressValue
       end
 
       rule dataRegister_name
-        val:register_name {
-          def to_ast
-            n1 :dataRegister_name, val.to_ast
-          end
-        }
+        register_name
       end
 
       rule scanRegister_name
-        val:register_name {
-          def to_ast
-            n1 :scanRegister_name, val.to_ast
-          end
-        }
+        register_name
       end
 
       rule parameter_override
-        val:parameter_def {
-          def to_ast
-            n1 :parameter_override, val.to_ast
-          end
-        }
+        parameter_def
       end
 
       rule inputPort_name
@@ -1576,59 +1504,31 @@ module IJTAG
       end
 
       rule port_name
-        name:(vector_id / SCALAR_ID) { 
-          def to_ast
-            n1 :port_name, name.to_ast
-          end
-        }
+        vector_id / SCALAR_ID
       end
 
       rule register_name
-        name:(SCALAR_ID / vector_id) { 
-          def to_ast
-            n1 :register_name, name.to_ast
-          end
-        }
+        vector_id / SCALAR_ID
       end
 
       rule instance_name
-        val:SCALAR_ID {
-          def to_ast
-            n1 :instance_name, val.to_ast
-          end
-        }
+        SCALAR_ID
       end
 
       rule namespace_name
-        id:SCALAR_ID {
-          def to_ast
-            n1 :namespace_name, id.to_ast
-          end
-        }
+        SCALAR_ID
       end
 
       rule module_name
-        val:SCALAR_ID {
-          def to_ast
-            n1 :module_name, val.to_ast
-          end
-        }
+        SCALAR_ID
       end
 
       rule reg_port_signal_id
-        val:(SCALAR_ID / vector_id) { 
-          def to_ast
-            n1 :reg_port_signal_id, val.to_ast
-          end
-        }
+        vector_id / SCALAR_ID
       end
 
       rule signal
-        val:(number / hier_port / reg_port_signal_id) { 
-          def to_ast
-            n1 :signal, val.to_ast
-          end
-        }
+        number / hier_port / reg_port_signal_id
       end
 
       rule reset_signal
@@ -1680,60 +1580,36 @@ module IJTAG
       end
 
       rule tck_signal
-        val:signal { 
-          def to_ast
-            n1 :tck_signal, val.to_ast
-          end
-        }
+        signal
       end
 
       rule tms_signal
-        val:signal { 
-          def to_ast
-            n1 :tms_signal, val.to_ast
-          end
-        }
+        signal
       end
 
       rule trst_signal
-        val:signal { 
-          def to_ast
-            n1 :trst_signal, val.to_ast
-          end
-        }
+        signal
       end
 
       rule shiftEn_signal
-        val:signal { 
-          def to_ast
-            n1 :signalEn_signal, val.to_ast
-          end
-        }
+        signal
       end
 
       rule captureEn_signal
-        val:signal { 
-          def to_ast
-            n1 :captureEn_signal, val.to_ast
-          end
-        }
+        signal
       end
 
       rule updateEn_signal
-        val:signal { 
-          def to_ast
-            n1 :updateEn_signal, val.to_ast
-          end
-        }
+        signal
       end
 
       rule concat_reset_signal
         s1:(reset_signal / data_signal) s2:(s "," s signal:(reset_signal / data_signal))* { 
           def to_ast
             if s2.empty?
-              n :concat_reset_signal, s1.to_ast
+              s1.to_ast
             else
-              n :concat_reset_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
             end
           end
         }
@@ -1743,9 +1619,9 @@ module IJTAG
         s1:(scan_signal / data_signal) s2:(s "," s signal:(scan_signal / data_signal))* { 
           def to_ast
             if s2.empty?
-              n :concat_scan_signal, s1.to_ast
+              s1.to_ast
             else
-              n :concat_scan_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
             end
           end
         }
@@ -1755,9 +1631,9 @@ module IJTAG
         s1:(data_signal) s2:(s "," s signal:data_signal)* { 
           def to_ast
             if s2.empty?
-              n :concat_data_signal, s1.to_ast
+              s1.to_ast
             else
-              n :concat_data_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
             end
           end
         }
@@ -1767,9 +1643,9 @@ module IJTAG
         s1:(clock_signal / data_signal) s2:(s "," s signal:(clock_signal / data_signal))* { 
           def to_ast
             if s2.empty?
-              n :concat_clock_signal, s1.to_ast
+              s1.to_ast
             else
-              n :concat_clock_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
             end
           end
         }
@@ -1779,9 +1655,9 @@ module IJTAG
         s1:(tck_signal / data_signal) s2:(s "," s signal:(tck_signal / data_signal))* { 
           def to_ast
             if s2.empty?
-              n :concat_tck_signal, s1.to_ast
+              s1.to_ast
             else
-              n :concat_tck_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
             end
           end
         }
@@ -1791,9 +1667,9 @@ module IJTAG
         s1:(shiftEn_signal / data_signal) s2:(s "," s signal:(shiftEn_signal / data_signal))* { 
           def to_ast
             if s2.empty?
-              n :concat_shiftEn_signal, s1.to_ast
+              s1.to_ast
             else
-              n :concat_shiftEn_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
             end
           end
         }
@@ -1803,9 +1679,9 @@ module IJTAG
         s1:(captureEn_signal / data_signal) s2:(s "," s signal:(captureEn_signal / data_signal))* {
           def to_ast
             if s2.empty?
-              n :concat_captureEn_signal, s1.to_ast
+              s1.to_ast
             else
-              n :concat_captureEn_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
             end
           end
         }
@@ -1815,9 +1691,9 @@ module IJTAG
         s1:(tms_signal / data_signal) s2:("," signal:(tms_signal / data_signal))* { 
           def to_ast
             if s2.empty?
-              n :concat_tms_signal, s1.to_ast
+              s1.to_ast
             else
-              n :concat_tms_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
             end
           end
         }
@@ -1827,9 +1703,9 @@ module IJTAG
         s1:(trst_signal / data_signal) s2:("," signal:(trst_signal / data_signal))* { 
           def to_ast
             if s2.empty?
-              n :concat_trst_signal, s1.to_ast
+              s1.to_ast
             else
-              n :concat_trst_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
             end
           end
         }
@@ -1952,11 +1828,7 @@ module IJTAG
       end
 
       rule index
-        val:integer_expr {
-          def to_ast
-            n :index, val.to_ast
-          end
-        }
+        integer_expr
       end
 
       rule range

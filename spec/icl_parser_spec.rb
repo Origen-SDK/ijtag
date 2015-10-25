@@ -59,14 +59,11 @@ Module Context {     // Some module
     ast.should ==
       s(:icl_source,
         s(:module_def,
-          s(:module_name,
-            s(:SCALAR_ID, "Context")),
+          s(:SCALAR_ID, "Context"),
           s(:useNameSpace_def,
-            s(:namespace_name,
-              s(:SCALAR_ID, "ATX"))),
+            s(:SCALAR_ID, "ATX")),
           s(:useNameSpace_def,
-            s(:namespace_name,
-              s(:SCALAR_ID, "Blah")))))
+            s(:SCALAR_ID, "Blah"))))
   end
 
   it "can parse some real examples" do
@@ -86,28 +83,19 @@ END
     ast.should ==
       s(:icl_source,
         s(:module_def,
-          s(:module_name,
-            s(:SCALAR_ID, "Context")),
+          s(:SCALAR_ID, "Context"),
           s(:scanOutPort_def,
-            s(:port_name,
-              s(:SCALAR_ID, "SO")),
+            s(:SCALAR_ID, "SO"),
             s(:scanOutPort_source,
-              s(:concat_scan_signal,
+              s(:concat,
                 s(:scan_signal,
-                  s(:signal,
-                    s(:hier_port,
-                      s(:instance_name,
-                        s(:SCALAR_ID, "reg2")),
-                      s(:port_name,
-                        s(:SCALAR_ID, "SO"))))),
+                  s(:hier_port,
+                    s(:SCALAR_ID, "reg2"),
+                    s(:SCALAR_ID, "SO"))),
                 s(:scan_signal,
-                  s(:signal,
-                    s(:reg_port_signal_id,
-                      s(:SCALAR_ID, "reg1")))),
+                  s(:SCALAR_ID, "reg1")),
                 s(:scan_signal,
-                  s(:signal,
-                    s(:reg_port_signal_id,
-                      s(:SCALAR_ID, "reg3")))))))))
+                  s(:SCALAR_ID, "reg3")))))))
 
   end
 end

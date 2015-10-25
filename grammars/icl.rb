@@ -13420,6 +13420,10 @@ module IJTAG
           elements[1]
         end
 
+        def items
+          elements[2]
+        end
+
         def s2
           elements[3]
         end
@@ -13430,13 +13434,6 @@ module IJTAG
       end
 
       module AliasDef1
-        def concat_hier_data_signal
-          elements[0]
-        end
-
-      end
-
-      module AliasDef2
         def S
           elements[1]
         end
@@ -13460,11 +13457,23 @@ module IJTAG
         def s3
           elements[7]
         end
+
+        def d
+          elements[8]
+        end
+
+        def s4
+          elements[9]
+        end
       end
 
-      module AliasDef3
+      module AliasDef2
         def to_ast
-          fail "alias_def not implemented yet!"
+          if d.respond_to?(:items)
+            n :alias_def, name.to_ast, signal.to_ast, *d.items.elements.map{ |e| e.to_ast }
+          else
+            n :alias_def, name.to_ast, signal.to_ast
+          end
         end
       end
 
@@ -13510,99 +13519,94 @@ module IJTAG
                   r6 = _nt_s
                   s0 << r6
                   if r6
-                    i7, s7 = index, []
-                    r8 = _nt_concat_hier_data_signal
-                    s7 << r8
-                    if r8
-                      i9 = index
-                      if (match_len = has_terminal?(';', false, index))
-                        r10 = true
-                        @index += match_len
-                      else
-                        terminal_parse_failure('\';\'')
-                        r10 = nil
-                      end
-                      if r10
-                        r10 = SyntaxNode.new(input, (index-1)...index) if r10 == true
-                        r9 = r10
-                      else
-                        i11, s11 = index, []
-                        if (match_len = has_terminal?('{', false, index))
-                          r12 = true
+                    r7 = _nt_concat_hier_data_signal
+                    s0 << r7
+                    if r7
+                      r8 = _nt_s
+                      s0 << r8
+                      if r8
+                        i9 = index
+                        if (match_len = has_terminal?(';', false, index))
+                          r10 = true
                           @index += match_len
                         else
-                          terminal_parse_failure('\'{\'')
-                          r12 = nil
+                          terminal_parse_failure('\';\'')
+                          r10 = nil
                         end
-                        s11 << r12
-                        if r12
-                          r13 = _nt_s
-                          s11 << r13
-                          if r13
-                            s14, i14 = [], index
-                            loop do
-                              r15 = _nt_alias_item
-                              if r15
-                                s14 << r15
-                              else
-                                break
-                              end
-                            end
-                            if s14.empty?
-                              @index = i14
-                              r14 = nil
-                            else
-                              r14 = instantiate_node(SyntaxNode,input, i14...index, s14)
-                            end
-                            s11 << r14
-                            if r14
-                              r16 = _nt_s
-                              s11 << r16
-                              if r16
-                                if (match_len = has_terminal?('}', false, index))
-                                  r17 = true
-                                  @index += match_len
+                        if r10
+                          r10 = SyntaxNode.new(input, (index-1)...index) if r10 == true
+                          r9 = r10
+                        else
+                          i11, s11 = index, []
+                          if (match_len = has_terminal?('{', false, index))
+                            r12 = true
+                            @index += match_len
+                          else
+                            terminal_parse_failure('\'{\'')
+                            r12 = nil
+                          end
+                          s11 << r12
+                          if r12
+                            r13 = _nt_s
+                            s11 << r13
+                            if r13
+                              s14, i14 = [], index
+                              loop do
+                                r15 = _nt_alias_item
+                                if r15
+                                  s14 << r15
                                 else
-                                  terminal_parse_failure('\'}\'')
-                                  r17 = nil
+                                  break
                                 end
-                                s11 << r17
-                                if r17
-                                  r18 = _nt_s
-                                  s11 << r18
+                              end
+                              if s14.empty?
+                                @index = i14
+                                r14 = nil
+                              else
+                                r14 = instantiate_node(SyntaxNode,input, i14...index, s14)
+                              end
+                              s11 << r14
+                              if r14
+                                r16 = _nt_s
+                                s11 << r16
+                                if r16
+                                  if (match_len = has_terminal?('}', false, index))
+                                    r17 = true
+                                    @index += match_len
+                                  else
+                                    terminal_parse_failure('\'}\'')
+                                    r17 = nil
+                                  end
+                                  s11 << r17
+                                  if r17
+                                    r18 = _nt_s
+                                    s11 << r18
+                                  end
                                 end
                               end
                             end
                           end
+                          if s11.last
+                            r11 = instantiate_node(SyntaxNode,input, i11...index, s11)
+                            r11.extend(AliasDef0)
+                          else
+                            @index = i11
+                            r11 = nil
+                          end
+                          if r11
+                            r11 = SyntaxNode.new(input, (index-1)...index) if r11 == true
+                            r9 = r11
+                          else
+                            @index = i9
+                            r9 = nil
+                          end
                         end
-                        if s11.last
-                          r11 = instantiate_node(SyntaxNode,input, i11...index, s11)
-                          r11.extend(AliasDef0)
-                        else
-                          @index = i11
-                          r11 = nil
-                        end
-                        if r11
-                          r11 = SyntaxNode.new(input, (index-1)...index) if r11 == true
-                          r9 = r11
-                        else
-                          @index = i9
-                          r9 = nil
+                        s0 << r9
+                        if r9
+                          r19 = _nt_s
+                          s0 << r19
                         end
                       end
-                      s7 << r9
-                    end
-                    if s7.last
-                      r7 = instantiate_node(SyntaxNode,input, i7...index, s7)
-                      r7.extend(AliasDef1)
-                    else
-                      @index = i7
-                      r7 = nil
-                    end
-                    s0 << r7
-                    if r7
-                      r19 = _nt_s
-                      s0 << r19
                     end
                   end
                 end
@@ -13612,8 +13616,8 @@ module IJTAG
         end
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(AliasDef1)
           r0.extend(AliasDef2)
-          r0.extend(AliasDef3)
         else
           @index = i0
           r0 = nil
@@ -13622,13 +13626,6 @@ module IJTAG
         node_cache[:alias_def][start_index] = r0
 
         r0
-      end
-
-      module AliasItem0
-        def s
-          elements[1]
-        end
-
       end
 
       def _nt_alias_item
@@ -13648,49 +13645,20 @@ module IJTAG
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
         else
-          i2, s2 = index, []
-          if (match_len = has_terminal?('AccessTogether', false, index))
-            r3 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-            @index += match_len
-          else
-            terminal_parse_failure('\'AccessTogether\'')
-            r3 = nil
-          end
-          s2 << r3
-          if r3
-            r4 = _nt_s
-            s2 << r4
-            if r4
-              if (match_len = has_terminal?(';', false, index))
-                r5 = true
-                @index += match_len
-              else
-                terminal_parse_failure('\';\'')
-                r5 = nil
-              end
-              s2 << r5
-            end
-          end
-          if s2.last
-            r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
-            r2.extend(AliasItem0)
-          else
-            @index = i2
-            r2 = nil
-          end
+          r2 = _nt_access_together
           if r2
             r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
             r0 = r2
           else
-            r6 = _nt_alias_iApplyEndState
-            if r6
-              r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
-              r0 = r6
+            r3 = _nt_alias_iApplyEndState
+            if r3
+              r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
+              r0 = r3
             else
-              r7 = _nt_alias_refEnum
-              if r7
-                r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
-                r0 = r7
+              r4 = _nt_alias_refEnum
+              if r4
+                r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
+                r0 = r4
               else
                 @index = i0
                 r0 = nil
@@ -13872,29 +13840,105 @@ module IJTAG
         r0
       end
 
-      module ConcatHierDataSignal0
-        def s
+      module AccessTogether0
+        def s1
           elements[1]
         end
 
-        def hier_data_signal
+        def s2
+          elements[3]
+        end
+      end
+
+      module AccessTogether1
+        def to_ast
+          n0 :access_together
+        end
+      end
+
+      def _nt_access_together
+        start_index = index
+        if node_cache[:access_together].has_key?(index)
+          cached = node_cache[:access_together][index]
+          if cached
+            node_cache[:access_together][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+            @index = cached.interval.end
+          end
+          return cached
+        end
+
+        i0, s0 = index, []
+        if (match_len = has_terminal?('AccessTogether', false, index))
+          r1 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+          @index += match_len
+        else
+          terminal_parse_failure('\'AccessTogether\'')
+          r1 = nil
+        end
+        s0 << r1
+        if r1
+          r2 = _nt_s
+          s0 << r2
+          if r2
+            if (match_len = has_terminal?(';', false, index))
+              r3 = true
+              @index += match_len
+            else
+              terminal_parse_failure('\';\'')
+              r3 = nil
+            end
+            s0 << r3
+            if r3
+              r4 = _nt_s
+              s0 << r4
+            end
+          end
+        end
+        if s0.last
+          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(AccessTogether0)
+          r0.extend(AccessTogether1)
+        else
+          @index = i0
+          r0 = nil
+        end
+
+        node_cache[:access_together][start_index] = r0
+
+        r0
+      end
+
+      module ConcatHierDataSignal0
+        def s1
+          elements[0]
+        end
+
+        def s2
+          elements[2]
+        end
+
+        def signal
           elements[3]
         end
       end
 
       module ConcatHierDataSignal1
-        def hier_data_signal
-          elements[1]
+        def s1
+          elements[0]
         end
 
-        def s
-          elements[3]
+        def s2
+          elements[1]
         end
       end
 
       module ConcatHierDataSignal2
         def to_ast
-          n :concat_hier_data_signal, text_value
+          if s2.empty?
+            s1.to_ast
+          else
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+          end
         end
       end
 
@@ -13910,77 +13954,75 @@ module IJTAG
         end
 
         i0, s0 = index, []
-        if (match_len = has_terminal?('~', false, index))
-          r2 = true
-          @index += match_len
-        else
-          terminal_parse_failure('\'~\'')
-          r2 = nil
-        end
+        i1 = index
+        r2 = _nt_inverted_hier_data_signal
         if r2
+          r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
           r1 = r2
         else
-          r1 = instantiate_node(SyntaxNode,input, index...index)
+          r3 = _nt_hier_data_signal
+          if r3
+            r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
+            r1 = r3
+          else
+            @index = i1
+            r1 = nil
+          end
         end
         s0 << r1
         if r1
-          r3 = _nt_hier_data_signal
-          s0 << r3
-          if r3
-            s4, i4 = [], index
-            loop do
-              i5, s5 = index, []
+          s4, i4 = [], index
+          loop do
+            i5, s5 = index, []
+            r6 = _nt_s
+            s5 << r6
+            if r6
               if (match_len = has_terminal?(',', false, index))
-                r6 = true
+                r7 = true
                 @index += match_len
               else
                 terminal_parse_failure('\',\'')
-                r6 = nil
+                r7 = nil
               end
-              s5 << r6
-              if r6
-                r7 = _nt_s
-                s5 << r7
-                if r7
-                  if (match_len = has_terminal?('~', false, index))
-                    r9 = true
-                    @index += match_len
+              s5 << r7
+              if r7
+                r8 = _nt_s
+                s5 << r8
+                if r8
+                  i9 = index
+                  r10 = _nt_inverted_hier_data_signal
+                  if r10
+                    r10 = SyntaxNode.new(input, (index-1)...index) if r10 == true
+                    r9 = r10
                   else
-                    terminal_parse_failure('\'~\'')
-                    r9 = nil
+                    r11 = _nt_hier_data_signal
+                    if r11
+                      r11 = SyntaxNode.new(input, (index-1)...index) if r11 == true
+                      r9 = r11
+                    else
+                      @index = i9
+                      r9 = nil
+                    end
                   end
-                  if r9
-                    r8 = r9
-                  else
-                    r8 = instantiate_node(SyntaxNode,input, index...index)
-                  end
-                  s5 << r8
-                  if r8
-                    r10 = _nt_hier_data_signal
-                    s5 << r10
-                  end
+                  s5 << r9
                 end
               end
-              if s5.last
-                r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
-                r5.extend(ConcatHierDataSignal0)
-              else
-                @index = i5
-                r5 = nil
-              end
-              if r5
-                s4 << r5
-              else
-                break
-              end
             end
-            r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
-            s0 << r4
-            if r4
-              r11 = _nt_s
-              s0 << r11
+            if s5.last
+              r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
+              r5.extend(ConcatHierDataSignal0)
+            else
+              @index = i5
+              r5 = nil
+            end
+            if r5
+              s4 << r5
+            else
+              break
             end
           end
+          r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
+          s0 << r4
         end
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
@@ -13997,25 +14039,29 @@ module IJTAG
       end
 
       module HierDataSignal0
-        def instance_name
+        def name
           elements[0]
         end
 
       end
 
       module HierDataSignal1
-        def reg_port_signal_id
-          elements[1]
+        def instances
+          elements[0]
         end
 
-        def s
-          elements[2]
+        def signal
+          elements[1]
         end
       end
 
       module HierDataSignal2
         def to_ast
-          n :hier_data_signal, text_value
+          if !instances.empty?
+            n :hier_data_signal, *instances.elements.map{ |e| e.name.to_ast }, signal.to_ast
+          else
+            signal.to_ast
+          end
         end
       end
 
@@ -14064,10 +14110,6 @@ module IJTAG
         if r1
           r5 = _nt_reg_port_signal_id
           s0 << r5
-          if r5
-            r6 = _nt_s
-            s0 << r6
-          end
         end
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
@@ -14079,6 +14121,103 @@ module IJTAG
         end
 
         node_cache[:hier_data_signal][start_index] = r0
+
+        r0
+      end
+
+      module InvertedHierDataSignal0
+        def name
+          elements[0]
+        end
+
+      end
+
+      module InvertedHierDataSignal1
+        def instances
+          elements[1]
+        end
+
+        def signal
+          elements[2]
+        end
+      end
+
+      module InvertedHierDataSignal2
+        def to_ast
+          if !instances.empty?
+            n :inverted_hier_data_signal, *instances.elements.map{ |e| e.name.to_ast }, signal.to_ast
+          else
+            n :inverted_signal, signal.to_ast
+          end
+        end
+      end
+
+      def _nt_inverted_hier_data_signal
+        start_index = index
+        if node_cache[:inverted_hier_data_signal].has_key?(index)
+          cached = node_cache[:inverted_hier_data_signal][index]
+          if cached
+            node_cache[:inverted_hier_data_signal][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+            @index = cached.interval.end
+          end
+          return cached
+        end
+
+        i0, s0 = index, []
+        if (match_len = has_terminal?('~', false, index))
+          r1 = true
+          @index += match_len
+        else
+          terminal_parse_failure('\'~\'')
+          r1 = nil
+        end
+        s0 << r1
+        if r1
+          s2, i2 = [], index
+          loop do
+            i3, s3 = index, []
+            r4 = _nt_instance_name
+            s3 << r4
+            if r4
+              if (match_len = has_terminal?('.', false, index))
+                r5 = true
+                @index += match_len
+              else
+                terminal_parse_failure('\'.\'')
+                r5 = nil
+              end
+              s3 << r5
+            end
+            if s3.last
+              r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
+              r3.extend(InvertedHierDataSignal0)
+            else
+              @index = i3
+              r3 = nil
+            end
+            if r3
+              s2 << r3
+            else
+              break
+            end
+          end
+          r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
+          s0 << r2
+          if r2
+            r6 = _nt_reg_port_signal_id
+            s0 << r6
+          end
+        end
+        if s0.last
+          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(InvertedHierDataSignal1)
+          r0.extend(InvertedHierDataSignal2)
+        else
+          @index = i0
+          r0 = nil
+        end
+
+        node_cache[:inverted_hier_data_signal][start_index] = r0
 
         r0
       end
@@ -14991,18 +15130,6 @@ module IJTAG
         r0
       end
 
-      module EnumName0
-        def val
-          elements[0]
-        end
-      end
-
-      module EnumName1
-        def to_ast
-          n1 :enum_name, val.to_ast
-        end
-      end
-
       def _nt_enum_name
         start_index = index
         if node_cache[:enum_name].has_key?(index)
@@ -15014,33 +15141,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_SCALAR_ID
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(EnumName0)
-          r0.extend(EnumName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_SCALAR_ID
 
         node_cache[:enum_name][start_index] = r0
 
         r0
-      end
-
-      module EnumSymbol0
-        def val
-          elements[0]
-        end
-      end
-
-      module EnumSymbol1
-        def to_ast
-          n1 :enum_symbol, val.to_ast
-        end
       end
 
       def _nt_enum_symbol
@@ -15054,33 +15159,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_SCALAR_ID
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(EnumSymbol0)
-          r0.extend(EnumSymbol1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_SCALAR_ID
 
         node_cache[:enum_symbol][start_index] = r0
 
         r0
-      end
-
-      module ParameterName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ParameterName1
-        def to_ast
-          n1 :parameter_name, val.to_ast
-        end
       end
 
       def _nt_parameter_name
@@ -15094,33 +15177,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_SCALAR_ID
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ParameterName0)
-          r0.extend(ParameterName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_SCALAR_ID
 
         node_cache[:parameter_name][start_index] = r0
 
         r0
-      end
-
-      module AttributeName0
-        def val
-          elements[0]
-        end
-      end
-
-      module AttributeName1
-        def to_ast
-          n1 :attribute_name, val.to_ast
-        end
       end
 
       def _nt_attribute_name
@@ -15134,33 +15195,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_SCALAR_ID
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(AttributeName0)
-          r0.extend(AttributeName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_SCALAR_ID
 
         node_cache[:attribute_name][start_index] = r0
 
         r0
-      end
-
-      module EnumValue0
-        def val
-          elements[0]
-        end
-      end
-
-      module EnumValue1
-        def to_ast
-          n1 :enum_value, val.to_ast
-        end
       end
 
       def _nt_enum_value
@@ -15174,33 +15213,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_concat_number
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(EnumValue0)
-          r0.extend(EnumValue1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_concat_number
 
         node_cache[:enum_value][start_index] = r0
 
         r0
-      end
-
-      module AliasName0
-        def val
-          elements[0]
-        end
-      end
-
-      module AliasName1
-        def to_ast
-          n1 :alias_name, val.to_ast
-        end
       end
 
       def _nt_alias_name
@@ -15214,33 +15231,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_reg_port_signal_id
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(AliasName0)
-          r0.extend(AliasName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_reg_port_signal_id
 
         node_cache[:alias_name][start_index] = r0
 
         r0
-      end
-
-      module AccessLink1149ActiveSignalName0
-        def val
-          elements[0]
-        end
-      end
-
-      module AccessLink1149ActiveSignalName1
-        def to_ast
-          n1 :accessLink1149_ActiveSignal_name, val.to_ast
-        end
       end
 
       def _nt_accessLink1149_ActiveSignal_name
@@ -15254,33 +15249,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_reg_port_signal_id
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(AccessLink1149ActiveSignalName0)
-          r0.extend(AccessLink1149ActiveSignalName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_reg_port_signal_id
 
         node_cache[:accessLink1149_ActiveSignal_name][start_index] = r0
 
         r0
-      end
-
-      module AccessLinkName0
-        def val
-          elements[0]
-        end
-      end
-
-      module AccessLinkName1
-        def to_ast
-          n1 :accessLink_name, val.to_ast
-        end
       end
 
       def _nt_accessLink_name
@@ -15294,33 +15267,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_SCALAR_ID
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(AccessLinkName0)
-          r0.extend(AccessLinkName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_SCALAR_ID
 
         node_cache[:accessLink_name][start_index] = r0
 
         r0
-      end
-
-      module BsdlEntityName0
-        def val
-          elements[0]
-        end
-      end
-
-      module BsdlEntityName1
-        def to_ast
-          n1 :bsdlEntity_name, val.to_ast
-        end
       end
 
       def _nt_bsdlEntity_name
@@ -15334,33 +15285,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_SCALAR_ID
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(BsdlEntityName0)
-          r0.extend(BsdlEntityName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_SCALAR_ID
 
         node_cache[:bsdlEntity_name][start_index] = r0
 
         r0
-      end
-
-      module BsdlInstrName0
-        def val
-          elements[0]
-        end
-      end
-
-      module BsdlInstrName1
-        def to_ast
-          n1 :bsdl_instr_name, val.to_ast
-        end
       end
 
       def _nt_bsdl_instr_name
@@ -15374,33 +15303,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_SCALAR_ID
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(BsdlInstrName0)
-          r0.extend(BsdlInstrName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_SCALAR_ID
 
         node_cache[:bsdl_instr_name][start_index] = r0
 
         r0
-      end
-
-      module AccessLinkGenericID0
-        def val
-          elements[0]
-        end
-      end
-
-      module AccessLinkGenericID1
-        def to_ast
-          n1 :scanInterfaceChain_name, val.to_ast
-        end
       end
 
       def _nt_accessLink_genericID
@@ -15414,33 +15321,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_SCALAR_ID
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(AccessLinkGenericID0)
-          r0.extend(AccessLinkGenericID1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_SCALAR_ID
 
         node_cache[:accessLink_genericID][start_index] = r0
 
         r0
-      end
-
-      module ScanInterfaceChainName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ScanInterfaceChainName1
-        def to_ast
-          n1 :scanInterfaceChain_name, val.to_ast
-        end
       end
 
       def _nt_scanInterfaceChain_name
@@ -15454,33 +15339,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_SCALAR_ID
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ScanInterfaceChainName0)
-          r0.extend(ScanInterfaceChainName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_SCALAR_ID
 
         node_cache[:scanInterfaceChain_name][start_index] = r0
 
         r0
-      end
-
-      module ScanInterfaceName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ScanInterfaceName1
-        def to_ast
-          n1 :scanInterface_name, val.to_ast
-        end
       end
 
       def _nt_scanInterface_name
@@ -15494,33 +15357,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_SCALAR_ID
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ScanInterfaceName0)
-          r0.extend(ScanInterfaceName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_SCALAR_ID
 
         node_cache[:scanInterface_name][start_index] = r0
 
         r0
-      end
-
-      module OneHotDataGroupName0
-        def val
-          elements[0]
-        end
-      end
-
-      module OneHotDataGroupName1
-        def to_ast
-          n1 :oneHotDataGroup_name, val.to_ast
-        end
       end
 
       def _nt_oneHotDataGroup_name
@@ -15534,33 +15375,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_reg_port_signal_id
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(OneHotDataGroupName0)
-          r0.extend(OneHotDataGroupName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_reg_port_signal_id
 
         node_cache[:oneHotDataGroup_name][start_index] = r0
 
         r0
-      end
-
-      module OneHotScanGroupName0
-        def val
-          elements[0]
-        end
-      end
-
-      module OneHotScanGroupName1
-        def to_ast
-          n1 :oneHotScanGroup_name, val.to_ast
-        end
       end
 
       def _nt_oneHotScanGroup_name
@@ -15574,33 +15393,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_reg_port_signal_id
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(OneHotScanGroupName0)
-          r0.extend(OneHotScanGroupName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_reg_port_signal_id
 
         node_cache[:oneHotScanGroup_name][start_index] = r0
 
         r0
-      end
-
-      module ClockMuxName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ClockMuxName1
-        def to_ast
-          n1 :clockMux_name, val.to_ast
-        end
       end
 
       def _nt_clockMux_name
@@ -15614,33 +15411,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_reg_port_signal_id
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ClockMuxName0)
-          r0.extend(ClockMuxName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_reg_port_signal_id
 
         node_cache[:clockMux_name][start_index] = r0
 
         r0
-      end
-
-      module ClockMuxSelect0
-        def val
-          elements[0]
-        end
-      end
-
-      module ClockMuxSelect1
-        def to_ast
-          n1 :clockMux_select, val.to_ast
-        end
       end
 
       def _nt_clockMux_select
@@ -15654,33 +15429,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_concat_data_signal
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ClockMuxSelect0)
-          r0.extend(ClockMuxSelect1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_concat_data_signal
 
         node_cache[:clockMux_select][start_index] = r0
 
         r0
-      end
-
-      module DataMuxName0
-        def val
-          elements[0]
-        end
-      end
-
-      module DataMuxName1
-        def to_ast
-          n1 :dataMux_name, val.to_ast
-        end
       end
 
       def _nt_dataMux_name
@@ -15694,33 +15447,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_reg_port_signal_id
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(DataMuxName0)
-          r0.extend(DataMuxName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_reg_port_signal_id
 
         node_cache[:dataMux_name][start_index] = r0
 
         r0
-      end
-
-      module DataMuxSelect0
-        def val
-          elements[0]
-        end
-      end
-
-      module DataMuxSelect1
-        def to_ast
-          n1 :dataMux_select, val.to_ast
-        end
       end
 
       def _nt_dataMux_select
@@ -15734,33 +15465,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_concat_data_signal
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(DataMuxSelect0)
-          r0.extend(DataMuxSelect1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_concat_data_signal
 
         node_cache[:dataMux_select][start_index] = r0
 
         r0
-      end
-
-      module ScanMuxName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ScanMuxName1
-        def to_ast
-          n1 :scanMux_name, val.to_ast
-        end
       end
 
       def _nt_scanMux_name
@@ -15774,33 +15483,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_reg_port_signal_id
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ScanMuxName0)
-          r0.extend(ScanMuxName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_reg_port_signal_id
 
         node_cache[:scanMux_name][start_index] = r0
 
         r0
-      end
-
-      module ScanMuxSelect0
-        def val
-          elements[0]
-        end
-      end
-
-      module ScanMuxSelect1
-        def to_ast
-          n1 :scanMux_select, val.to_ast
-        end
       end
 
       def _nt_scanMux_select
@@ -15814,33 +15501,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_concat_data_signal
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ScanMuxSelect0)
-          r0.extend(ScanMuxSelect1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_concat_data_signal
 
         node_cache[:scanMux_select][start_index] = r0
 
         r0
-      end
-
-      module LogicSignalName0
-        def val
-          elements[0]
-        end
-      end
-
-      module LogicSignalName1
-        def to_ast
-          n1 :logicSignal_name, val.to_ast
-        end
       end
 
       def _nt_logicSignal_name
@@ -15854,33 +15519,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_reg_port_signal_id
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(LogicSignalName0)
-          r0.extend(LogicSignalName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_reg_port_signal_id
 
         node_cache[:logicSignal_name][start_index] = r0
 
         r0
-      end
-
-      module DataRegisterAddressable0
-        def val
-          elements[0]
-        end
-      end
-
-      module DataRegisterAddressable1
-        def to_ast
-          n1 :dataRegister_addressable, val.to_ast
-        end
       end
 
       def _nt_dataRegister_addressable
@@ -15894,33 +15537,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_dataRegister_addressValue
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(DataRegisterAddressable0)
-          r0.extend(DataRegisterAddressable1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_dataRegister_addressValue
 
         node_cache[:dataRegister_addressable][start_index] = r0
 
         r0
-      end
-
-      module DataRegisterName0
-        def val
-          elements[0]
-        end
-      end
-
-      module DataRegisterName1
-        def to_ast
-          n1 :dataRegister_name, val.to_ast
-        end
       end
 
       def _nt_dataRegister_name
@@ -15934,33 +15555,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_register_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(DataRegisterName0)
-          r0.extend(DataRegisterName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_register_name
 
         node_cache[:dataRegister_name][start_index] = r0
 
         r0
-      end
-
-      module ScanRegisterName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ScanRegisterName1
-        def to_ast
-          n1 :scanRegister_name, val.to_ast
-        end
       end
 
       def _nt_scanRegister_name
@@ -15974,33 +15573,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_register_name
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ScanRegisterName0)
-          r0.extend(ScanRegisterName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_register_name
 
         node_cache[:scanRegister_name][start_index] = r0
 
         r0
-      end
-
-      module ParameterOverride0
-        def val
-          elements[0]
-        end
-      end
-
-      module ParameterOverride1
-        def to_ast
-          n1 :parameter_override, val.to_ast
-        end
       end
 
       def _nt_parameter_override
@@ -16014,17 +15591,7 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_parameter_def
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ParameterOverride0)
-          r0.extend(ParameterOverride1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_parameter_def
 
         node_cache[:parameter_override][start_index] = r0
 
@@ -16613,19 +16180,6 @@ module IJTAG
         r0
       end
 
-      module PortName0
-        def name
-          elements[0]
-        end
-      end
-
-      module PortName1
-
-        def to_ast
-          n1 :port_name, name.to_ast
-        end
-      end
-
       def _nt_port_name
         start_index = index
         if node_cache[:port_name].has_key?(index)
@@ -16637,48 +16191,25 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        i1 = index
-        r2 = _nt_vector_id
-        if r2
-          r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
-          r1 = r2
+        i0 = index
+        r1 = _nt_vector_id
+        if r1
+          r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
+          r0 = r1
         else
-          r3 = _nt_SCALAR_ID
-          if r3
-            r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
-            r1 = r3
+          r2 = _nt_SCALAR_ID
+          if r2
+            r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
+            r0 = r2
           else
-            @index = i1
-            r1 = nil
+            @index = i0
+            r0 = nil
           end
-        end
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(PortName0)
-          r0.extend(PortName1)
-        else
-          @index = i0
-          r0 = nil
         end
 
         node_cache[:port_name][start_index] = r0
 
         r0
-      end
-
-      module RegisterName0
-        def name
-          elements[0]
-        end
-      end
-
-      module RegisterName1
-
-        def to_ast
-          n1 :register_name, name.to_ast
-        end
       end
 
       def _nt_register_name
@@ -16692,47 +16223,25 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        i1 = index
-        r2 = _nt_SCALAR_ID
-        if r2
-          r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
-          r1 = r2
+        i0 = index
+        r1 = _nt_vector_id
+        if r1
+          r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
+          r0 = r1
         else
-          r3 = _nt_vector_id
-          if r3
-            r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
-            r1 = r3
+          r2 = _nt_SCALAR_ID
+          if r2
+            r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
+            r0 = r2
           else
-            @index = i1
-            r1 = nil
+            @index = i0
+            r0 = nil
           end
-        end
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(RegisterName0)
-          r0.extend(RegisterName1)
-        else
-          @index = i0
-          r0 = nil
         end
 
         node_cache[:register_name][start_index] = r0
 
         r0
-      end
-
-      module InstanceName0
-        def val
-          elements[0]
-        end
-      end
-
-      module InstanceName1
-        def to_ast
-          n1 :instance_name, val.to_ast
-        end
       end
 
       def _nt_instance_name
@@ -16746,33 +16255,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_SCALAR_ID
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(InstanceName0)
-          r0.extend(InstanceName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_SCALAR_ID
 
         node_cache[:instance_name][start_index] = r0
 
         r0
-      end
-
-      module NamespaceName0
-        def id
-          elements[0]
-        end
-      end
-
-      module NamespaceName1
-        def to_ast
-          n1 :namespace_name, id.to_ast
-        end
       end
 
       def _nt_namespace_name
@@ -16786,33 +16273,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_SCALAR_ID
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(NamespaceName0)
-          r0.extend(NamespaceName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_SCALAR_ID
 
         node_cache[:namespace_name][start_index] = r0
 
         r0
-      end
-
-      module ModuleName0
-        def val
-          elements[0]
-        end
-      end
-
-      module ModuleName1
-        def to_ast
-          n1 :module_name, val.to_ast
-        end
       end
 
       def _nt_module_name
@@ -16826,34 +16291,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_SCALAR_ID
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ModuleName0)
-          r0.extend(ModuleName1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_SCALAR_ID
 
         node_cache[:module_name][start_index] = r0
 
         r0
-      end
-
-      module RegPortSignalId0
-        def val
-          elements[0]
-        end
-      end
-
-      module RegPortSignalId1
-
-        def to_ast
-          n1 :reg_port_signal_id, val.to_ast
-        end
       end
 
       def _nt_reg_port_signal_id
@@ -16867,48 +16309,25 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        i1 = index
-        r2 = _nt_SCALAR_ID
-        if r2
-          r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
-          r1 = r2
+        i0 = index
+        r1 = _nt_vector_id
+        if r1
+          r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
+          r0 = r1
         else
-          r3 = _nt_vector_id
-          if r3
-            r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
-            r1 = r3
+          r2 = _nt_SCALAR_ID
+          if r2
+            r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
+            r0 = r2
           else
-            @index = i1
-            r1 = nil
+            @index = i0
+            r0 = nil
           end
-        end
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(RegPortSignalId0)
-          r0.extend(RegPortSignalId1)
-        else
-          @index = i0
-          r0 = nil
         end
 
         node_cache[:reg_port_signal_id][start_index] = r0
 
         r0
-      end
-
-      module Signal0
-        def val
-          elements[0]
-        end
-      end
-
-      module Signal1
-
-        def to_ast
-          n1 :signal, val.to_ast
-        end
       end
 
       def _nt_signal
@@ -16922,36 +16341,26 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        i1 = index
-        r2 = _nt_number
-        if r2
-          r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
-          r1 = r2
+        i0 = index
+        r1 = _nt_number
+        if r1
+          r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
+          r0 = r1
         else
-          r3 = _nt_hier_port
-          if r3
-            r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
-            r1 = r3
+          r2 = _nt_hier_port
+          if r2
+            r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
+            r0 = r2
           else
-            r4 = _nt_reg_port_signal_id
-            if r4
-              r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
-              r1 = r4
+            r3 = _nt_reg_port_signal_id
+            if r3
+              r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
+              r0 = r3
             else
-              @index = i1
-              r1 = nil
+              @index = i0
+              r0 = nil
             end
           end
-        end
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(Signal0)
-          r0.extend(Signal1)
-        else
-          @index = i0
-          r0 = nil
         end
 
         node_cache[:signal][start_index] = r0
@@ -17215,19 +16624,6 @@ module IJTAG
         r0
       end
 
-      module TckSignal0
-        def val
-          elements[0]
-        end
-      end
-
-      module TckSignal1
-
-        def to_ast
-          n1 :tck_signal, val.to_ast
-        end
-      end
-
       def _nt_tck_signal
         start_index = index
         if node_cache[:tck_signal].has_key?(index)
@@ -17239,34 +16635,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_signal
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(TckSignal0)
-          r0.extend(TckSignal1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_signal
 
         node_cache[:tck_signal][start_index] = r0
 
         r0
-      end
-
-      module TmsSignal0
-        def val
-          elements[0]
-        end
-      end
-
-      module TmsSignal1
-
-        def to_ast
-          n1 :tms_signal, val.to_ast
-        end
       end
 
       def _nt_tms_signal
@@ -17280,34 +16653,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_signal
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(TmsSignal0)
-          r0.extend(TmsSignal1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_signal
 
         node_cache[:tms_signal][start_index] = r0
 
         r0
-      end
-
-      module TrstSignal0
-        def val
-          elements[0]
-        end
-      end
-
-      module TrstSignal1
-
-        def to_ast
-          n1 :trst_signal, val.to_ast
-        end
       end
 
       def _nt_trst_signal
@@ -17321,34 +16671,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_signal
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(TrstSignal0)
-          r0.extend(TrstSignal1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_signal
 
         node_cache[:trst_signal][start_index] = r0
 
         r0
-      end
-
-      module ShiftEnSignal0
-        def val
-          elements[0]
-        end
-      end
-
-      module ShiftEnSignal1
-
-        def to_ast
-          n1 :signalEn_signal, val.to_ast
-        end
       end
 
       def _nt_shiftEn_signal
@@ -17362,34 +16689,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_signal
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(ShiftEnSignal0)
-          r0.extend(ShiftEnSignal1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_signal
 
         node_cache[:shiftEn_signal][start_index] = r0
 
         r0
-      end
-
-      module CaptureEnSignal0
-        def val
-          elements[0]
-        end
-      end
-
-      module CaptureEnSignal1
-
-        def to_ast
-          n1 :captureEn_signal, val.to_ast
-        end
       end
 
       def _nt_captureEn_signal
@@ -17403,34 +16707,11 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_signal
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(CaptureEnSignal0)
-          r0.extend(CaptureEnSignal1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_signal
 
         node_cache[:captureEn_signal][start_index] = r0
 
         r0
-      end
-
-      module UpdateEnSignal0
-        def val
-          elements[0]
-        end
-      end
-
-      module UpdateEnSignal1
-
-        def to_ast
-          n1 :updateEn_signal, val.to_ast
-        end
       end
 
       def _nt_updateEn_signal
@@ -17444,17 +16725,7 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_signal
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(UpdateEnSignal0)
-          r0.extend(UpdateEnSignal1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_signal
 
         node_cache[:updateEn_signal][start_index] = r0
 
@@ -17489,9 +16760,9 @@ module IJTAG
 
         def to_ast
           if s2.empty?
-            n :concat_reset_signal, s1.to_ast
+            s1.to_ast
           else
-            n :concat_reset_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
           end
         end
       end
@@ -17620,9 +16891,9 @@ module IJTAG
 
         def to_ast
           if s2.empty?
-            n :concat_scan_signal, s1.to_ast
+            s1.to_ast
           else
-            n :concat_scan_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
           end
         end
       end
@@ -17751,9 +17022,9 @@ module IJTAG
 
         def to_ast
           if s2.empty?
-            n :concat_data_signal, s1.to_ast
+            s1.to_ast
           else
-            n :concat_data_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
           end
         end
       end
@@ -17854,9 +17125,9 @@ module IJTAG
 
         def to_ast
           if s2.empty?
-            n :concat_clock_signal, s1.to_ast
+            s1.to_ast
           else
-            n :concat_clock_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
           end
         end
       end
@@ -17985,9 +17256,9 @@ module IJTAG
 
         def to_ast
           if s2.empty?
-            n :concat_tck_signal, s1.to_ast
+            s1.to_ast
           else
-            n :concat_tck_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
           end
         end
       end
@@ -18116,9 +17387,9 @@ module IJTAG
 
         def to_ast
           if s2.empty?
-            n :concat_shiftEn_signal, s1.to_ast
+            s1.to_ast
           else
-            n :concat_shiftEn_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
           end
         end
       end
@@ -18246,9 +17517,9 @@ module IJTAG
       module ConcatCaptureEnSignal2
         def to_ast
           if s2.empty?
-            n :concat_captureEn_signal, s1.to_ast
+            s1.to_ast
           else
-            n :concat_captureEn_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
           end
         end
       end
@@ -18369,9 +17640,9 @@ module IJTAG
 
         def to_ast
           if s2.empty?
-            n :concat_tms_signal, s1.to_ast
+            s1.to_ast
           else
-            n :concat_tms_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
           end
         end
       end
@@ -18484,9 +17755,9 @@ module IJTAG
 
         def to_ast
           if s2.empty?
-            n :concat_trst_signal, s1.to_ast
+            s1.to_ast
           else
-            n :concat_trst_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
           end
         end
       end
@@ -19718,18 +18989,6 @@ module IJTAG
         r0
       end
 
-      module Index0
-        def val
-          elements[0]
-        end
-      end
-
-      module Index1
-        def to_ast
-          n :index, val.to_ast
-        end
-      end
-
       def _nt_index
         start_index = index
         if node_cache[:index].has_key?(index)
@@ -19741,17 +19000,7 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_integer_expr
-        s0 << r1
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(Index0)
-          r0.extend(Index1)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_integer_expr
 
         node_cache[:index][start_index] = r0
 
