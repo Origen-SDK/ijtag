@@ -4,15 +4,21 @@ module IJTAG
     class Builder < Processor
       # Returns the built network object after the processor has run
       attr_reader :network
+      attr_reader :module_defs
+      attr_reader :top_level
 
-      def on_icl_source(node)
-        @network = Network.new
-        process_all(node.children)
+      def initialize(network_def)
+        @network_def = network_def
       end
 
       def on_module_def(node)
         name, *items = *node
-        model = network.sub_block name.value, class_name: 'IJTAG::Instrument'
+        if top_level
+          model = network.sub_block name.value, class_name: 'IJTAG::Instrument'
+        else
+          model = Module.new
+          @top_level = model
+        end
         define_module(model) do
           process_all(items)
         end

@@ -30,13 +30,13 @@ describe "The ICL AST Resolver" do
      ast = s(:add,
              s(:add,
                s(:sized_bin_number,
-                 s(:size, 16),
+                 s(:POS_INT, 16),
                  s(:UNSIZED_BIN_NUMBER, "10")),
                s(:sized_hex_number,
-                 s(:size, 16),
+                 s(:POS_INT, 16),
                  s(:UNSIZED_HEX_NUMBER, "10"))),
              s(:sized_dec_number,
-               s(:size, 16),
+               s(:POS_INT, 16),
                s(:POS_INT, 3)))
 
      r.process(ast).should == s(:POS_INT, 21)             

@@ -11,13 +11,14 @@ module IJTAG
         IJTAG::AST::Node.new(type, children)
       end
 
-      # Default handler for the terminal nodes, do nothing
-      def process_terminal(node)
+      def process(node)
+        if node.respond_to?(:to_ast)
+          super(node) 
+        else
+          node
+        end
       end
-      alias_method :on_SCALAR_ID, :process_terminal
-      alias_method :on_POS_INT, :process_terminal
 
-      # Most of the ICL nodes are non-terminals, so process them all by default
       def handler_missing(node)
         node.updated(nil, process_all(node.children))
       end
