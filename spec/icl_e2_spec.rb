@@ -21,4 +21,10 @@ describe "ICL Example 2 from the 1687 spec" do
     network.Instrument.ports[:DI].size.should == 8
   end 
 
+  it 'captures alias and enumerations from the module def' do
+    network = IJTAG.icl_to_model(file: file)
+    network.Instrument.aliases.size.should == 6
+    network.Instrument.enumerations.size.should == 3
+  end
+
 end

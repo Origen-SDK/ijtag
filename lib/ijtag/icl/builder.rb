@@ -35,6 +35,14 @@ module IJTAG
       alias_method :on_dataInPort_def, :on_port_def
       alias_method :on_dataOutPort_def, :on_port_def
 
+      def on_alias_def(node)
+        current_module.aliases << node
+      end
+
+      def on_enum_def(node)
+        current_module.enumerations << node
+      end
+
       private
 
       def size_of(range)
