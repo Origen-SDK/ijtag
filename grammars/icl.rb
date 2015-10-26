@@ -7869,21 +7869,64 @@ module IJTAG
               r4 = _nt_S
               s0 << r4
               if r4
+                i5 = index
                 if (match_len = has_terminal?('Of', false, index))
-                  r5 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                  r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
                   @index += match_len
                 else
                   terminal_parse_failure('\'Of\'')
-                  r5 = nil
+                  r6 = nil
+                end
+                if r6
+                  r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
+                  r5 = r6
+                else
+                  if (match_len = has_terminal?('of', false, index))
+                    r7 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                    @index += match_len
+                  else
+                    terminal_parse_failure('\'of\'')
+                    r7 = nil
+                  end
+                  if r7
+                    r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
+                    r5 = r7
+                  else
+                    @index = i5
+                    r5 = nil
+                  end
                 end
                 s0 << r5
                 if r5
-                  r6 = _nt_S
-                  s0 << r6
-                  if r6
-                    i7, s7 = index, []
+                  r8 = _nt_S
+                  s0 << r8
+                  if r8
                     i9, s9 = index, []
-                    r11 = _nt_namespace_name
+                    i11, s11 = index, []
+                    r13 = _nt_namespace_name
+                    if r13
+                      r12 = r13
+                    else
+                      r12 = instantiate_node(SyntaxNode,input, index...index)
+                    end
+                    s11 << r12
+                    if r12
+                      if (match_len = has_terminal?('::', false, index))
+                        r14 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                        @index += match_len
+                      else
+                        terminal_parse_failure('\'::\'')
+                        r14 = nil
+                      end
+                      s11 << r14
+                    end
+                    if s11.last
+                      r11 = instantiate_node(SyntaxNode,input, i11...index, s11)
+                      r11.extend(InstanceDef0)
+                    else
+                      @index = i11
+                      r11 = nil
+                    end
                     if r11
                       r10 = r11
                     else
@@ -7891,115 +7934,92 @@ module IJTAG
                     end
                     s9 << r10
                     if r10
-                      if (match_len = has_terminal?('::', false, index))
-                        r12 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                        @index += match_len
-                      else
-                        terminal_parse_failure('\'::\'')
-                        r12 = nil
-                      end
-                      s9 << r12
+                      r15 = _nt_module_name
+                      s9 << r15
                     end
                     if s9.last
                       r9 = instantiate_node(SyntaxNode,input, i9...index, s9)
-                      r9.extend(InstanceDef0)
+                      r9.extend(InstanceDef1)
                     else
                       @index = i9
                       r9 = nil
                     end
+                    s0 << r9
                     if r9
-                      r8 = r9
-                    else
-                      r8 = instantiate_node(SyntaxNode,input, index...index)
-                    end
-                    s7 << r8
-                    if r8
-                      r13 = _nt_module_name
-                      s7 << r13
-                    end
-                    if s7.last
-                      r7 = instantiate_node(SyntaxNode,input, i7...index, s7)
-                      r7.extend(InstanceDef1)
-                    else
-                      @index = i7
-                      r7 = nil
-                    end
-                    s0 << r7
-                    if r7
-                      r14 = _nt_s
-                      s0 << r14
-                      if r14
-                        i15 = index
+                      r16 = _nt_s
+                      s0 << r16
+                      if r16
+                        i17 = index
                         if (match_len = has_terminal?(';', false, index))
-                          r16 = true
+                          r18 = true
                           @index += match_len
                         else
                           terminal_parse_failure('\';\'')
-                          r16 = nil
+                          r18 = nil
                         end
-                        if r16
-                          r16 = SyntaxNode.new(input, (index-1)...index) if r16 == true
-                          r15 = r16
+                        if r18
+                          r18 = SyntaxNode.new(input, (index-1)...index) if r18 == true
+                          r17 = r18
                         else
-                          i17, s17 = index, []
+                          i19, s19 = index, []
                           if (match_len = has_terminal?('{', false, index))
-                            r18 = true
+                            r20 = true
                             @index += match_len
                           else
                             terminal_parse_failure('\'{\'')
-                            r18 = nil
+                            r20 = nil
                           end
-                          s17 << r18
-                          if r18
-                            r19 = _nt_s
-                            s17 << r19
-                            if r19
-                              s20, i20 = [], index
+                          s19 << r20
+                          if r20
+                            r21 = _nt_s
+                            s19 << r21
+                            if r21
+                              s22, i22 = [], index
                               loop do
-                                r21 = _nt_instance_item
-                                if r21
-                                  s20 << r21
+                                r23 = _nt_instance_item
+                                if r23
+                                  s22 << r23
                                 else
                                   break
                                 end
                               end
-                              r20 = instantiate_node(SyntaxNode,input, i20...index, s20)
-                              s17 << r20
-                              if r20
-                                r22 = _nt_s
-                                s17 << r22
-                                if r22
+                              r22 = instantiate_node(SyntaxNode,input, i22...index, s22)
+                              s19 << r22
+                              if r22
+                                r24 = _nt_s
+                                s19 << r24
+                                if r24
                                   if (match_len = has_terminal?('}', false, index))
-                                    r23 = true
+                                    r25 = true
                                     @index += match_len
                                   else
                                     terminal_parse_failure('\'}\'')
-                                    r23 = nil
+                                    r25 = nil
                                   end
-                                  s17 << r23
+                                  s19 << r25
                                 end
                               end
                             end
                           end
-                          if s17.last
-                            r17 = instantiate_node(SyntaxNode,input, i17...index, s17)
-                            r17.extend(InstanceDef2)
+                          if s19.last
+                            r19 = instantiate_node(SyntaxNode,input, i19...index, s19)
+                            r19.extend(InstanceDef2)
+                          else
+                            @index = i19
+                            r19 = nil
+                          end
+                          if r19
+                            r19 = SyntaxNode.new(input, (index-1)...index) if r19 == true
+                            r17 = r19
                           else
                             @index = i17
                             r17 = nil
                           end
-                          if r17
-                            r17 = SyntaxNode.new(input, (index-1)...index) if r17 == true
-                            r15 = r17
-                          else
-                            @index = i15
-                            r15 = nil
-                          end
                         end
-                        s0 << r15
-                        if r15
-                          r24 = _nt_s
-                          s0 << r24
+                        s0 << r17
+                        if r17
+                          r26 = _nt_s
+                          s0 << r26
                         end
                       end
                     end
@@ -15021,6 +15041,12 @@ module IJTAG
       module STRING0
       end
 
+      module STRING1
+        def to_ast
+          n :STRING, text_value
+        end
+      end
+
       def _nt_STRING
         start_index = index
         if node_cache[:STRING].has_key?(index)
@@ -15135,6 +15161,7 @@ module IJTAG
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
           r0.extend(STRING0)
+          r0.extend(STRING1)
         else
           @index = i0
           r0 = nil

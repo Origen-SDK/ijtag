@@ -21,6 +21,10 @@ module IJTAG
         compute_op(node) { |left, right| left + right }
       end
 
+      def on_subtract(node)
+        compute_op(node) { |left, right| left - right }
+      end
+
       def on_UNSIZED_BIN_NUMBER(node)
         nodes = process_all(node)
         n :POS_INT, nodes[0].to_i(2)

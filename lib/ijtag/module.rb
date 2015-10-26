@@ -13,7 +13,7 @@ module IJTAG
 
     def add_block(type, name, options={})
       options = options.merge(class_name: type.to_s.camelize)
-      sub_block name, options
+      block = sub_block name, options
       lower_case_alias = name.to_s.symbolize
       unless lower_case_alias == name.to_sym
         define_singleton_method lower_case_alias do
@@ -21,6 +21,7 @@ module IJTAG
         end
       end
       @cache = {}
+      block
     end
 
     def ports

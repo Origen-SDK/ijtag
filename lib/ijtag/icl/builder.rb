@@ -9,31 +9,46 @@ module IJTAG
       include NumericExpressionProcessor
 
       # Returns the built network object after the processor has run
-      attr_reader :network
-      attr_reader :module_defs
       attr_reader :top_level
+      attr_reader :network_def
 
       def initialize(network_def)
         @network_def = network_def
       end
 
-      def on_module_def(node)
+      def on_module_def(node, params={})
         name, *items = *node
-        if top_level
-          #model = network.sub_block name.value, class_name: 'IJTAG::Instrument'
-          fail "Oops, something has gone wrong!"
-        else
-          model = Module.new
-          @top_level = model
+        model = Module.new
+        @top_level = model
+        define_module(model) do
+          params.each do |k, v|
+            k = k.to_s
+            unless v.is_a?(AST::Node)
+              if v.is_a?(String)
+                v = n :STRING, v
+              else
+                v = n :POS_INT, v
+              end
+            end
+            parameters[k] ||= v
+          end
+          process_all(items)
         end
+      end
+
+      def on_instance_def(node)
+        name, module_name, *items = *node.children
+        module_def = network_def.modules[module_name.value]
+        model = current_module.add_block(:Module, name.value)
         define_module(model) do
           process_all(items)
+          process_all(module_def.children)
         end
       end
 
       def on_parameter_def(node)
         name, val = *process_all(node)
-        parameters[name.value] = val
+        parameters[name.value] ||= val
       end
 
       def on_parameter_ref(node)

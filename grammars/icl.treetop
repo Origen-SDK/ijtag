@@ -674,7 +674,7 @@ module IJTAG
       #                 InputPort SEL = SEL1;
       # }
       rule instance_def
-        'Instance' S name:instance_name S 'Of' S mod:((namespace_name? '::')? module_name) s d:(';' / ('{' s items:instance_item* s '}')) s {
+        'Instance' S name:instance_name S ('Of' / 'of') S mod:((namespace_name? '::')? module_name) s d:(';' / ('{' s items:instance_item* s '}')) s {
           def to_ast
             if d.respond_to?(:items)
               n :instance_def, name.to_ast, n(:module_name, mod.text_value), *d.items.elements.map{ |e| e.to_ast }
@@ -1280,7 +1280,11 @@ module IJTAG
       end
 
       rule STRING
-        '"' (!('"' / '\\') / '\\\\' / '\\"')* '"'
+        '"' (!('"' / '\\') / '\\\\' / '\\"')* '"' {
+          def to_ast
+            n :STRING, text_value
+          end
+        }
       end
 
       ####################################################

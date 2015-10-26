@@ -16,9 +16,13 @@ module IJTAG
       ICL::Importer.new(self).process(ast)
     end
 
-    def instantiate(module_name)
+    def instantiate(module_name, params={})
       b = ICL::Builder.new(self)
-      b.process(modules[module_name])
+      if icl = modules[module_name]
+        b.on_module_def(icl, params)
+      else
+        fail "No ICL definition for module \"#{module_name}\""
+      end
       b.top_level
     end
   end
