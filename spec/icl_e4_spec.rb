@@ -13,12 +13,11 @@ describe "ICL Example 4 from the 1687 spec" do
 
   it 'instantiates the top level module' do
     net = IJTAG.import(file: file).instantiate("WrappedInstr")
-    #net.is_a?(IJTAG::Module).should == true
-    #net.ports.size.should == 10
-    #net.scan_interfaces.size.should == 1
-    #net.scan_registers.size.should == 1
-    #net.sr.is_a?(IJTAG::ScanRegister).should == true
-    #net.sr.size.should == 8
-    #net.di.size.should == 8
+    net.i1.module_name.should == "Instrument"
+    net.i1.instance_name.should == "I1"
+    net.reg8.module_name.should == "SReg"
+    net.reg8.instance_name.should == "reg8"
   end
+
+  it 'the connections are hooked up'
 end

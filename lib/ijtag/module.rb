@@ -5,12 +5,29 @@ module IJTAG
     include IJTAG::Aliases
     include IJTAG::Enumerations
 
-    attr_reader :icl
+    attr_reader :icl, :module_name, :instance_name
+    attr_reader :network, :top_level
 
     alias_method :blocks, :sub_blocks
+    alias_method :instance_name, :name
 
     def initialize(options = {})
       @icl = options[:icl]
+      @module_name = options[:module_name]
+      @top_level =  options[:top_level]
+      if @top_level
+        @network = self
+      else
+        @network = options[:network]
+      end
+    end
+
+    def netlist
+      if top_level
+        @netlist ||= Netlist.new
+      else
+        network.netlist
+      end
     end
 
     def scan_interfaces

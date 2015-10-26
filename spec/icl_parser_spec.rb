@@ -88,14 +88,11 @@ END
             s(:SCALAR_ID, "SO"),
             s(:source,
               s(:concat,
-                s(:scan_signal,
-                  s(:hier_port,
-                    s(:SCALAR_ID, "reg2"),
-                    s(:SCALAR_ID, "SO"))),
-                s(:scan_signal,
-                  s(:SCALAR_ID, "reg1")),
-                s(:scan_signal,
-                  s(:SCALAR_ID, "reg3")))))))
+                s(:hier_port,
+                  s(:SCALAR_ID, "reg2"),
+                  s(:SCALAR_ID, "SO")),
+                s(:SCALAR_ID, "reg1"),
+                s(:SCALAR_ID, "reg3"))))))
 
   end
 end

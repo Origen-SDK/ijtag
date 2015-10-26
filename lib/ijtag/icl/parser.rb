@@ -3,7 +3,7 @@ module IJTAG
   module ICL
     # Responsible for parsing an 1687 ICL file to an AST
     class Parser
-      def self.parse(data, options={})
+      def self.parse(data, options = {})
         # This will be appended to all nodes if supplied
         @file = options[:file]
         tree = parser.parse(data)

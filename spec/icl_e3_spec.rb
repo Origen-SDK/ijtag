@@ -54,4 +54,8 @@ describe "ICL Example 3 from the 1687 spec" do
     net.di.size.should == 6
     net.do.size.should == 6
   end
+
+  it 'the connections are hooked up' do
+    net = IJTAG.import(file: file).instantiate("SReg")
+  end
 end

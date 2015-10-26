@@ -18,7 +18,7 @@ module IJTAG
 
       def on_module_def(node, params = {})
         name, *items = *node
-        model = Module.new(icl: node)
+        model = Module.new(icl: node, path: :hidden, top_level: true)
         @top_level = model
         define_module(model) do
           params.each do |k, v|
@@ -39,9 +39,19 @@ module IJTAG
       def on_instance_def(node)
         name, module_name, *items = *node.children
         module_def = network_def.modules[module_name.value]
-        model = current_module.add_block(:Module, name.value, icl: module_def)
+        model = current_module.add_block(:Module, name.value, icl: module_def, module_name: module_name.value, network: top_level)
         define_module(model) do
-          process_all(items)
+          process_all(items).each do |item|
+            case item.type
+            when :inputPort_connection
+              a, b = *item
+              add_to_netlist(to_stem(model.path) + to_string(a), to_string(b))
+            when :parameter_def
+              # Do nothing, already applied
+            else
+              fail "Don't know how to model #{item.type} in an instance def"
+            end
+          end
           process_all(module_def.children)
         end
       end
@@ -49,6 +59,7 @@ module IJTAG
       def on_parameter_def(node)
         name, val = *process_all(node)
         parameters[name.value] ||= val
+        node
       end
 
       def on_parameter_ref(node)
@@ -58,7 +69,16 @@ module IJTAG
       def on_port_def(node)
         name, *items = *process_all(node)
         name_and_size = name_and_size_from(name)
-        current_module.add_block(:Port, name_and_size[0], size: name_and_size[1], icl: node)
+        type = node.type.to_s.sub('_def', '').camelize.to_sym
+        port = current_module.add_block(:Port, name_and_size[0], size: name_and_size[1], icl: node, network: top_level, type: type)
+        items.each do |item|
+          case item.type
+          when :source
+            add_to_netlist(port.path, to_stem(port.parent.path) + to_string(item.to_a[0]))
+          else
+            fail "Don't know how to model #{item.type} in a port def"
+          end
+        end
       end
       alias_method :on_scanInPort_def, :on_port_def
       alias_method :on_scanOutPort_def, :on_port_def
@@ -101,10 +121,31 @@ module IJTAG
         unless elements[:scanInSource]
           fail BuildError.new('A ScanRegister definition must declare a ScanInSource', node)
         end
-        current_module.add_block(:ScanRegister, name_and_size[0], size: name_and_size[1], icl: node)
+        reg = current_module.add_block(:ScanRegister, name_and_size[0], size: name_and_size[1], icl: node, network: top_level)
+        add_to_netlist("#{reg.path}.scan_in", to_stem(reg.parent.path) + to_string(elements[:scanInSource].to_a[0]))
+        add_to_netlist("#{reg.path}.capture", to_stem(reg.parent.path) + to_string(elements[:captureSource].to_a[0])) if elements[:captureSource]
       end
 
       private
+
+      def to_stem(path)
+        if path.empty?
+          ''
+        else
+          path + '.'
+        end
+      end
+
+      def add_to_netlist(a, b)
+        netlist = top_level.network.netlist
+        netlist[a] = b
+        netlist[b] = a
+      end
+
+      def to_string(node)
+        @to_string ||= ToString.new
+        @to_string.process(node)
+      end
 
       def name_and_size_from(node)
         if node.type == :vector_id && node.to_a[1].type == :range

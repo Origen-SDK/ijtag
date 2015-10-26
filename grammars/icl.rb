@@ -16672,11 +16672,8 @@ module IJTAG
       module ResetSignal1
 
         def to_ast
-          if !invert.empty?
-            n :reset_signal, n(:invert), val.to_ast, input: input, interval: interval, file: file
-          else
-            n :reset_signal, val.to_ast, input: input, interval: interval, file: file
-          end
+          fail "scan_signal invert not handled yet!" unless invert.empty?
+          val.to_ast
         end
       end
 
@@ -16736,11 +16733,8 @@ module IJTAG
       module ScanSignal1
 
         def to_ast
-          if !invert.empty?
-            n :scan_signal, n(:invert), val.to_ast, input: input, interval: interval, file: file
-          else
-            n :scan_signal, val.to_ast, input: input, interval: interval, file: file
-          end
+          fail "scan_signal invert not handled yet!" unless invert.empty?
+          val.to_ast
         end
       end
 
@@ -16800,11 +16794,8 @@ module IJTAG
       module DataSignal1
 
         def to_ast
-          if !invert.empty?
-            n :data_signal, n(:invert), val.to_ast, input: input, interval: interval, file: file
-          else
-            n :data_signal, val.to_ast, input: input, interval: interval, file: file
-          end
+          fail "scan_signal invert not handled yet!" unless invert.empty?
+          val.to_ast
         end
       end
 
@@ -16864,11 +16855,8 @@ module IJTAG
       module ClockSignal1
 
         def to_ast
-          if !invert.empty?
-            n :clock_signal, n(:invert), val.to_ast, input: input, interval: interval, file: file
-          else
-            n :clock_signal, val.to_ast, input: input, interval: interval, file: file
-          end
+          fail "scan_signal invert not handled yet!" unless invert.empty?
+          val.to_ast
         end
       end
 
