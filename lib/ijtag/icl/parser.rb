@@ -3,7 +3,9 @@ module IJTAG
   module ICL
     # Responsible for parsing an 1687 ICL file to an AST
     class Parser
-      def self.parse(data)
+      def self.parse(data, options={})
+        # This will be appended to all nodes if supplied
+        @file = options[:file]
         tree = parser.parse(data)
 
         # If the AST is nil then there was an error during parsing
@@ -28,6 +30,10 @@ module IJTAG
           require "#{Origen.root!}/grammars/icl"
           GrammarParser.new
         end
+      end
+
+      def self.file
+        @file
       end
     end
   end

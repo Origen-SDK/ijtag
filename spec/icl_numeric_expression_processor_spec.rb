@@ -47,6 +47,8 @@ describe "The ICL AST Resolver" do
      r.process(ast).should == s(:POS_INT, 21)             
   end
 
-  it "can resolve parameters" do
-  end
+  it "can resolve subtractions"
+  it "can resolve multiplications"
+  it "can resolve divisions"
+  it "can resolve mods"
 end

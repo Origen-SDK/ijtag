@@ -3,7 +3,7 @@ require 'treetop'
 module IJTAG
   module AST
     class Node < ::AST::Node
-      attr_reader :input, :interval
+      attr_reader :input, :interval, :file
 
       # Returns the value at the root of an AST node like this:
       #
@@ -39,6 +39,12 @@ module IJTAG
         input[interval]
       end
 
+      def directory
+        if file
+          Pathname.new(file).dirname
+        end
+      end
+
       protected
 
       # I'd rather see the true symbol
@@ -56,6 +62,10 @@ module Treetop
       def n(type, *children)
         properties = children.pop if children.last.is_a?(Hash)
         IJTAG::AST::Node.new(type, children, properties || {})
+      end
+
+      def file
+        IJTAG::ICL::Parser.file
       end
     end
   end

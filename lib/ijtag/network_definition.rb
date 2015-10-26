@@ -12,7 +12,7 @@ module IJTAG
       icl_str, options = nil, icl_str if icl_str.is_a?(Hash)
       icl_str ||= File.read(options[:file])
 
-      ast = ICL::Parser.parse(icl_str).to_ast
+      ast = ICL::Parser.parse(icl_str, options).to_ast
       ICL::Importer.new(self).process(ast)
     end
 

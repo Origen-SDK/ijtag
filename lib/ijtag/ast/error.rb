@@ -5,7 +5,11 @@ module IJTAG
 
       def initialize(msg, node)
         @node = node
-        msg += "\nAt ICL source line #{node.line_number}:"
+        if node.file
+          msg += "\n#{node.file}:#{node.line_number}"
+        else
+          msg += "\nAt ICL source line #{node.line_number}:"
+        end
         msg += "\n\n#{node.text_value}"
         super(msg)
       end
