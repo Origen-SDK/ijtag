@@ -39,7 +39,7 @@ module IJTAG
       def on_instance_def(node)
         name, module_name, *items = *node.children
         module_def = network_def.modules[module_name.value]
-        model = current_module.add_block(:Module, name.value, icl: node)
+        model = current_module.add_block(:Module, name.value, icl: module_def)
         define_module(model) do
           process_all(items)
           process_all(module_def.children)
