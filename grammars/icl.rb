@@ -10484,12 +10484,12 @@ module IJTAG
         end
 
         i0 = index
-        r1 = _nt_SCALAR_ID
+        r1 = _nt_parameter_ref
         if r1
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
         else
-          r2 = _nt_parameter_ref
+          r2 = _nt_SCALAR_ID
           if r2
             r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
             r0 = r2
@@ -10516,39 +10516,39 @@ module IJTAG
         end
 
         i0 = index
-        if (match_len = has_terminal?('<D>', false, index))
-          r1 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-          @index += match_len
-        else
-          terminal_parse_failure('\'<D>\'')
-          r1 = nil
-        end
+        r1 = _nt_parameter_ref
         if r1
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
         else
-          if (match_len = has_terminal?('<R>', false, index))
+          if (match_len = has_terminal?('<D>', false, index))
             r2 = instantiate_node(SyntaxNode,input, index...(index + match_len))
             @index += match_len
           else
-            terminal_parse_failure('\'<R>\'')
+            terminal_parse_failure('\'<D>\'')
             r2 = nil
           end
           if r2
             r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
             r0 = r2
           else
-            r3 = _nt_number
+            if (match_len = has_terminal?('<R>', false, index))
+              r3 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+              @index += match_len
+            else
+              terminal_parse_failure('\'<R>\'')
+              r3 = nil
+            end
             if r3
               r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
               r0 = r3
             else
-              r4 = _nt_STRING
+              r4 = _nt_number
               if r4
                 r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
                 r0 = r4
               else
-                r5 = _nt_parameter_ref
+                r5 = _nt_STRING
                 if r5
                   r5 = SyntaxNode.new(input, (index-1)...index) if r5 == true
                   r0 = r5
@@ -10578,12 +10578,12 @@ module IJTAG
         end
 
         i0 = index
-        r1 = _nt_SCALAR_ID
+        r1 = _nt_parameter_ref
         if r1
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
         else
-          r2 = _nt_parameter_ref
+          r2 = _nt_SCALAR_ID
           if r2
             r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
             r0 = r2
@@ -10610,12 +10610,12 @@ module IJTAG
         end
 
         i0 = index
-        r1 = _nt_SCALAR_ID
+        r1 = _nt_parameter_ref
         if r1
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
         else
-          r2 = _nt_parameter_ref
+          r2 = _nt_SCALAR_ID
           if r2
             r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
             r0 = r2
@@ -14727,9 +14727,20 @@ module IJTAG
           elements[1]
         end
 
+        def val
+          elements[2]
+        end
       end
 
       module ConcatString1
+        def s1
+          elements[0]
+        end
+
+        def s2
+          elements[1]
+        end
+
         def s
           elements[2]
         end
@@ -14737,7 +14748,11 @@ module IJTAG
 
       module ConcatString2
         def to_ast
-          n :concat_string, text_value
+          if s2.empty?
+            s1.to_ast
+          else
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.val.to_ast }
+          end
         end
       end
 
@@ -14754,12 +14769,12 @@ module IJTAG
 
         i0, s0 = index, []
         i1 = index
-        r2 = _nt_STRING
+        r2 = _nt_parameter_ref
         if r2
           r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
           r1 = r2
         else
-          r3 = _nt_parameter_ref
+          r3 = _nt_STRING
           if r3
             r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
             r1 = r3
@@ -14786,12 +14801,12 @@ module IJTAG
               s5 << r7
               if r7
                 i8 = index
-                r9 = _nt_STRING
+                r9 = _nt_parameter_ref
                 if r9
                   r9 = SyntaxNode.new(input, (index-1)...index) if r9 == true
                   r8 = r9
                 else
-                  r10 = _nt_parameter_ref
+                  r10 = _nt_STRING
                   if r10
                     r10 = SyntaxNode.new(input, (index-1)...index) if r10 == true
                     r8 = r10
@@ -19428,17 +19443,17 @@ module IJTAG
         end
 
         i0 = index
-        r1 = _nt_integer_expr_paren
+        r1 = _nt_parameter_ref
         if r1
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
         else
-          r2 = _nt_POS_INT
+          r2 = _nt_integer_expr_paren
           if r2
             r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
             r0 = r2
           else
-            r3 = _nt_parameter_ref
+            r3 = _nt_POS_INT
             if r3
               r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
               r0 = r3

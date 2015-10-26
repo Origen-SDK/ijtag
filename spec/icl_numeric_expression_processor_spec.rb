@@ -2,9 +2,14 @@ require "spec_helper"
 
 describe "The ICL AST Resolver" do
 
-  def r
-    @r ||= IJTAG::ICL::Resolver.new
+  class Resolver < IJTAG::ICL::Processor
+    include IJTAG::ICL::NumericExpressionProcessor
   end
+
+  def r
+    @r ||= Resolver.new
+  end
+
 
   it "can resolve addition expressions" do
      ast = s(:add,

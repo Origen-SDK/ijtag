@@ -17,6 +17,8 @@ Module SReg {
 }
 
 Module SRegParam {    
+  Parameter MSB = 7;
+
   ScanInPort      SI;
   ScanOutPort     SO { Source SR[0];}
   ShiftEnPort     SE;
@@ -25,11 +27,11 @@ Module SRegParam {
   SelectPort      SEL;
   ResetPort       RST;
   TCKPort         TCK;
-  DataInPort      DI[7:0];
-  DataOutPort     DO[7:0] {Source SR; }
+  DataInPort      DI[$MSB:0];
+  DataOutPort     DO[$MSB:0] {Source SR; }
   ScanInterface   scan_client { Port SI; Port SO; Port SEL; }
 
-  ScanRegister SR[7:0] { ScanInSource SI;
-                         CaptureSource DI;
-                         ResetValue 8'b00000000; }                   
+  ScanRegister SR[$MSB:0] { ScanInSource SI;
+                            CaptureSource DI;
+                            ResetValue 8'b00000000; }                   
 }

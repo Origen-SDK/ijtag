@@ -1,10 +1,13 @@
 require 'ijtag/icl/processor'
+require 'ijtag/icl/numeric_expression_processor'
 module IJTAG
   module ICL
     class BuildError < AST::Error
     end
 
     class Builder < Processor
+      include NumericExpressionProcessor
+
       # Returns the built network object after the processor has run
       attr_reader :network
       attr_reader :module_defs
@@ -17,7 +20,8 @@ module IJTAG
       def on_module_def(node)
         name, *items = *node
         if top_level
-          model = network.sub_block name.value, class_name: 'IJTAG::Instrument'
+          #model = network.sub_block name.value, class_name: 'IJTAG::Instrument'
+          fail "Oops, something has gone wrong!"
         else
           model = Module.new
           @top_level = model
@@ -25,6 +29,15 @@ module IJTAG
         define_module(model) do
           process_all(items)
         end
+      end
+
+      def on_parameter_def(node)
+        name, val = *process_all(node)
+        parameters[name.value] = val
+      end
+
+      def on_parameter_ref(node)
+        parameters[node.value]
       end
 
       def on_port_def(node)
@@ -96,16 +109,26 @@ module IJTAG
 
       def define_module(model)
         modules.push model
+        _parameters.push({})
         yield
         modules.pop
+        _parameters.pop
       end
 
       def modules
         @modules ||= []
       end
 
+      def _parameters
+        @_parameters ||= []
+      end
+
       def current_module
         modules.last
+      end
+
+      def parameters
+        _parameters.last
       end
     end
   end

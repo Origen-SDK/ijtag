@@ -921,25 +921,25 @@ module IJTAG
       end
 
       rule iProc_name
-        SCALAR_ID / parameter_ref
+         parameter_ref / SCALAR_ID
       end
 
       rule iProc_args
+        parameter_ref /
         '<D>' /
         '<R>' /
         number /
-        STRING /
-        parameter_ref
+        STRING
       end
 
       rule sub_namespace
-        SCALAR_ID /
-        parameter_ref
+        parameter_ref /
+        SCALAR_ID
       end
 
       rule ref_module_name
-        SCALAR_ID /
-        parameter_ref
+        parameter_ref /
+        SCALAR_ID
       end
 
       rule logicSignal_def
@@ -1255,9 +1255,13 @@ module IJTAG
       end
 
       rule concat_string
-        (STRING / parameter_ref) (',' s (STRING / parameter_ref))* s {
+        s1:(parameter_ref / STRING) s2:(',' s val:(parameter_ref / STRING))* s {
           def to_ast
-            n :concat_string, text_value
+            if s2.empty?
+              s1.to_ast
+            else
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.val.to_ast }
+            end
           end
         }
       end
@@ -1890,7 +1894,7 @@ module IJTAG
       end
 
       rule integer_expr_arg
-        integer_expr_paren / POS_INT / parameter_ref
+         parameter_ref / integer_expr_paren / POS_INT
       end
 
       rule logic_expr

@@ -13,7 +13,6 @@ module IJTAG
       icl_str ||= File.read(options[:file])
 
       ast = ICL::Parser.parse(icl_str).to_ast
-      ast = ICL::Resolver.new.process(ast)
       ICL::Importer.new(self).process(ast)
     end
 

@@ -19,10 +19,13 @@ describe "ICL Example 3 from the 1687 spec" do
     net.scan_registers.size.should == 1
     net.sr.is_a?(IJTAG::ScanRegister).should == true
     net.sr.size.should == 8
+    net.di.size.should == 8
   end
 
   it 'accepts in-line default parameters' do
     net = IJTAG.import(file: file).instantiate("SRegParam")
     net.sr.size.should == 8
+    net.di.size.should == 8
+    net.do.size.should == 8
   end
 end
