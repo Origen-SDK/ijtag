@@ -16,7 +16,7 @@ module IJTAG
 
       def on_nameSpace_def(node)
       end
-       
+
       def on_useNameSpace_def(node)
       end
     end

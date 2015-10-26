@@ -12,7 +12,7 @@ module IJTAG
 
       module IclSource0
         def to_ast
-          n :icl_source, *elements.map{ |e| e.to_ast if e.respond_to?(:to_ast) }.compact
+          n :icl_source, *elements.map{ |e| e.to_ast if e.respond_to?(:to_ast) }.compact, input: input, interval: interval
         end
       end
 
@@ -329,7 +329,7 @@ module IJTAG
 
       module NameSpaceDef1
         def to_ast
-          n1 :nameSpace_def, name.to_ast
+          n :nameSpace_def, name.to_ast, input: input, interval: interval
         end
       end
 
@@ -418,7 +418,7 @@ module IJTAG
 
       module UseNameSpaceDef1
         def to_ast
-          n1 :useNameSpace_def, name.to_ast
+          n :useNameSpace_def, name.to_ast, input: input, interval: interval
         end
       end
 
@@ -520,9 +520,9 @@ module IJTAG
       module ModuleDef1
         def to_ast
           if respond_to?(:items)
-            n :module_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            n :module_def, name.to_ast, *items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :module_def, name.to_ast
+            n :module_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -962,9 +962,9 @@ module IJTAG
       module ScanInPortDef2
         def to_ast
           if d.respond_to?(:attrs)
-            n :scanInPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+            n :scanInPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :scanInPort_def, name.to_ast
+            n :scanInPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -1129,9 +1129,9 @@ module IJTAG
       module ScanOutPortDef2
         def to_ast
           if d.respond_to?(:items)
-            n :scanOutPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :scanOutPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :scanOutPort_def, name.to_ast
+            n :scanOutPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -1314,7 +1314,7 @@ module IJTAG
 
       module ScanOutPortSource1
         def to_ast
-          n :source, signal.to_ast
+          n :source, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -1398,7 +1398,7 @@ module IJTAG
 
       module ScanOutPortEnable1
         def to_ast
-          n :enable, signal.to_ast
+          n :enable, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -1502,9 +1502,9 @@ module IJTAG
       module ShiftEnPortDef2
         def to_ast
           if d.respond_to?(:attrs)
-            n :shiftEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+            n :shiftEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :shiftEnPort_def, name.to_ast
+            n :shiftEnPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -1669,9 +1669,9 @@ module IJTAG
       module CaptureEnPortDef2
         def to_ast
           if d.respond_to?(:attrs)
-            n :captureEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+            n :captureEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :captureEnPort_def, name.to_ast
+            n :captureEnPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -1836,9 +1836,9 @@ module IJTAG
       module UpdateEnPortDef2
         def to_ast
           if d.respond_to?(:attrs)
-            n :updateEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+            n :updateEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :updateEnPort_def, name.to_ast
+            n :updateEnPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -2003,9 +2003,9 @@ module IJTAG
       module DataInPortDef2
         def to_ast
           if d.respond_to?(:items)
-            n :dataInPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :dataInPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :dataInPort_def, name.to_ast
+            n :dataInPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -2188,7 +2188,7 @@ module IJTAG
 
       module DataInPortRefEnum1
         def to_ast
-          n :refEnum, name.to_ast
+          n :refEnum, name.to_ast, input: input, interval: interval
         end
       end
 
@@ -2272,7 +2272,7 @@ module IJTAG
 
       module DataInPortDefaultLoadValue1
         def to_ast
-          n :defaultLoadValue, val.to_ast
+          n :defaultLoadValue, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -2390,9 +2390,9 @@ module IJTAG
       module DataOutPortDef2
         def to_ast
           if d.respond_to?(:items)
-            n :dataOutPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :dataOutPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :dataOutPort_def, name.to_ast
+            n :dataOutPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -2581,7 +2581,7 @@ module IJTAG
 
       module DataOutPortSource1
         def to_ast
-          n :source, signal.to_ast
+          n :source, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -2665,7 +2665,7 @@ module IJTAG
 
       module DataOutPortEnable1
         def to_ast
-          n :enable, signal.to_ast
+          n :enable, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -2749,7 +2749,7 @@ module IJTAG
 
       module DataOutPortRefEnum1
         def to_ast
-          n :refEnum, name.to_ast
+          n :refEnum, name.to_ast, input: input, interval: interval
         end
       end
 
@@ -2853,9 +2853,9 @@ module IJTAG
       module ToShiftEnPortDef2
         def to_ast
           if d.respond_to?(:items)
-            n :toShiftEnPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :toShiftEnPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :toShiftEnPort_def, name.to_ast
+            n :toShiftEnPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -3032,7 +3032,7 @@ module IJTAG
 
       module ToShiftEnPortSource1
         def to_ast
-          n :source, signal.to_ast
+          n :source, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -3136,9 +3136,9 @@ module IJTAG
       module ToCaptureEnPortDef2
         def to_ast
           if d.respond_to?(:items)
-            n :toCaptureEnPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :toCaptureEnPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :toCaptureEnPort_def, name.to_ast
+            n :toCaptureEnPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -3315,7 +3315,7 @@ module IJTAG
 
       module ToCaptureEnPortSource1
         def to_ast
-          n :source, signal.to_ast
+          n :source, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -3419,9 +3419,9 @@ module IJTAG
       module ToUpdateEnPortDef2
         def to_ast
           if d.respond_to?(:items)
-            n :toUpdateEnPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :toUpdateEnPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :toUpdateEnPort_def, name.to_ast
+            n :toUpdateEnPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -3598,7 +3598,7 @@ module IJTAG
 
       module ToUpdateEnPortSource1
         def to_ast
-          n :source, signal.to_ast
+          n :source, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -3702,9 +3702,9 @@ module IJTAG
       module SelectPortDef2
         def to_ast
           if d.respond_to?(:attrs)
-            n :selectPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+            n :selectPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :selectPort_def, name.to_ast
+            n :selectPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -3869,9 +3869,9 @@ module IJTAG
       module ToSelectPortDef2
         def to_ast
           if d.respond_to?(:items)
-            n :toSelectPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :toSelectPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :toSelectPort_def, name.to_ast
+            n :toSelectPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -4053,7 +4053,7 @@ module IJTAG
 
       module ToSelectPortSource1
         def to_ast
-          n :source, signal.to_ast
+          n :source, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -4157,9 +4157,9 @@ module IJTAG
       module ResetPortDef2
         def to_ast
           if d.respond_to?(:items)
-            n :resetPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :resetPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :resetPort_def, name.to_ast
+            n :resetPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -4336,7 +4336,7 @@ module IJTAG
 
       module ResetPortPolarity1
         def to_ast
-          n :resetPort_polarity, val.text_value.to_i
+          n :resetPort_polarity, val.text_value.to_i, input: input, interval: interval
         end
       end
 
@@ -4466,9 +4466,9 @@ module IJTAG
       module ToResetPortDef2
         def to_ast
           if d.respond_to?(:items)
-            n :toResetPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :toResetPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :toResetPort_def, name.to_ast
+            n :toResetPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -4656,7 +4656,7 @@ module IJTAG
 
       module ToResetPortSource1
         def to_ast
-          n :source, signal.to_ast
+          n :source, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -4736,7 +4736,7 @@ module IJTAG
 
       module ToResetPortPolarity1
         def to_ast
-          n :resetPort_polarity, val.text_value.to_i
+          n :resetPort_polarity, val.text_value.to_i, input: input, interval: interval
         end
       end
 
@@ -4866,9 +4866,9 @@ module IJTAG
       module TmsPortDef2
         def to_ast
           if d.respond_to?(:attrs)
-            n :tmsPort_name, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+            n :tmsPort_name, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :tmsPort_name, name.to_ast
+            n :tmsPort_name, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -5033,9 +5033,9 @@ module IJTAG
       module ToTmsPortDef2
         def to_ast
           if d.respond_to?(:items)
-            n :toTmsPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :toTmsPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :toTmsPort_def, name.to_ast
+            n :toTmsPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -5212,7 +5212,7 @@ module IJTAG
 
       module ToTmsPortSource1
         def to_ast
-          n :source, signal.to_ast
+          n :source, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -5316,9 +5316,9 @@ module IJTAG
       module ToIRSelectPortDef2
         def to_ast
           if d.respond_to?(:attrs)
-            n :toIRSelectPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+            n :toIRSelectPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :toIRSelectPort_def, name.to_ast
+            n :toIRSelectPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -5483,9 +5483,9 @@ module IJTAG
       module TckPortDef2
         def to_ast
           if d.respond_to?(:attrs)
-            n :tckPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+            n :tckPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :tckPort_def, name.to_ast
+            n :tckPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -5650,9 +5650,9 @@ module IJTAG
       module ToTckPortDef2
         def to_ast
           if d.respond_to?(:attrs)
-            n :toTckPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+            n :toTckPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :toTckPort_def, name.to_ast
+            n :toTckPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -5817,9 +5817,9 @@ module IJTAG
       module ClockPortDef2
         def to_ast
           if d.respond_to?(:items)
-            n :clockPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :clockPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :clockPort_def, name.to_ast
+            n :clockPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -5996,7 +5996,7 @@ module IJTAG
 
       module ClockPortDiffPort1
         def to_ast
-          n :clockPort_diffPort, signal.to_ast
+          n :clockPort_diffPort, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -6100,9 +6100,9 @@ module IJTAG
       module ToClockPortDef2
         def to_ast
           if d.respond_to?(:items)
-            n :toClockPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :toClockPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :toClockPort_def, name.to_ast
+            n :toClockPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -6308,7 +6308,7 @@ module IJTAG
 
       module ToClockPortSource1
         def to_ast
-          n :source, signal.to_ast
+          n :source, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -6392,7 +6392,7 @@ module IJTAG
 
       module FreqMultiplierDef1
         def to_ast
-          n :freqMultiplier_def, val.to_ast
+          n :freqMultiplier_def, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -6476,7 +6476,7 @@ module IJTAG
 
       module FreqDividerDef1
         def to_ast
-          n :freqDivider_def, val.to_ast
+          n :freqDivider_def, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -6560,7 +6560,7 @@ module IJTAG
 
       module DifferentialInvOfDef1
         def to_ast
-          n :differentialInvOf_def, val.to_ast
+          n :differentialInvOf_def, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -6652,7 +6652,7 @@ module IJTAG
 
       module PeriodDef1
         def to_ast
-          n :period_def, "#{v.to_ast}#{unit}"
+          n :period_def, "#{v.to_ast}#{unit}", input: input, interval: interval
         end
       end
 
@@ -6855,9 +6855,9 @@ module IJTAG
       module TrstPortDef2
         def to_ast
           if d.respond_to?(:items)
-            n :trstPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+            n :trstPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :trstPort_def, name.to_ast
+            n :trstPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -7022,9 +7022,9 @@ module IJTAG
       module ToTrstPortDef2
         def to_ast
           if d.respond_to?(:items)
-            n :toTrstPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :toTrstPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :toTrstPort_def, name.to_ast
+            n :toTrstPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -7206,7 +7206,7 @@ module IJTAG
 
       module ToTrstPortSource1
         def to_ast
-          n :source, signal.to_ast
+          n :source, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -7310,9 +7310,9 @@ module IJTAG
       module AddressPortDef2
         def to_ast
           if d.respond_to?(:attrs)
-            n :addressPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+            n :addressPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :addressPort_def, name.to_ast
+            n :addressPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -7477,9 +7477,9 @@ module IJTAG
       module WriteEnPortDef2
         def to_ast
           if d.respond_to?(:attrs)
-            n :writeEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+            n :writeEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :writeEnPort_def, name.to_ast
+            n :writeEnPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -7644,9 +7644,9 @@ module IJTAG
       module ReadEnPortDef2
         def to_ast
           if d.respond_to?(:attrs)
-            n :readEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+            n :readEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :readEnPort_def, name.to_ast
+            n :readEnPort_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -7832,9 +7832,9 @@ module IJTAG
       module InstanceDef4
         def to_ast
           if d.respond_to?(:items)
-            n :instance_def, name.to_ast, n(:module_name, mod.text_value), *d.items.elements.map{ |e| e.to_ast }
+            n :instance_def, name.to_ast, n(:module_name, mod.text_value), *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :instance_def, name.to_ast, n(:module_name, mod.text_value)
+            n :instance_def, name.to_ast, n(:module_name, mod.text_value), input: input, interval: interval
           end
         end
       end
@@ -8125,7 +8125,7 @@ module IJTAG
 
       module InputPortConnection1
         def to_ast
-          n :inputPort_connection, name.to_ast, source.to_ast
+          n :inputPort_connection, name.to_ast, source.to_ast, input: input, interval: interval
         end
       end
 
@@ -8231,7 +8231,7 @@ module IJTAG
 
       module AllowBroadcastDef1
         def to_ast
-          n :allowBroadcast_def, name.to_ast
+          n :allowBroadcast_def, name.to_ast, input: input, interval: interval
         end
       end
 
@@ -8395,7 +8395,7 @@ module IJTAG
 
       module InstanceAddressValue1
         def to_ast
-          n :instance_addressValue, val.to_ast
+          n :instance_addressValue, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -8702,7 +8702,7 @@ module IJTAG
 
       module ScanRegisterScanInSource1
         def to_ast
-          n :scanInSource, signal.to_ast
+          n :scanInSource, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -8786,7 +8786,7 @@ module IJTAG
 
       module ScanRegisterDefaultLoadValue1
         def to_ast
-          n :defaultLoadValue, val.to_ast
+          n :defaultLoadValue, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -8884,7 +8884,7 @@ module IJTAG
 
       module ScanRegisterCaptureSource1
         def to_ast
-          n :captureSource, source.to_ast
+          n :captureSource, source.to_ast, input: input, interval: interval
         end
       end
 
@@ -8982,7 +8982,7 @@ module IJTAG
 
       module ScanRegisterResetValue1
         def to_ast
-          n :resetValue, val.to_ast
+          n :resetValue, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -9080,7 +9080,7 @@ module IJTAG
 
       module ScanRegisterRefEnum1
         def to_ast
-          n :refEnum, name.to_ast
+          n :refEnum, name.to_ast, input: input, interval: interval
         end
       end
 
@@ -9184,9 +9184,9 @@ module IJTAG
       module DataRegisterDef2
         def to_ast
           if d.respond_to?(:items)
-            n :dataRegister_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :dataRegister_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :dataRegister_def, name.to_ast
+            n :dataRegister_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -9456,7 +9456,7 @@ module IJTAG
 
       module DataRegisterResetValue1
         def to_ast
-          n :resetValue, val.to_ast
+          n :resetValue, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -9554,7 +9554,7 @@ module IJTAG
 
       module DataRegisterDefaultLoadValue1
         def to_ast
-          n :defaultLoadValue, val.to_ast
+          n :defaultLoadValue, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -9652,7 +9652,7 @@ module IJTAG
 
       module DataRegisterRefEnum1
         def to_ast
-          n :refEnum, name.to_ast
+          n :refEnum, name.to_ast, input: input, interval: interval
         end
       end
 
@@ -9768,7 +9768,7 @@ module IJTAG
 
       module DataRegisterWriteEnSource1
         def to_ast
-          n :dataRegister_writeEnSource, signal.to_ast
+          n :dataRegister_writeEnSource, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -9852,7 +9852,7 @@ module IJTAG
 
       module DataRegisterWriteDataSource1
         def to_ast
-          n :dataRegister_writeDataSource, signal.to_ast
+          n :dataRegister_writeDataSource, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -9936,7 +9936,7 @@ module IJTAG
 
       module DataRegisterAddressValue1
         def to_ast
-          n :dataRegister_addressValue, val.to_ast
+          n :dataRegister_addressValue, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -10069,9 +10069,9 @@ module IJTAG
       module DataRegisterReadCallBackProc1
         def to_ast
           if respond_to?(:args)
-            n :dataRegister_readCallBack_proc, namespace.to_ast, name.to_ast, *args.elements.map{ |e| e.to_ast }
+            n :dataRegister_readCallBack_proc, namespace.to_ast, name.to_ast, *args.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :dataRegister_readCallBack_proc, namespace.to_ast, name.to_ast
+            n :dataRegister_readCallBack_proc, namespace.to_ast, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -10181,7 +10181,7 @@ module IJTAG
 
       module DataRegisterReadDataSource1
         def to_ast
-          n :dataRegister_readDataSource, signal.to_ast
+          n :dataRegister_readDataSource, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -10282,9 +10282,9 @@ module IJTAG
       module DataRegisterWriteCallBack1
         def to_ast
           if respond_to?(:args)
-            n :dataRegister_writeCallBack, namespace.to_ast, name.to_ast, *args.elements.map{ |e| e.to_ast }
+            n :dataRegister_writeCallBack, namespace.to_ast, name.to_ast, *args.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :dataRegister_writeCallBack, namespace.to_ast, name.to_ast
+            n :dataRegister_writeCallBack, namespace.to_ast, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -10395,7 +10395,7 @@ module IJTAG
 
       module IProcNamespace3
         def to_ast
-          n :iProc_namespace, text_value
+          n :iProc_namespace, text_value, input: input, interval: interval
         end
       end
 
@@ -10686,7 +10686,7 @@ module IJTAG
 
       module LogicSignalDef1
         def to_ast
-          n :logicSignal_def, name.to_ast, expr.to_ast
+          n :logicSignal_def, name.to_ast, expr.to_ast, input: input, interval: interval
         end
       end
 
@@ -10830,7 +10830,7 @@ module IJTAG
 
       module ScanMuxDef1
         def to_ast
-          n :scanMux_def, name.to_ast, select.to_ast, *selections.elements.map{ |e| e.to_ast }
+          n :scanMux_def, name.to_ast, select.to_ast, *selections.elements.map{ |e| e.to_ast }, input: input, interval: interval
         end
       end
 
@@ -10978,7 +10978,7 @@ module IJTAG
 
       module ScanMuxSelection2
         def to_ast
-          n :scanMux_selection, val.text_value
+          n :scanMux_selection, val.text_value, input: input, interval: interval
         end
       end
 
@@ -11095,7 +11095,7 @@ module IJTAG
 
       module DataMuxDef1
         def to_ast
-          n :dataMux_def, name.to_ast, select.to_ast, *selections.elements.map{ |e| e.to_ast }
+          n :dataMux_def, name.to_ast, select.to_ast, *selections.elements.map{ |e| e.to_ast }, input: input, interval: interval
         end
       end
 
@@ -11243,7 +11243,7 @@ module IJTAG
 
       module DataMuxSelection2
         def to_ast
-          n :dataMux_selection, val.text_value
+          n :dataMux_selection, val.text_value, input: input, interval: interval
         end
       end
 
@@ -11360,7 +11360,7 @@ module IJTAG
 
       module ClockMuxDef1
         def to_ast
-          n :clockMux_def, name.to_ast, select.to_ast, *selections.elements.map{ |e| e.to_ast }
+          n :clockMux_def, name.to_ast, select.to_ast, *selections.elements.map{ |e| e.to_ast }, input: input, interval: interval
         end
       end
 
@@ -11508,7 +11508,7 @@ module IJTAG
 
       module ClockMuxSelection2
         def to_ast
-          n :clockMux_selection, val.text_value
+          n :clockMux_selection, val.text_value, input: input, interval: interval
         end
       end
 
@@ -11613,7 +11613,7 @@ module IJTAG
 
       module OneHotScanGroupDef1
         def to_ast
-          n :oneHotScanGroup_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          n :oneHotScanGroup_def, name.to_ast, *items.elements.map{ |e| e.to_ast }, input: input, interval: interval
         end
       end
 
@@ -11733,7 +11733,7 @@ module IJTAG
 
       module OneHotScanGroupItem1
         def to_ast
-          n :oneHotScanGroup_item, signal.to_ast
+          n :oneHotScanGroup_item, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -11829,7 +11829,7 @@ module IJTAG
 
       module OneHotDataGroupDef1
         def to_ast
-          n :oneHotDataGroup_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          n :oneHotDataGroup_def, name.to_ast, *items.elements.map{ |e| e.to_ast }, input: input, interval: interval
         end
       end
 
@@ -11987,7 +11987,7 @@ module IJTAG
 
       module OneHotDataGroupPortSource1
         def to_ast
-          n :oneHotDataGroup_portSource, signal.to_ast
+          n :oneHotDataGroup_portSource, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -12083,7 +12083,7 @@ module IJTAG
 
       module ScanInterfaceDef1
         def to_ast
-          n :scanInterface_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          n :scanInterface_def, name.to_ast, *items.elements.map{ |e| e.to_ast }, input: input, interval: interval
         end
       end
 
@@ -12247,7 +12247,7 @@ module IJTAG
 
       module ScanInterfacePortDef1
         def to_ast
-          n :scanInterfacePort_def, signal.to_ast
+          n :scanInterfacePort_def, signal.to_ast, input: input, interval: interval
         end
       end
 
@@ -12343,7 +12343,7 @@ module IJTAG
 
       module ScanInterfaceChainDef1
         def to_ast
-          n :scanInterfaceChain_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          n :scanInterfaceChain_def, name.to_ast, *items.elements.map{ |e| e.to_ast }, input: input, interval: interval
         end
       end
 
@@ -12501,7 +12501,7 @@ module IJTAG
 
       module DefaultLoadDef1
         def to_ast
-          n :defaultLoad_def, val.to_ast
+          n :defaultLoad_def, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -12625,7 +12625,7 @@ module IJTAG
 
       module AccessLinkGenericDef1
         def to_ast
-          n :AccessLinkGeneric_def, v1.to_ast, v2.to_ast
+          n :AccessLinkGeneric_def, v1.to_ast, v2.to_ast, input: input, interval: interval
         end
       end
 
@@ -12757,7 +12757,7 @@ module IJTAG
 
       module AccessLink1149Def1
         def to_ast
-          n :accessLink1149_def, ling.to_ast, type.text_value, bname.to_ast, *refs.elements.map{ |e| e.to_ast }
+          n :accessLink1149_def, ling.to_ast, type.text_value, bname.to_ast, *refs.elements.map{ |e| e.to_ast }, input: input, interval: interval
         end
       end
 
@@ -12969,7 +12969,7 @@ module IJTAG
 
       module BsdlInstrRef1
         def to_ast
-          n :bsdl_instr_ref, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          n :bsdl_instr_ref, name.to_ast, *items.elements.map{ |e| e.to_ast }, input: input, interval: interval
         end
       end
 
@@ -13119,7 +13119,7 @@ module IJTAG
 
       module BsdlInstrSelectedItem5
         def to_ast
-          n :bsdl_instr_selected_item, *d.names.elements.map{ |e| e.to_ast }
+          n :bsdl_instr_selected_item, *d.names.elements.map{ |e| e.to_ast }, input: input, interval: interval
         end
       end
 
@@ -13362,7 +13362,7 @@ module IJTAG
 
       module AccessLink1149ScanInterfaceName3
         def to_ast
-          n :accessLink1149_ScanInterface_name, val.text_value
+          n :accessLink1149_ScanInterface_name, val.text_value, input: input, interval: interval
         end
       end
 
@@ -13490,9 +13490,9 @@ module IJTAG
       module AliasDef2
         def to_ast
           if d.respond_to?(:items)
-            n :alias_def, name.to_ast, signal.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :alias_def, name.to_ast, signal.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :alias_def, name.to_ast, signal.to_ast
+            n :alias_def, name.to_ast, signal.to_ast, input: input, interval: interval
           end
         end
       end
@@ -13712,7 +13712,7 @@ module IJTAG
 
       module AliasIApplyEndState1
         def to_ast
-          n :alias_iApplyEndState, num.to_ast
+          n :alias_iApplyEndState, num.to_ast, input: input, interval: interval
         end
       end
 
@@ -13796,7 +13796,7 @@ module IJTAG
 
       module AliasRefEnum1
         def to_ast
-          n :refEnum, name.to_ast
+          n :refEnum, name.to_ast, input: input, interval: interval
         end
       end
 
@@ -13872,7 +13872,7 @@ module IJTAG
 
       module AccessTogether1
         def to_ast
-          n0 :access_together
+          n :access_together, input: input, interval: interval
         end
       end
 
@@ -13957,7 +13957,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
           end
         end
       end
@@ -14078,7 +14078,7 @@ module IJTAG
       module HierDataSignal2
         def to_ast
           if !instances.empty?
-            n :hier_data_signal, *instances.elements.map{ |e| e.name.to_ast }, signal.to_ast
+            n :hier_data_signal, *instances.elements.map{ |e| e.name.to_ast }, signal.to_ast, input: input, interval: interval
           else
             signal.to_ast
           end
@@ -14165,9 +14165,9 @@ module IJTAG
       module InvertedHierDataSignal2
         def to_ast
           if !instances.empty?
-            n :inverted_hier_data_signal, *instances.elements.map{ |e| e.name.to_ast }, signal.to_ast
+            n :inverted_hier_data_signal, *instances.elements.map{ |e| e.name.to_ast }, signal.to_ast, input: input, interval: interval
           else
-            n :inverted_signal, signal.to_ast
+            n :inverted_signal, signal.to_ast, input: input, interval: interval
           end
         end
       end
@@ -14274,7 +14274,7 @@ module IJTAG
 
       module EnumDef1
         def to_ast
-          n :enum_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+          n :enum_def, name.to_ast, *items.elements.map{ |e| e.to_ast }, input: input, interval: interval
         end
       end
 
@@ -14402,7 +14402,7 @@ module IJTAG
 
       module EnumItem1
         def to_ast
-          n :enum_item, sym.to_ast, val.to_ast
+          n :enum_item, sym.to_ast, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -14506,7 +14506,7 @@ module IJTAG
 
       module ParameterDef1
         def to_ast
-          n :parameter_def, name.to_ast, val.to_ast
+          n :parameter_def, name.to_ast, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -14624,7 +14624,7 @@ module IJTAG
 
       module LocalParameterDef1
         def to_ast
-          n :localParameter_def, name.to_ast, val.to_ast
+          n :localParameter_def, name.to_ast, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -14771,7 +14771,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.val.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.val.to_ast }, input: input, interval: interval
           end
         end
       end
@@ -14906,7 +14906,7 @@ module IJTAG
 
       module AttributeDef2
         def to_ast
-          n :attribute_def, name.to_ast, val.to_ast
+          n :attribute_def, name.to_ast, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -15043,7 +15043,7 @@ module IJTAG
 
       module STRING1
         def to_ast
-          n :STRING, text_value
+          n :STRING, text_value, input: input, interval: interval
         end
       end
 
@@ -16149,7 +16149,7 @@ module IJTAG
 
       module HierPort2
         def to_ast
-          n :hier_port, *ins.elements.map{ |e| e.name.to_ast }, port.to_ast
+          n :hier_port, *ins.elements.map{ |e| e.name.to_ast }, port.to_ast, input: input, interval: interval
         end
       end
 
@@ -16424,9 +16424,9 @@ module IJTAG
 
         def to_ast
           if !invert.empty?
-            n :reset_signal, n0(:invert), val.to_ast
+            n :reset_signal, n(:invert), val.to_ast, input: input, interval: interval
           else
-            n :reset_signal, val.to_ast
+            n :reset_signal, val.to_ast, input: input, interval: interval
           end
         end
       end
@@ -16488,9 +16488,9 @@ module IJTAG
 
         def to_ast
           if !invert.empty?
-            n :scan_signal, n0(:invert), val.to_ast
+            n :scan_signal, n(:invert), val.to_ast, input: input, interval: interval
           else
-            n :scan_signal, val.to_ast
+            n :scan_signal, val.to_ast, input: input, interval: interval
           end
         end
       end
@@ -16552,9 +16552,9 @@ module IJTAG
 
         def to_ast
           if !invert.empty?
-            n :data_signal, n0(:invert), val.to_ast
+            n :data_signal, n(:invert), val.to_ast, input: input, interval: interval
           else
-            n :data_signal, val.to_ast
+            n :data_signal, val.to_ast, input: input, interval: interval
           end
         end
       end
@@ -16616,9 +16616,9 @@ module IJTAG
 
         def to_ast
           if !invert.empty?
-            n :clock_signal, n0(:invert), val.to_ast
+            n :clock_signal, n(:invert), val.to_ast, input: input, interval: interval
           else
-            n :clock_signal, val.to_ast
+            n :clock_signal, val.to_ast, input: input, interval: interval
           end
         end
       end
@@ -16804,7 +16804,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
           end
         end
       end
@@ -16935,7 +16935,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
           end
         end
       end
@@ -17066,7 +17066,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
           end
         end
       end
@@ -17169,7 +17169,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
           end
         end
       end
@@ -17300,7 +17300,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
           end
         end
       end
@@ -17431,7 +17431,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
           end
         end
       end
@@ -17561,7 +17561,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
           end
         end
       end
@@ -17684,7 +17684,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
           end
         end
       end
@@ -17799,7 +17799,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
           end
         end
       end
@@ -17897,7 +17897,7 @@ module IJTAG
 
       module SCALARID1
         def to_ast
-          n :SCALAR_ID, text_value
+          n :SCALAR_ID, text_value, input: input, interval: interval
         end
       end
 
@@ -17977,7 +17977,7 @@ module IJTAG
 
       module POSINT1
         def to_ast
-          n :POS_INT, text_value.sub("_", "").to_i
+          n :POS_INT, text_value.sub("_", "").to_i, input: input, interval: interval
         end
       end
 
@@ -18076,7 +18076,7 @@ module IJTAG
 
       module UNKNOWNDIGIT0
         def to_ast
-          n0 :UNKNOWN_DIGIT
+          n :UNKNOWN_DIGIT, input: input, interval: interval
         end
       end
 
@@ -18607,7 +18607,7 @@ module IJTAG
 
       module UNSIZEDBINNUMBER2
         def to_ast
-          n :UNSIZED_BIN_NUMBER, val.text_value.sub("_", "")
+          n :UNSIZED_BIN_NUMBER, val.text_value.sub("_", ""), input: input, interval: interval
         end
       end
 
@@ -18704,7 +18704,7 @@ module IJTAG
 
       module UNSIZEDHEXNUMBER2
         def to_ast
-          n :UNSIZED_HEX_NUMBER, val.text_value.sub("_", "").upcase
+          n :UNSIZED_HEX_NUMBER, val.text_value.sub("_", "").upcase, input: input, interval: interval
         end
       end
 
@@ -18794,7 +18794,7 @@ module IJTAG
 
       module SizedDecNumber1
         def to_ast
-          n :sized_dec_number, v1.to_ast, v2.to_ast
+          n :sized_dec_number, v1.to_ast, v2.to_ast, input: input, interval: interval
         end
       end
 
@@ -18842,7 +18842,7 @@ module IJTAG
 
       module SizedBinNumber1
         def to_ast
-          n :sized_bin_number, v1.to_ast, v2.to_ast
+          n :sized_bin_number, v1.to_ast, v2.to_ast, input: input, interval: interval
         end
       end
 
@@ -18890,7 +18890,7 @@ module IJTAG
 
       module SizedHexNumber1
         def to_ast
-          n :sized_hex_number, v1.to_ast, v2.to_ast
+          n :sized_hex_number, v1.to_ast, v2.to_ast, input: input, interval: interval
         end
       end
 
@@ -18939,7 +18939,7 @@ module IJTAG
 
       module VectorId1
         def to_ast
-          n :vector_id, name.to_ast, val.to_ast
+          n :vector_id, name.to_ast, val.to_ast, input: input, interval: interval
         end
       end
 
@@ -19039,7 +19039,7 @@ module IJTAG
 
       module Range1
         def to_ast
-          n :range, start.to_ast, stop.to_ast
+          n :range, start.to_ast, stop.to_ast, input: input, interval: interval
         end
       end
 
@@ -19187,9 +19187,9 @@ module IJTAG
         def to_ast
           if right.respond_to?(:op)
             if right.op.text_value == "+"
-              n :add, left.to_ast, right.expr.to_ast
+              n :add, left.to_ast, right.expr.to_ast, input: input, interval: interval
             else
-              n :subtract, left.to_ast, right.expr.to_ast
+              n :subtract, left.to_ast, right.expr.to_ast, input: input, interval: interval
             end
           else
             left.to_ast
@@ -19297,11 +19297,11 @@ module IJTAG
         def to_ast
           if right.respond_to?(:op)
             if right.op.text_value == "*"
-              n :multiply, left.to_ast, right.expr.to_ast
+              n :multiply, left.to_ast, right.expr.to_ast, input: input, interval: interval
             elsif right.op.text_value == "/"
-              n :divide, left.to_ast, right.expr.to_ast
+              n :divide, left.to_ast, right.expr.to_ast, input: input, interval: interval
             else
-              n :modulus, left.to_ast, right.expr.to_ast
+              n :modulus, left.to_ast, right.expr.to_ast, input: input, interval: interval
             end
           else
             left.to_ast
@@ -20198,7 +20198,7 @@ module IJTAG
 
       module ParameterRef1
         def to_ast
-          n :parameter_ref, id.to_ast
+          n :parameter_ref, id.to_ast, input: input, interval: interval
         end
       end
 
@@ -20348,7 +20348,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.val.to_ast }
+            n :concat, s1.to_ast, *s2.elements.map{ |e| e.val.to_ast }, input: input, interval: interval
           end
         end
       end

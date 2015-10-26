@@ -3,11 +3,11 @@ module IJTAG
     include Origen::Model
 
     attr_reader :size
-    attr_reader :ast
+    attr_reader :icl
 
-    def initialize(options={})
+    def initialize(options = {})
       @size = options[:size]
-      @ast = options[:ast]
+      @icl = options[:icl]
     end
   end
 end

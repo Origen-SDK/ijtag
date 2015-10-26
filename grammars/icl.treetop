@@ -4,7 +4,7 @@ module IJTAG
       rule icl_source
         iclSource_items+ {
           def to_ast
-            n :icl_source, *elements.map{ |e| e.to_ast if e.respond_to?(:to_ast) }.compact
+            n :icl_source, *elements.map{ |e| e.to_ast if e.respond_to?(:to_ast) }.compact, input: input, interval: interval
           end
         }
       end
@@ -32,7 +32,7 @@ module IJTAG
       rule nameSpace_def
         "NameSpace" s name:namespace_name? s ";" s {
           def to_ast
-            n1 :nameSpace_def, name.to_ast
+            n :nameSpace_def, name.to_ast, input: input, interval: interval
           end
         }
       end
@@ -40,7 +40,7 @@ module IJTAG
       rule useNameSpace_def
         "UseNameSpace" s name:namespace_name? s ";" s {
           def to_ast
-            n1 :useNameSpace_def, name.to_ast
+            n :useNameSpace_def, name.to_ast, input: input, interval: interval
           end
         }
       end
@@ -49,9 +49,9 @@ module IJTAG
         "Module" S name:module_name S "{" s items:module_item* s "}" s {
           def to_ast
             if respond_to?(:items)
-              n :module_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+              n :module_def, name.to_ast, *items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :module_def, name.to_ast
+              n :module_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -115,9 +115,9 @@ module IJTAG
         'ScanInPort' S name:scanInPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
             if d.respond_to?(:attrs)
-              n :scanInPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+              n :scanInPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :scanInPort_def, name.to_ast
+              n :scanInPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -127,9 +127,9 @@ module IJTAG
         'ScanOutPort' S name:scanOutPort_name s d:(';' / ('{' s items:scanOutPort_item* s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :scanOutPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :scanOutPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :scanOutPort_def, name.to_ast
+              n :scanOutPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -142,7 +142,7 @@ module IJTAG
       rule scanOutPort_source
         'Source' S signal:concat_scan_signal s ';' s {
           def to_ast
-            n :source, signal.to_ast
+            n :source, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -150,7 +150,7 @@ module IJTAG
       rule scanOutPort_enable
         'Enable' S signal:data_signal s ';' s {
           def to_ast
-            n :enable, signal.to_ast
+            n :enable, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -159,9 +159,9 @@ module IJTAG
         'ShiftEnPort' S name:shiftEnPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
             if d.respond_to?(:attrs)
-              n :shiftEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+              n :shiftEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :shiftEnPort_def, name.to_ast
+              n :shiftEnPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -171,9 +171,9 @@ module IJTAG
         'CaptureEnPort' S name:captureEnPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
             if d.respond_to?(:attrs)
-              n :captureEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+              n :captureEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :captureEnPort_def, name.to_ast
+              n :captureEnPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -183,9 +183,9 @@ module IJTAG
         'UpdateEnPort' S name:updateEnPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
             if d.respond_to?(:attrs)
-              n :updateEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+              n :updateEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :updateEnPort_def, name.to_ast
+              n :updateEnPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -195,9 +195,9 @@ module IJTAG
         'DataInPort' S name:dataInPort_name s d:(';' / ('{' s items:dataInPort_item* s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :dataInPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :dataInPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :dataInPort_def, name.to_ast
+              n :dataInPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -212,7 +212,7 @@ module IJTAG
       rule dataInPort_refEnum
         'RefEnum' s name:enum_name s ';' s {
           def to_ast
-            n :refEnum, name.to_ast
+            n :refEnum, name.to_ast, input: input, interval: interval
           end
         }
       end
@@ -220,7 +220,7 @@ module IJTAG
       rule dataInPort_defaultLoadValue
         'DefaultLoadValue' S val:(concat_number / enum_symbol) s ';' s {
           def to_ast
-            n :defaultLoadValue, val.to_ast
+            n :defaultLoadValue, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -229,9 +229,9 @@ module IJTAG
         'DataOutPort' S name:dataOutPort_name s d:(';' / ('{' s items:dataOutPort_item*  s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :dataOutPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :dataOutPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :dataOutPort_def, name.to_ast
+              n :dataOutPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -247,7 +247,7 @@ module IJTAG
       rule dataOutPort_source
         'Source' S signal:concat_data_signal s ';' s {
           def to_ast
-            n :source, signal.to_ast
+            n :source, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -255,7 +255,7 @@ module IJTAG
       rule dataOutPort_enable
         'Enable' S signal:data_signal s ';' s {
           def to_ast
-            n :enable, signal.to_ast
+            n :enable, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -263,7 +263,7 @@ module IJTAG
       rule dataOutPort_refEnum
         'RefEnum' S name:enum_name s ';' s {
           def to_ast
-            n :refEnum, name.to_ast
+            n :refEnum, name.to_ast, input: input, interval: interval
           end
         }
       end
@@ -272,9 +272,9 @@ module IJTAG
         'ToShiftEnPort' S name:toShiftEnPort_name s d:(';' / ('{' s items:toShiftEnPort_items* s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :toShiftEnPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :toShiftEnPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :toShiftEnPort_def, name.to_ast
+              n :toShiftEnPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -288,7 +288,7 @@ module IJTAG
       rule toShiftEnPort_source
         'Source' S signal:concat_shiftEn_signal s ';' s {
           def to_ast
-            n :source, signal.to_ast
+            n :source, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -297,9 +297,9 @@ module IJTAG
         'ToCaptureEnPort' S name:toCaptureEnPort_name s d:(';' / ('{' s items:toCaptureEnPort_items* s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :toCaptureEnPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :toCaptureEnPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :toCaptureEnPort_def, name.to_ast
+              n :toCaptureEnPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -313,7 +313,7 @@ module IJTAG
       rule toCaptureEnPort_source
         'Source' S signal:captureEn_signal s ';' s {
           def to_ast
-            n :source, signal.to_ast
+            n :source, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -322,9 +322,9 @@ module IJTAG
         'ToUpdateEnPort' S name:toUpdateEnPort_name s d:(';' / ('{' s items:toUpdateEnPort_items* s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :toUpdateEnPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :toUpdateEnPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :toUpdateEnPort_def, name.to_ast
+              n :toUpdateEnPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -337,7 +337,7 @@ module IJTAG
       rule toUpdateEnPort_source
         'Source' S signal:updateEn_signal s ';' s {
           def to_ast
-            n :source, signal.to_ast
+            n :source, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -346,9 +346,9 @@ module IJTAG
         'SelectPort' S name:selectPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
             if d.respond_to?(:attrs)
-              n :selectPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+              n :selectPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :selectPort_def, name.to_ast
+              n :selectPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -358,9 +358,9 @@ module IJTAG
         'ToSelectPort' S name:toSelectPort_name s d:(';' / ('{' s items:toSelectPort_item+ s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :toSelectPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :toSelectPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :toSelectPort_def, name.to_ast
+              n :toSelectPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -373,7 +373,7 @@ module IJTAG
       rule toSelectPort_source
         'Source' S signal:concat_data_signal s ';' s {
           def to_ast
-            n :source, signal.to_ast
+            n :source, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -382,9 +382,9 @@ module IJTAG
         'ResetPort' S name:resetPort_name s d:(';' / ('{' s items:resetPort_item* s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :resetPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :resetPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :resetPort_def, name.to_ast
+              n :resetPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -398,7 +398,7 @@ module IJTAG
       rule resetPort_polarity
         'ActivePolarity' S val:('0' / '1') s ';' s {
           def to_ast
-            n :resetPort_polarity, val.text_value.to_i
+            n :resetPort_polarity, val.text_value.to_i, input: input, interval: interval
           end
         }
       end
@@ -407,9 +407,9 @@ module IJTAG
         'ToResetPort' S name:toResetPort_name s d:(';' / ('{' s items:toResetPort_item+ s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :toResetPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :toResetPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :toResetPort_def, name.to_ast
+              n :toResetPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -424,7 +424,7 @@ module IJTAG
       rule toResetPort_source
         'Source' S signal:concat_reset_signal s ';' s {
           def to_ast
-            n :source, signal.to_ast
+            n :source, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -432,7 +432,7 @@ module IJTAG
       rule toResetPort_polarity
         'ActivePolarity' S ('0' / '1') s ';' s {
           def to_ast
-            n :resetPort_polarity, val.text_value.to_i
+            n :resetPort_polarity, val.text_value.to_i, input: input, interval: interval
           end
         }
       end
@@ -441,9 +441,9 @@ module IJTAG
         'TMSPort' S name:tmsPort_name  s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
             if d.respond_to?(:attrs)
-              n :tmsPort_name, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+              n :tmsPort_name, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :tmsPort_name, name.to_ast
+              n :tmsPort_name, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -453,9 +453,9 @@ module IJTAG
         'ToTMSPort' S name:toTmsPort_name s d:(';' / ('{' s items:toTmsPort_item* s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :toTmsPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :toTmsPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :toTmsPort_def, name.to_ast
+              n :toTmsPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -469,7 +469,7 @@ module IJTAG
       rule toTmsPort_source
         'Source' S signal:concat_tms_signal s ';' s {
           def to_ast
-            n :source, signal.to_ast
+            n :source, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -478,9 +478,9 @@ module IJTAG
         'ToIRSelectPort' S name:toIRSelectPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
             if d.respond_to?(:attrs)
-              n :toIRSelectPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+              n :toIRSelectPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :toIRSelectPort_def, name.to_ast
+              n :toIRSelectPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -490,9 +490,9 @@ module IJTAG
         'TCKPort' S name:tckPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
             if d.respond_to?(:attrs)
-              n :tckPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+              n :tckPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :tckPort_def, name.to_ast
+              n :tckPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -502,9 +502,9 @@ module IJTAG
         'ToTCKPort' S name:toTckPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
             if d.respond_to?(:attrs)
-              n :toTckPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+              n :toTckPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :toTckPort_def, name.to_ast
+              n :toTckPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -514,9 +514,9 @@ module IJTAG
         'ClockPort' S name:clockPort_name s d:(';' / ('{' s items:clockPort_item* s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :clockPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :clockPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :clockPort_def, name.to_ast
+              n :clockPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -530,7 +530,7 @@ module IJTAG
       rule clockPort_diffPort
         'DifferentialInvOf' S signal:concat_clock_signal s ';' s {
           def to_ast
-            n :clockPort_diffPort, signal.to_ast
+            n :clockPort_diffPort, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -539,9 +539,9 @@ module IJTAG
         'ToClockPort' S name:toClockPort_name s d:(';' / ('{' s items:toClockPort_item+ s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :toClockPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :toClockPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :toClockPort_def, name.to_ast
+              n :toClockPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -559,7 +559,7 @@ module IJTAG
       rule toClockPort_source
         'Source' S signal:concat_clock_signal s ';' s {
           def to_ast
-            n :source, signal.to_ast
+            n :source, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -567,7 +567,7 @@ module IJTAG
       rule freqMultiplier_def
         'FreqMultiplier' S val:POS_INT s ';' s {
           def to_ast
-            n :freqMultiplier_def, val.to_ast
+            n :freqMultiplier_def, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -575,7 +575,7 @@ module IJTAG
       rule freqDivider_def
         'FreqDivider' S val:POS_INT s ';' s {
           def to_ast
-            n :freqDivider_def, val.to_ast
+            n :freqDivider_def, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -583,7 +583,7 @@ module IJTAG
       rule differentialInvOf_def
         'DifferentialInvOf' S val:concat_clock_signal s ';' s {
           def to_ast
-            n :differentialInvOf_def, val.to_ast
+            n :differentialInvOf_def, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -591,7 +591,7 @@ module IJTAG
       rule period_def
         'Period' S val:POS_INT s unit:('s' / 'ms' / 'us' / 'ns' / 'ps' / 'fs' / 'as')? s ';' s {
           def to_ast
-            n :period_def, "#{v.to_ast}#{unit}"
+            n :period_def, "#{v.to_ast}#{unit}", input: input, interval: interval
           end
         }
       end
@@ -600,9 +600,9 @@ module IJTAG
         'TRSTPort' S name:trstPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :trstPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+              n :trstPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :trstPort_def, name.to_ast
+              n :trstPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -612,9 +612,9 @@ module IJTAG
         'ToTRSTPort' S name:toTrstPort_name s d:(';' / ('{' s items:toTrstPort_item+ s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :toTrstPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :toTrstPort_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :toTrstPort_def, name.to_ast
+              n :toTrstPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -628,7 +628,7 @@ module IJTAG
       rule toTrstPort_source
         'Source' S signal:concat_trst_signal s ';' s {
           def to_ast
-            n :source, signal.to_ast
+            n :source, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -637,9 +637,9 @@ module IJTAG
         'AddressPort' S name:addressPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
             if d.respond_to?(:attrs)
-              n :addressPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+              n :addressPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :addressPort_def, name.to_ast
+              n :addressPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -649,9 +649,9 @@ module IJTAG
         'WriteEnPort' S name:writeEnPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
             if d.respond_to?(:attrs)
-              n :writeEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+              n :writeEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :writeEnPort_def, name.to_ast
+              n :writeEnPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -661,9 +661,9 @@ module IJTAG
         'ReadEnPort' S name:readEnPort_name s d:(';' / ('{' s attrs:attribute_def* s '}')) s {
           def to_ast
             if d.respond_to?(:attrs)
-              n :readEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }
+              n :readEnPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :readEnPort_def, name.to_ast
+              n :readEnPort_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -677,9 +677,9 @@ module IJTAG
         'Instance' S name:instance_name S ('Of' / 'of') S mod:((namespace_name? '::')? module_name) s d:(';' / ('{' s items:instance_item* s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :instance_def, name.to_ast, n(:module_name, mod.text_value), *d.items.elements.map{ |e| e.to_ast }
+              n :instance_def, name.to_ast, n(:module_name, mod.text_value), *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :instance_def, name.to_ast, n(:module_name, mod.text_value)
+              n :instance_def, name.to_ast, n(:module_name, mod.text_value), input: input, interval: interval
             end
           end
         }
@@ -696,7 +696,7 @@ module IJTAG
       rule inputPort_connection
         'InputPort' S name:inputPort_name s '=' s source:inputPort_source s ';' s {
           def to_ast
-            n :inputPort_connection, name.to_ast, source.to_ast
+            n :inputPort_connection, name.to_ast, source.to_ast, input: input, interval: interval
           end
         }
       end
@@ -704,7 +704,7 @@ module IJTAG
       rule allowBroadcast_def
         'AllowBroadcastOnScanInterface' S name:scanInterface_name s ';' s {
           def to_ast
-            n :allowBroadcast_def, name.to_ast
+            n :allowBroadcast_def, name.to_ast, input: input, interval: interval
           end
         }
       end
@@ -725,7 +725,7 @@ module IJTAG
       rule instance_addressValue
         'AddressValue' S val:number s ';' s {
           def to_ast
-            n :instance_addressValue, val.to_ast
+            n :instance_addressValue, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -754,7 +754,7 @@ module IJTAG
       rule scanRegister_scanInSource
         'ScanInSource' S signal:scan_signal s ';' s {
           def to_ast
-            n :scanInSource, signal.to_ast
+            n :scanInSource, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -762,7 +762,7 @@ module IJTAG
       rule scanRegister_defaultLoadValue
         'DefaultLoadValue' S val:(concat_number / enum_symbol) s ';' s {
           def to_ast
-            n :defaultLoadValue, val.to_ast
+            n :defaultLoadValue, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -770,7 +770,7 @@ module IJTAG
       rule scanRegister_captureSource
         'CaptureSource' S source:(concat_data_signal / enum_symbol) s ';' s {
           def to_ast
-            n :captureSource, source.to_ast
+            n :captureSource, source.to_ast, input: input, interval: interval
           end
         }
       end
@@ -778,7 +778,7 @@ module IJTAG
       rule scanRegister_resetValue
         'ResetValue' S val:(concat_number / enum_symbol) s ';' s {
           def to_ast
-            n :resetValue, val.to_ast
+            n :resetValue, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -786,7 +786,7 @@ module IJTAG
       rule scanRegister_refEnum
         'RefEnum' S name:enum_name s ';' s {
           def to_ast
-            n :refEnum, name.to_ast
+            n :refEnum, name.to_ast, input: input, interval: interval
           end
         }
       end
@@ -795,9 +795,9 @@ module IJTAG
         'DataRegister' S name:dataRegister_name s d:(';' / ('{' s items:dataRegister_item+ s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :dataRegister_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :dataRegister_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :dataRegister_def, name.to_ast
+              n :dataRegister_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -825,7 +825,7 @@ module IJTAG
       rule dataRegister_resetValue
         'ResetValue' S val:(concat_number / enum_symbol) s ';' s {
           def to_ast
-            n :resetValue, val.to_ast
+            n :resetValue, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -833,7 +833,7 @@ module IJTAG
       rule dataRegister_defaultLoadValue
         'DefaultLoadValue' S val:(concat_number / enum_symbol) s ';' s {
           def to_ast
-            n :defaultLoadValue, val.to_ast
+            n :defaultLoadValue, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -841,7 +841,7 @@ module IJTAG
       rule dataRegister_refEnum
         'RefEnum' S name:enum_name s ';' s {
           def to_ast
-            n :refEnum, name.to_ast
+            n :refEnum, name.to_ast, input: input, interval: interval
           end
         }
       end
@@ -854,7 +854,7 @@ module IJTAG
       rule dataRegister_writeEnSource
         'WriteEnSource' S signal:data_signal s ';' s {
           def to_ast
-            n :dataRegister_writeEnSource, signal.to_ast
+            n :dataRegister_writeEnSource, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -862,7 +862,7 @@ module IJTAG
       rule dataRegister_writeDataSource
         'WriteDataSource' S signal:concat_data_signal s ';' s {
           def to_ast
-            n :dataRegister_writeDataSource, signal.to_ast
+            n :dataRegister_writeDataSource, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -870,7 +870,7 @@ module IJTAG
       rule dataRegister_addressValue
         'AddressValue' S val:number s ';' s {
           def to_ast
-            n :dataRegister_addressValue, val.to_ast
+            n :dataRegister_addressValue, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -884,9 +884,9 @@ module IJTAG
         'ReadCallBack' S namespace:iProc_namespace S name:iProc_name s args:iProc_args* s ';' s {
           def to_ast
             if respond_to?(:args)
-              n :dataRegister_readCallBack_proc, namespace.to_ast, name.to_ast, *args.elements.map{ |e| e.to_ast }
+              n :dataRegister_readCallBack_proc, namespace.to_ast, name.to_ast, *args.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :dataRegister_readCallBack_proc, namespace.to_ast, name.to_ast
+              n :dataRegister_readCallBack_proc, namespace.to_ast, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -895,7 +895,7 @@ module IJTAG
       rule dataRegister_readDataSource
         'ReadDataSource' S signal:concat_data_signal s ';' s {
           def to_ast
-            n :dataRegister_readDataSource, signal.to_ast
+            n :dataRegister_readDataSource, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -904,9 +904,9 @@ module IJTAG
         'WriteCallBack' S namespace:iProc_namespace S name:iProc_name s args:iProc_args* s ';' s {
           def to_ast
             if respond_to?(:args)
-              n :dataRegister_writeCallBack, namespace.to_ast, name.to_ast, *args.elements.map{ |e| e.to_ast }
+              n :dataRegister_writeCallBack, namespace.to_ast, name.to_ast, *args.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :dataRegister_writeCallBack, namespace.to_ast, name.to_ast
+              n :dataRegister_writeCallBack, namespace.to_ast, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -915,7 +915,7 @@ module IJTAG
       rule iProc_namespace
         (namespace_name? '::')? ref_module_name ( '::' sub_namespace )? s {
           def to_ast
-            n :iProc_namespace, text_value
+            n :iProc_namespace, text_value, input: input, interval: interval
           end
         }
       end
@@ -945,7 +945,7 @@ module IJTAG
       rule logicSignal_def
         'LogicSignal' S name:logicSignal_name s '{' s expr:logic_expr s ';' s '}' s {
           def to_ast
-            n :logicSignal_def, name.to_ast, expr.to_ast
+            n :logicSignal_def, name.to_ast, expr.to_ast, input: input, interval: interval
           end
         }
       end
@@ -953,7 +953,7 @@ module IJTAG
       rule scanMux_def
         'ScanMux' S name:scanMux_name S 'SelectedBy' S select:scanMux_select s '{' s selections:scanMux_selection+ s '}' s {
           def to_ast
-            n :scanMux_def, name.to_ast, select.to_ast, *selections.elements.map{ |e| e.to_ast }
+            n :scanMux_def, name.to_ast, select.to_ast, *selections.elements.map{ |e| e.to_ast }, input: input, interval: interval
           end
         }
       end
@@ -961,7 +961,7 @@ module IJTAG
       rule scanMux_selection
         val:(concat_number_list ':' concat_scan_signal) s ';' s {
           def to_ast
-            n :scanMux_selection, val.text_value
+            n :scanMux_selection, val.text_value, input: input, interval: interval
           end
         }
       end
@@ -969,7 +969,7 @@ module IJTAG
       rule dataMux_def
         'DataMux' S name:dataMux_name S 'SelectedBy' S select:dataMux_select s '{' s selections:dataMux_selection+ s '}' s {
           def to_ast
-            n :dataMux_def, name.to_ast, select.to_ast, *selections.elements.map{ |e| e.to_ast }
+            n :dataMux_def, name.to_ast, select.to_ast, *selections.elements.map{ |e| e.to_ast }, input: input, interval: interval
           end
         }
       end
@@ -977,7 +977,7 @@ module IJTAG
       rule dataMux_selection
         val:(concat_number_list ':' concat_data_signal) s ';' s {
           def to_ast
-            n :dataMux_selection, val.text_value
+            n :dataMux_selection, val.text_value, input: input, interval: interval
           end
         }
       end
@@ -985,7 +985,7 @@ module IJTAG
       rule clockMux_def
         'ClockMux' S name:clockMux_name S 'SelectedBy' S select:clockMux_select s '{' s selections:clockMux_selection+ s '}' s {
           def to_ast
-            n :clockMux_def, name.to_ast, select.to_ast, *selections.elements.map{ |e| e.to_ast }
+            n :clockMux_def, name.to_ast, select.to_ast, *selections.elements.map{ |e| e.to_ast }, input: input, interval: interval
           end
         }
       end
@@ -993,7 +993,7 @@ module IJTAG
       rule clockMux_selection
         val:(concat_number_list ':' concat_clock_signal) s ';' s {
           def to_ast
-            n :clockMux_selection, val.text_value
+            n :clockMux_selection, val.text_value, input: input, interval: interval
           end
         }
       end
@@ -1001,7 +1001,7 @@ module IJTAG
       rule oneHotScanGroup_def
         'OneHotScanGroup' S name:oneHotScanGroup_name s '{' s items:oneHotScanGroup_item+ s '}' s {
           def to_ast
-            n :oneHotScanGroup_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            n :oneHotScanGroup_def, name.to_ast, *items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           end
         }
       end
@@ -1009,7 +1009,7 @@ module IJTAG
       rule oneHotScanGroup_item
         'Port' S signal:concat_scan_signal s ';' s {
           def to_ast
-            n :oneHotScanGroup_item, signal.to_ast
+            n :oneHotScanGroup_item, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1017,7 +1017,7 @@ module IJTAG
       rule oneHotDataGroup_def
         'OneHotDataGroup' S name:oneHotDataGroup_name s '{' s items:oneHotDataGroup_item+ s '}' s {
           def to_ast
-            n :oneHotDataGroup_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            n :oneHotDataGroup_def, name.to_ast, *items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           end
         }
       end
@@ -1031,7 +1031,7 @@ module IJTAG
       rule oneHotDataGroup_portSource
         'Port' S signal:concat_data_signal s ';' s {
           def to_ast
-            n :oneHotDataGroup_portSource, signal.to_ast
+            n :oneHotDataGroup_portSource, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1039,7 +1039,7 @@ module IJTAG
       rule scanInterface_def
         'ScanInterface' S name:scanInterface_name s '{' s items:scanInterface_item+ s '}' s {
           def to_ast
-            n :scanInterface_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            n :scanInterface_def, name.to_ast, *items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           end
         }
       end
@@ -1054,7 +1054,7 @@ module IJTAG
       rule scanInterfacePort_def
         'Port' S signal:reg_port_signal_id s ';' s {
           def to_ast
-            n :scanInterfacePort_def, signal.to_ast
+            n :scanInterfacePort_def, signal.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1062,7 +1062,7 @@ module IJTAG
       rule scanInterfaceChain_def
         'Chain' S name:scanInterfaceChain_name s '{' s items:scanInterfaceChain_item+ s '}' s {
           def to_ast
-            n :scanInterfaceChain_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            n :scanInterfaceChain_def, name.to_ast, *items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           end
         }
       end
@@ -1076,7 +1076,7 @@ module IJTAG
       rule defaultLoad_def
         'DefaultLoadValue' S val:concat_number s ';' s {
           def to_ast
-            n :defaultLoad_def, val.to_ast
+            n :defaultLoad_def, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1089,7 +1089,7 @@ module IJTAG
       rule AccessLinkGeneric_def
         'AccessLink' S v1:SCALAR_ID S 'Of' S v2:SCALAR_ID s {
           def to_ast
-            n :AccessLinkGeneric_def, v1.to_ast, v2.to_ast
+            n :AccessLinkGeneric_def, v1.to_ast, v2.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1109,7 +1109,7 @@ module IJTAG
       rule accessLink1149_def
         'AccessLink' S link:accessLink_name S 'Of' S type:('STD_1149_1_2001' / 'STD_1149_1_2013') s '{' s 'BSDLEntity' S bname:bsdlEntity_name s ';' s refs:bsdl_instr_ref+  s '}' s {
           def to_ast
-            n :accessLink1149_def, ling.to_ast, type.text_value, bname.to_ast, *refs.elements.map{ |e| e.to_ast }
+            n :accessLink1149_def, ling.to_ast, type.text_value, bname.to_ast, *refs.elements.map{ |e| e.to_ast }, input: input, interval: interval
           end
         }
       end
@@ -1117,7 +1117,7 @@ module IJTAG
       rule bsdl_instr_ref
         name:bsdl_instr_name s '{' s items:bsdl_instr_selected_item+ s '}' s {
           def to_ast
-            n :bsdl_instr_ref, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            n :bsdl_instr_ref, name.to_ast, *items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           end
         }
       end
@@ -1125,7 +1125,7 @@ module IJTAG
       rule bsdl_instr_selected_item
         d:(('ScanInterface' s '{' s names:(accessLink1149_ScanInterface_name ';')+ s '}')  / ('ActiveSignals' s '{' s names:(accessLink1149_ActiveSignal_name ';')+ s '}')) s {
           def to_ast
-            n :bsdl_instr_selected_item, *d.names.elements.map{ |e| e.to_ast }
+            n :bsdl_instr_selected_item, *d.names.elements.map{ |e| e.to_ast }, input: input, interval: interval
           end
         }
       end
@@ -1133,7 +1133,7 @@ module IJTAG
       rule accessLink1149_ScanInterface_name
         val:(instance_name ('.' scanInterface_name)?) s {
           def to_ast
-            n :accessLink1149_ScanInterface_name, val.text_value
+            n :accessLink1149_ScanInterface_name, val.text_value, input: input, interval: interval
           end
         }
       end
@@ -1142,9 +1142,9 @@ module IJTAG
         'Alias' S name:alias_name s '=' s signal:concat_hier_data_signal s d:(';' / ('{' s items:alias_item+ s '}' s )) s {
           def to_ast
             if d.respond_to?(:items)
-              n :alias_def, name.to_ast, signal.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :alias_def, name.to_ast, signal.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :alias_def, name.to_ast, signal.to_ast
+              n :alias_def, name.to_ast, signal.to_ast, input: input, interval: interval
             end
           end
         }
@@ -1160,7 +1160,7 @@ module IJTAG
       rule alias_iApplyEndState
         'iApplyEndState' S num:concat_number s ';' s {
           def to_ast
-            n :alias_iApplyEndState, num.to_ast
+            n :alias_iApplyEndState, num.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1168,7 +1168,7 @@ module IJTAG
       rule alias_refEnum
         'RefEnum' S name:enum_name s ';' s {
           def to_ast
-            n :refEnum, name.to_ast
+            n :refEnum, name.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1176,7 +1176,7 @@ module IJTAG
       rule access_together
         'AccessTogether' s ';' s {
           def to_ast
-            n0 :access_together
+            n :access_together, input: input, interval: interval
           end
         }
       end
@@ -1187,7 +1187,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
             end
           end
         }
@@ -1197,7 +1197,7 @@ module IJTAG
         instances:(name:instance_name '.')* signal:reg_port_signal_id {
           def to_ast
             if !instances.empty?
-              n :hier_data_signal, *instances.elements.map{ |e| e.name.to_ast }, signal.to_ast
+              n :hier_data_signal, *instances.elements.map{ |e| e.name.to_ast }, signal.to_ast, input: input, interval: interval
             else
               signal.to_ast
             end
@@ -1209,9 +1209,9 @@ module IJTAG
         '~' instances:(name:instance_name '.')* signal:reg_port_signal_id {
           def to_ast
             if !instances.empty?
-              n :inverted_hier_data_signal, *instances.elements.map{ |e| e.name.to_ast }, signal.to_ast
+              n :inverted_hier_data_signal, *instances.elements.map{ |e| e.name.to_ast }, signal.to_ast, input: input, interval: interval
             else
-              n :inverted_signal, signal.to_ast
+              n :inverted_signal, signal.to_ast, input: input, interval: interval
             end
           end
         }
@@ -1220,7 +1220,7 @@ module IJTAG
       rule enum_def
         'Enum' S name:enum_name s '{' s items:enum_item+ s '}' s {
           def to_ast
-            n :enum_def, name.to_ast, *items.elements.map{ |e| e.to_ast }
+            n :enum_def, name.to_ast, *items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           end
         }
       end
@@ -1228,7 +1228,7 @@ module IJTAG
       rule enum_item
         sym:enum_symbol s '=' s val:enum_value s ';' s {
           def to_ast
-            n :enum_item, sym.to_ast, val.to_ast
+            n :enum_item, sym.to_ast, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1236,7 +1236,7 @@ module IJTAG
       rule parameter_def
         'Parameter' S name:parameter_name s '=' s val:parameter_value s ';' s {
           def to_ast
-            n :parameter_def, name.to_ast, val.to_ast
+            n :parameter_def, name.to_ast, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1244,7 +1244,7 @@ module IJTAG
       rule localParameter_def
         'LocalParameter' S name:parameter_name s '=' s val:parameter_value s ';' s {
           def to_ast
-            n :localParameter_def, name.to_ast, val.to_ast
+            n :localParameter_def, name.to_ast, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1260,7 +1260,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.val.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.val.to_ast }, input: input, interval: interval
             end
           end
         }
@@ -1269,7 +1269,7 @@ module IJTAG
       rule attribute_def
         'Attribute' S name:attribute_name s ('=' s val:attribute_value s)? ';' s {
           def to_ast
-            n :attribute_def, name.to_ast, val.to_ast
+            n :attribute_def, name.to_ast, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1282,7 +1282,7 @@ module IJTAG
       rule STRING
         '"' (!('"' / '\\') / '\\\\' / '\\"')* '"' {
           def to_ast
-            n :STRING, text_value
+            n :STRING, text_value, input: input, interval: interval
           end
         }
       end
@@ -1506,7 +1506,7 @@ module IJTAG
       rule hier_port
         ins:(name:instance_name ".")+ port:port_name s {
           def to_ast
-            n :hier_port, *ins.elements.map{ |e| e.name.to_ast }, port.to_ast
+            n :hier_port, *ins.elements.map{ |e| e.name.to_ast }, port.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1543,9 +1543,9 @@ module IJTAG
         invert:"~"? val:signal { 
           def to_ast
             if !invert.empty?
-              n :reset_signal, n0(:invert), val.to_ast
+              n :reset_signal, n(:invert), val.to_ast, input: input, interval: interval
             else
-              n :reset_signal, val.to_ast
+              n :reset_signal, val.to_ast, input: input, interval: interval
             end
           end
         }
@@ -1555,9 +1555,9 @@ module IJTAG
         invert:"~"? val:signal { 
           def to_ast
             if !invert.empty?
-              n :scan_signal, n0(:invert), val.to_ast
+              n :scan_signal, n(:invert), val.to_ast, input: input, interval: interval
             else
-              n :scan_signal, val.to_ast
+              n :scan_signal, val.to_ast, input: input, interval: interval
             end
           end
         }
@@ -1567,9 +1567,9 @@ module IJTAG
         invert:"~"? val:signal { 
           def to_ast
             if !invert.empty?
-              n :data_signal, n0(:invert), val.to_ast
+              n :data_signal, n(:invert), val.to_ast, input: input, interval: interval
             else
-              n :data_signal, val.to_ast
+              n :data_signal, val.to_ast, input: input, interval: interval
             end
           end
         }
@@ -1579,9 +1579,9 @@ module IJTAG
         invert:"~"? val:signal { 
           def to_ast
             if !invert.empty?
-              n :clock_signal, n0(:invert), val.to_ast
+              n :clock_signal, n(:invert), val.to_ast, input: input, interval: interval
             else
-              n :clock_signal, val.to_ast
+              n :clock_signal, val.to_ast, input: input, interval: interval
             end
           end
         }
@@ -1617,7 +1617,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
             end
           end
         }
@@ -1629,7 +1629,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
             end
           end
         }
@@ -1641,7 +1641,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
             end
           end
         }
@@ -1653,7 +1653,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
             end
           end
         }
@@ -1665,7 +1665,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
             end
           end
         }
@@ -1677,7 +1677,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
             end
           end
         }
@@ -1689,7 +1689,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
             end
           end
         }
@@ -1701,7 +1701,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
             end
           end
         }
@@ -1713,7 +1713,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval
             end
           end
         }
@@ -1726,7 +1726,7 @@ module IJTAG
       rule SCALAR_ID
         [a-zA-Z] ([a-zA-Z_] / DEC_DIGIT)* {
           def to_ast
-            n :SCALAR_ID, text_value
+            n :SCALAR_ID, text_value, input: input, interval: interval
           end
         }
       end
@@ -1734,7 +1734,7 @@ module IJTAG
       rule POS_INT
         DEC_DIGIT ('_' / DEC_DIGIT)* {
           def to_ast
-            n :POS_INT, text_value.sub("_", "").to_i
+            n :POS_INT, text_value.sub("_", "").to_i, input: input, interval: interval
           end
         }
       end
@@ -1746,7 +1746,7 @@ module IJTAG
       rule UNKNOWN_DIGIT
         'X' / 'x' {
           def to_ast
-            n0 :UNKNOWN_DIGIT
+            n :UNKNOWN_DIGIT, input: input, interval: interval
           end
         }
       end
@@ -1786,7 +1786,7 @@ module IJTAG
       rule UNSIZED_BIN_NUMBER
         BIN_BASE val:(BIN_DIGIT ("_" / BIN_DIGIT)*) {
           def to_ast
-            n :UNSIZED_BIN_NUMBER, val.text_value.sub("_", "")
+            n :UNSIZED_BIN_NUMBER, val.text_value.sub("_", ""), input: input, interval: interval
           end
         }
       end
@@ -1794,7 +1794,7 @@ module IJTAG
       rule UNSIZED_HEX_NUMBER
         HEX_BASE val:(HEX_DIGIT ("_" / HEX_DIGIT)*) {
           def to_ast
-            n :UNSIZED_HEX_NUMBER, val.text_value.sub("_", "").upcase
+            n :UNSIZED_HEX_NUMBER, val.text_value.sub("_", "").upcase, input: input, interval: interval
           end
         }
       end
@@ -1802,7 +1802,7 @@ module IJTAG
       rule sized_dec_number
         v1:size v2:UNSIZED_DEC_NUMBER {
           def to_ast
-            n :sized_dec_number, v1.to_ast, v2.to_ast
+            n :sized_dec_number, v1.to_ast, v2.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1810,7 +1810,7 @@ module IJTAG
       rule sized_bin_number
         v1:size v2:UNSIZED_BIN_NUMBER {
           def to_ast
-            n :sized_bin_number, v1.to_ast, v2.to_ast
+            n :sized_bin_number, v1.to_ast, v2.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1818,7 +1818,7 @@ module IJTAG
       rule sized_hex_number
         v1:size v2:UNSIZED_HEX_NUMBER {
           def to_ast
-            n :sized_hex_number, v1.to_ast, v2.to_ast
+            n :sized_hex_number, v1.to_ast, v2.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1826,7 +1826,7 @@ module IJTAG
       rule vector_id
         name:SCALAR_ID "[" val:(range / index) "]" {
           def to_ast
-            n :vector_id, name.to_ast, val.to_ast
+            n :vector_id, name.to_ast, val.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1838,7 +1838,7 @@ module IJTAG
       rule range
         start:index ":" stop:index {
           def to_ast
-            n :range, start.to_ast, stop.to_ast
+            n :range, start.to_ast, stop.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1860,9 +1860,9 @@ module IJTAG
           def to_ast
             if right.respond_to?(:op)
               if right.op.text_value == "+"
-                n :add, left.to_ast, right.expr.to_ast
+                n :add, left.to_ast, right.expr.to_ast, input: input, interval: interval
               else
-                n :subtract, left.to_ast, right.expr.to_ast
+                n :subtract, left.to_ast, right.expr.to_ast, input: input, interval: interval
               end
             else
               left.to_ast
@@ -1876,11 +1876,11 @@ module IJTAG
           def to_ast
             if right.respond_to?(:op)
               if right.op.text_value == "*"
-                n :multiply, left.to_ast, right.expr.to_ast
+                n :multiply, left.to_ast, right.expr.to_ast, input: input, interval: interval
               elsif right.op.text_value == "/"
-                n :divide, left.to_ast, right.expr.to_ast
+                n :divide, left.to_ast, right.expr.to_ast, input: input, interval: interval
               else
-                n :modulus, left.to_ast, right.expr.to_ast
+                n :modulus, left.to_ast, right.expr.to_ast, input: input, interval: interval
               end
             else
               left.to_ast
@@ -1942,7 +1942,7 @@ module IJTAG
       rule parameter_ref
         "$" id:SCALAR_ID {
           def to_ast
-            n :parameter_ref, id.to_ast
+            n :parameter_ref, id.to_ast, input: input, interval: interval
           end
         }
       end
@@ -1962,7 +1962,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.val.to_ast }
+              n :concat, s1.to_ast, *s2.elements.map{ |e| e.val.to_ast }, input: input, interval: interval
             end
           end
         }

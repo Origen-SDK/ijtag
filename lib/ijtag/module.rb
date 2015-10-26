@@ -5,13 +5,19 @@ module IJTAG
     include IJTAG::Aliases
     include IJTAG::Enumerations
 
-    alias :blocks :sub_blocks
+    attr_reader :icl
+
+    alias_method :blocks, :sub_blocks
+
+    def initialize(options = {})
+      @icl = options[:icl]
+    end
 
     def scan_interfaces
       @scan_interfaces ||= {}.with_indifferent_access
     end
 
-    def add_block(type, name, options={})
+    def add_block(type, name, options = {})
       options = options.merge(class_name: type.to_s.camelize)
       block = sub_block name, options
       lower_case_alias = name.to_s.symbolize
@@ -25,11 +31,11 @@ module IJTAG
     end
 
     def ports
-      @cache[:ports] ||= sub_blocks.select{ |k,v| v.is_a?(Port) }
+      @cache[:ports] ||= sub_blocks.select { |k, v| v.is_a?(Port) }
     end
 
     def scan_registers
-      @cache[:scan_registers] ||= sub_blocks.select{ |k,v| v.is_a?(ScanRegister) }
+      @cache[:scan_registers] ||= sub_blocks.select { |k, v| v.is_a?(ScanRegister) }
     end
   end
 end

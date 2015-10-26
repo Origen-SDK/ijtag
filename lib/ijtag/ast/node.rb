@@ -23,7 +23,7 @@ module IJTAG
 
       # Returns the first child node of the given type that is found
       def find(type)
-        find_all(type).first
+        find(type)
       end
 
       # Returns an array containing all child nodes of the given type(s)
@@ -38,8 +38,6 @@ module IJTAG
       def text_value
         input[interval]
       end
-
-
 
       protected
 
@@ -58,14 +56,6 @@ module Treetop
       def n(type, *children)
         properties = children.pop if children.last.is_a?(Hash)
         IJTAG::AST::Node.new(type, children, properties || {})
-      end
-
-      def n0(type, properties={})
-        n(type, *[], properties)
-      end
-
-      def n1(type, arg, properties={})
-        n(type, *[arg], properties)
       end
     end
   end

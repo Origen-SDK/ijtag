@@ -6,15 +6,9 @@ module IJTAG
     class Processor
       include ::AST::Processor::Mixin
 
-      # Helper to create new nodes
-      def n(type, *children)
-        properties = children.pop if children.last.is_a?(Hash)
-        IJTAG::AST::Node.new(type, children, properties || {})
-      end
-
       def process(node)
         if node.respond_to?(:to_ast)
-          super(node) 
+          super(node)
         else
           node
         end

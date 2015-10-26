@@ -14,7 +14,7 @@ module IJTAG
           end
         end
 
-        n :POS_INT, yield(values)
+        node.updated :POS_INT, [yield(values)]
       end
 
       def on_add(node)
@@ -27,23 +27,23 @@ module IJTAG
 
       def on_UNSIZED_BIN_NUMBER(node)
         nodes = process_all(node)
-        n :POS_INT, nodes[0].to_i(2)
+        node.updated :POS_INT, [nodes[0].to_i(2)]
       end
 
       def on_UNSIZED_HEX_NUMBER(node)
         nodes = process_all(node)
-        n :POS_INT, nodes[0].to_i(16)
+        node.updated :POS_INT, [nodes[0].to_i(16)]
       end
 
       # These just get rid of the size component so that it can be treated
       # like a regular number in additions, don't think the size is really
       # required anywhere
       def on_sized_number(node)
-        n :SIZED_POS_INT, *process_all(node)
+        node.updated :SIZED_POS_INT, process_all(node)
       end
-      alias :on_sized_dec_number :on_sized_number
-      alias :on_sized_bin_number :on_sized_number
-      alias :on_sized_hex_number :on_sized_number
+      alias_method :on_sized_dec_number, :on_sized_number
+      alias_method :on_sized_bin_number, :on_sized_number
+      alias_method :on_sized_hex_number, :on_sized_number
     end
   end
 end

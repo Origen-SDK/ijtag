@@ -4,7 +4,7 @@ module IJTAG
     attr_reader :use_namespaces
     attr_reader :modules
 
-    def initialize(icl_str=nil, options={})
+    def initialize(icl_str = nil, options = {})
       @namespaces = {}.with_indifferent_access
       @use_namespaces = {}.with_indifferent_access
       @modules = {}.with_indifferent_access
@@ -16,7 +16,7 @@ module IJTAG
       ICL::Importer.new(self).process(ast)
     end
 
-    def instantiate(module_name, params={})
+    def instantiate(module_name, params = {})
       b = ICL::Builder.new(self)
       if icl = modules[module_name]
         b.on_module_def(icl, params)

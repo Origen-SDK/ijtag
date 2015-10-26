@@ -59,4 +59,3 @@ Module SRegP3 {
                                CaptureSource DI;
                                ResetValue $Size'b00000000; }                   
 }
-
