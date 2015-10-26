@@ -2272,7 +2272,7 @@ module IJTAG
 
       module DataInPortDefaultLoadValue1
         def to_ast
-          n :dataInPort_defaultLoadValue, val.to_ast
+          n :defaultLoadValue, val.to_ast
         end
       end
 
@@ -8682,7 +8682,7 @@ module IJTAG
 
       module ScanRegisterScanInSource1
         def to_ast
-          n :scanRegister_scanInSource, signal.to_ast
+          n :scanInSource, signal.to_ast
         end
       end
 
@@ -8766,7 +8766,7 @@ module IJTAG
 
       module ScanRegisterDefaultLoadValue1
         def to_ast
-          n :scanRegister_defaultLoadValue, val.to_ast
+          n :defaultLoadValue, val.to_ast
         end
       end
 
@@ -8864,7 +8864,7 @@ module IJTAG
 
       module ScanRegisterCaptureSource1
         def to_ast
-          n :scanRegister_captureSource, source.to_ast
+          n :captureSource, source.to_ast
         end
       end
 
@@ -8962,7 +8962,7 @@ module IJTAG
 
       module ScanRegisterResetValue1
         def to_ast
-          n :scanRegister_resetValue, val.to_ast
+          n :resetValue, val.to_ast
         end
       end
 
@@ -9436,7 +9436,7 @@ module IJTAG
 
       module DataRegisterResetValue1
         def to_ast
-          n :dataRegister_resetValue, val.to_ast
+          n :resetValue, val.to_ast
         end
       end
 
@@ -9534,7 +9534,7 @@ module IJTAG
 
       module DataRegisterDefaultLoadValue1
         def to_ast
-          n :dataRegister_defaultLoadValue, val.to_ast
+          n :defaultLoadValue, val.to_ast
         end
       end
 

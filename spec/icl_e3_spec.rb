@@ -17,7 +17,12 @@ describe "ICL Example 3 from the 1687 spec" do
     net.ports.size.should == 10
     net.scan_interfaces.size.should == 1
     net.scan_registers.size.should == 1
+    net.sr.is_a?(IJTAG::ScanRegister).should == true
+    net.sr.size.should == 8
+  end
 
-    # Check port connections
+  it 'accepts in-line default parameters' do
+    net = IJTAG.import(file: file).instantiate("SRegParam")
+    net.sr.size.should == 8
   end
 end

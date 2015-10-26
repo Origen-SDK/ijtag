@@ -19,10 +19,15 @@ module IJTAG
         # this will return something like this: [(POS-INT 2), (POS-INT 5)]
         nodes = process_all(node)
 
-        values = nodes.map { |node| node.children.first }
-        AST::Node.new(:POS_INT, [
-          yield(values)
-        ])
+        values = nodes.map do |node|
+          if node.type == :SIZED_POS_INT
+            node.children[1].value
+          else
+            node.children[0]
+          end
+        end
+
+        n :POS_INT, yield(values)
       end
 
       def on_add(node)
@@ -30,27 +35,24 @@ module IJTAG
       end
 
       def on_UNSIZED_BIN_NUMBER(node)
-        n :POS_INT, node.children[0].to_i(2)
+        nodes = process_all(node)
+        n :POS_INT, nodes[0].to_i(2)
       end
 
       def on_UNSIZED_HEX_NUMBER(node)
-        n :POS_INT, node.children[0].to_i(16)
+        nodes = process_all(node)
+        n :POS_INT, nodes[0].to_i(16)
       end
 
       # These just get rid of the size component so that it can be treated
       # like a regular number in additions, don't think the size is really
       # required anywhere
-      def on_sized_dec_number(node)
-        node.children[1]
+      def on_sized_number(node)
+        n :SIZED_POS_INT, *process_all(node)
       end
-
-      def on_sized_bin_number(node)
-        on_UNSIZED_BIN_NUMBER(node.children[1])
-      end
-
-      def on_sized_hex_number(node)
-        on_UNSIZED_HEX_NUMBER(node.children[1])
-      end
+      alias :on_sized_dec_number :on_sized_number
+      alias :on_sized_bin_number :on_sized_number
+      alias :on_sized_hex_number :on_sized_number
     end
   end
 end

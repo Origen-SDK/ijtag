@@ -220,7 +220,7 @@ module IJTAG
       rule dataInPort_defaultLoadValue
         'DefaultLoadValue' S val:(concat_number / enum_symbol) s ';' s {
           def to_ast
-            n :dataInPort_defaultLoadValue, val.to_ast
+            n :defaultLoadValue, val.to_ast
           end
         }
       end
@@ -754,7 +754,7 @@ module IJTAG
       rule scanRegister_scanInSource
         'ScanInSource' S signal:scan_signal s ';' s {
           def to_ast
-            n :scanRegister_scanInSource, signal.to_ast
+            n :scanInSource, signal.to_ast
           end
         }
       end
@@ -762,7 +762,7 @@ module IJTAG
       rule scanRegister_defaultLoadValue
         'DefaultLoadValue' S val:(concat_number / enum_symbol) s ';' s {
           def to_ast
-            n :scanRegister_defaultLoadValue, val.to_ast
+            n :defaultLoadValue, val.to_ast
           end
         }
       end
@@ -770,7 +770,7 @@ module IJTAG
       rule scanRegister_captureSource
         'CaptureSource' S source:(concat_data_signal / enum_symbol) s ';' s {
           def to_ast
-            n :scanRegister_captureSource, source.to_ast
+            n :captureSource, source.to_ast
           end
         }
       end
@@ -778,7 +778,7 @@ module IJTAG
       rule scanRegister_resetValue
         'ResetValue' S val:(concat_number / enum_symbol) s ';' s {
           def to_ast
-            n :scanRegister_resetValue, val.to_ast
+            n :resetValue, val.to_ast
           end
         }
       end
@@ -825,7 +825,7 @@ module IJTAG
       rule dataRegister_resetValue
         'ResetValue' S val:(concat_number / enum_symbol) s ';' s {
           def to_ast
-            n :dataRegister_resetValue, val.to_ast
+            n :resetValue, val.to_ast
           end
         }
       end
@@ -833,7 +833,7 @@ module IJTAG
       rule dataRegister_defaultLoadValue
         'DefaultLoadValue' S val:(concat_number / enum_symbol) s ';' s {
           def to_ast
-            n :dataRegister_defaultLoadValue, val.to_ast
+            n :defaultLoadValue, val.to_ast
           end
         }
       end

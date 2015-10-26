@@ -1,6 +1,9 @@
 require 'ijtag/icl/processor'
 module IJTAG
   module ICL
+    class BuildError < AST::Error
+    end
+
     class Builder < Processor
       # Returns the built network object after the processor has run
       attr_reader :network
@@ -26,17 +29,8 @@ module IJTAG
 
       def on_port_def(node)
         name, *items = *process_all(node)
-
-        if name.type == :vector_id && name.to_a[1].type == :range
-          v = name.to_a
-          current_module.add_port(v[0].value, size: size_of(v[1]))
-        else
-          current_module.add_port(name.value)
-        end
-
-        if items.size > 0
-          #fail 'Port def items not implemented yet!'
-        end
+        name_and_size = name_and_size_from(name)
+        current_module.add_block(:Port, name_and_size[0], size: name_and_size[1], ast: node)
       end
       alias_method :on_scanInPort_def, :on_port_def
       alias_method :on_scanOutPort_def, :on_port_def
@@ -58,15 +52,42 @@ module IJTAG
       end
 
       def on_scanInterface_def(node)
-        current_module.scan_interfaces << node
+        name, *items = *process_all(node)
+        name_and_size = name_and_size_from(name)
+        current_module.scan_interfaces[name_and_size[0]] = node
       end
 
       def on_scanRegister_def(node)
         name, *items = *process_all(node)
-        debugger
+        name_and_size = name_and_size_from(name)
+        elements = {attributes: []}
+        items.each do |item|
+          if item.type == :attribute_def
+            elements[:attributes] << item
+          elsif elements[item.type]
+            raise BuildError.new("A ScanRegister definition can declare only one #{item.type.to_s.camelize}", node)
+          else
+            elements[item.type] = item
+          end
+        end
+        unless elements[:scanInSource]
+          raise BuildError.new("A ScanRegister definition must declare a ScanInSource", node)
+        end
+        current_module.add_block(:ScanRegister, name_and_size[0], size: name_and_size[1], ast: node)
       end
 
       private
+
+      def name_and_size_from(node)
+        if node.type == :vector_id && node.to_a[1].type == :range
+          a = node.to_a
+          [a[0].value, size_of(a[1])]
+        elsif node.type == :SCALAR_ID
+          [node.value, 1]
+        else
+          fail "Don't know how to extract name_and_size from node type #{node.type}!"
+        end
+      end
 
       def size_of(range)
         a, b = *range

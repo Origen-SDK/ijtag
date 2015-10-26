@@ -21,14 +21,38 @@ Module SReg {
     END
 
     -> { IJTAG.import(valid_icl).instantiate(:SReg) }.should_not raise_error
-    -> { IJTAG.import(invalid_icl).instantiate(:SReg) }.should raise_error
+    -> { IJTAG.import(invalid_icl).instantiate(:SReg) }.should raise_error(/must declare a ScanInSource/)
   end
 
   it 'The scanRegister_scanInSource referring to a multi-bit scanRegister_name shall always specify
       the right most bit, meaning the bit referenced by the index to the right of the “:” in the range.'
 
   it 'Except for the attribute_def, there shall be at most one occurrence of each element type in a
-      scanRegister_item.'
+      scanRegister_item.' do
+    valid_icl = <<-END
+Module SReg {    
+  ScanInPort      SI;
+  DataInPort      DI[7:0];
+  ScanRegister SR[7:0] { ScanInSource SI;
+                         CaptureSource DI;
+                         ResetValue 8'b00000000; }                   
+}
+    END
+
+    invalid_icl = <<-END
+Module SReg {    
+  ScanInPort      SI;
+  DataInPort      DI[7:0];
+  ScanRegister SR[7:0] { ScanInSource SI;
+                         CaptureSource DI;
+                         ResetValue 8'b00000000;
+                         CaptureSource DI;
+  }                   
+}
+    END
+    -> { IJTAG.import(valid_icl).instantiate(:SReg) }.should_not raise_error
+    -> { IJTAG.import(invalid_icl).instantiate(:SReg) }.should raise_error(/only one CaptureSource/)
+  end
 
   it 'If used, the width of scanRegister_DefaultLoadValue, scanRegister_CaptureSource, and
       scanRegister_ResetValue shall match the width of the scanRegister_name.'
