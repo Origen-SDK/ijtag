@@ -9,5 +9,9 @@ module IJTAG
     def add_port(name, options = {})
       ports[name] = Port.new(self, name, options)
     end
+
+    def scan_interfaces
+      @scan_interfaces ||= []
+    end
   end
 end

@@ -8,7 +8,8 @@ module IJTAG
 
       # Helper to create new nodes
       def n(type, *children)
-        IJTAG::AST::Node.new(type, children)
+        properties = children.pop if children.last.is_a?(Hash)
+        IJTAG::AST::Node.new(type, children, properties || {})
       end
 
       def process(node)

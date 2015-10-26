@@ -142,7 +142,7 @@ module IJTAG
       rule scanOutPort_source
         'Source' S signal:concat_scan_signal s ';' s {
           def to_ast
-            n :scanOutPort_source, signal.to_ast
+            n :source, signal.to_ast
           end
         }
       end
@@ -150,7 +150,7 @@ module IJTAG
       rule scanOutPort_enable
         'Enable' S signal:data_signal s ';' s {
           def to_ast
-            n :scanOutPort_enable, signal.to_ast
+            n :enable, signal.to_ast
           end
         }
       end
@@ -212,7 +212,7 @@ module IJTAG
       rule dataInPort_refEnum
         'RefEnum' s name:enum_name s ';' s {
           def to_ast
-            n :dataInPort_refEnum, name.to_ast
+            n :refEnum, name.to_ast
           end
         }
       end
@@ -247,7 +247,7 @@ module IJTAG
       rule dataOutPort_source
         'Source' S signal:concat_data_signal s ';' s {
           def to_ast
-            n :dataOutPort_source, signal.to_ast
+            n :source, signal.to_ast
           end
         }
       end
@@ -255,7 +255,7 @@ module IJTAG
       rule dataOutPort_enable
         'Enable' S signal:data_signal s ';' s {
           def to_ast
-            n :dataOutPort_enable, signal.to_ast
+            n :enable, signal.to_ast
           end
         }
       end
@@ -263,7 +263,7 @@ module IJTAG
       rule dataOutPort_refEnum
         'RefEnum' S name:enum_name s ';' s {
           def to_ast
-            n :dataOutPort_refEnum, name.to_ast
+            n :refEnum, name.to_ast
           end
         }
       end
@@ -288,7 +288,7 @@ module IJTAG
       rule toShiftEnPort_source
         'Source' S signal:concat_shiftEn_signal s ';' s {
           def to_ast
-            n :toShiftEnPort_source, signal.to_ast
+            n :source, signal.to_ast
           end
         }
       end
@@ -313,7 +313,7 @@ module IJTAG
       rule toCaptureEnPort_source
         'Source' S signal:captureEn_signal s ';' s {
           def to_ast
-            n :toCaptureEnPort_source, signal.to_ast
+            n :source, signal.to_ast
           end
         }
       end
@@ -337,7 +337,7 @@ module IJTAG
       rule toUpdateEnPort_source
         'Source' S signal:updateEn_signal s ';' s {
           def to_ast
-            n :toUpdateEnPort_source, signal.to_ast
+            n :source, signal.to_ast
           end
         }
       end
@@ -373,7 +373,7 @@ module IJTAG
       rule toSelectPort_source
         'Source' S signal:concat_data_signal s ';' s {
           def to_ast
-            n :toSelectPort_source, signal.to_ast
+            n :source, signal.to_ast
           end
         }
       end
@@ -424,7 +424,7 @@ module IJTAG
       rule toResetPort_source
         'Source' S signal:concat_reset_signal s ';' s {
           def to_ast
-            n :toResetPort_source, signal.to_ast
+            n :source, signal.to_ast
           end
         }
       end
@@ -469,7 +469,7 @@ module IJTAG
       rule toTmsPort_source
         'Source' S signal:concat_tms_signal s ';' s {
           def to_ast
-            n :toTmsPort_source, signal.to_ast
+            n :source, signal.to_ast
           end
         }
       end
@@ -559,7 +559,7 @@ module IJTAG
       rule toClockPort_source
         'Source' S signal:concat_clock_signal s ';' s {
           def to_ast
-            n :toClockPort_source, signal.to_ast
+            n :source, signal.to_ast
           end
         }
       end
@@ -628,7 +628,7 @@ module IJTAG
       rule toTrstPort_source
         'Source' S signal:concat_trst_signal s ';' s {
           def to_ast
-            n :toTrstPort_source, signal.to_ast
+            n :source, signal.to_ast
           end
         }
       end
@@ -734,9 +734,9 @@ module IJTAG
         'ScanRegister' S name:scanRegister_name s d:(';' / ('{' s items:scanRegister_item* s '}')) s {
           def to_ast
             if d.respond_to?(:items)
-              n :scanRegister_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+              n :scanRegister_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
             else
-              n :scanRegister_def, name.to_ast
+              n :scanRegister_def, name.to_ast, input: input, interval: interval
             end
           end
         }
@@ -786,7 +786,7 @@ module IJTAG
       rule scanRegister_refEnum
         'RefEnum' S name:enum_name s ';' s {
           def to_ast
-            n :scanRegister_refEnum, name.to_ast
+            n :refEnum, name.to_ast
           end
         }
       end
@@ -841,7 +841,7 @@ module IJTAG
       rule dataRegister_refEnum
         'RefEnum' S name:enum_name s ';' s {
           def to_ast
-            n :dataRegister_refEnum, name.to_ast
+            n :refEnum, name.to_ast
           end
         }
       end
@@ -1168,7 +1168,7 @@ module IJTAG
       rule alias_refEnum
         'RefEnum' S name:enum_name s ';' s {
           def to_ast
-            n :alias_refEnum, name.to_ast
+            n :refEnum, name.to_ast
           end
         }
       end
@@ -1528,7 +1528,7 @@ module IJTAG
       end
 
       rule signal
-        number / hier_port / reg_port_signal_id
+        hier_port / reg_port_signal_id / number
       end
 
       rule reset_signal

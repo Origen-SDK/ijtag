@@ -1314,7 +1314,7 @@ module IJTAG
 
       module ScanOutPortSource1
         def to_ast
-          n :scanOutPort_source, signal.to_ast
+          n :source, signal.to_ast
         end
       end
 
@@ -1398,7 +1398,7 @@ module IJTAG
 
       module ScanOutPortEnable1
         def to_ast
-          n :scanOutPort_enable, signal.to_ast
+          n :enable, signal.to_ast
         end
       end
 
@@ -2188,7 +2188,7 @@ module IJTAG
 
       module DataInPortRefEnum1
         def to_ast
-          n :dataInPort_refEnum, name.to_ast
+          n :refEnum, name.to_ast
         end
       end
 
@@ -2581,7 +2581,7 @@ module IJTAG
 
       module DataOutPortSource1
         def to_ast
-          n :dataOutPort_source, signal.to_ast
+          n :source, signal.to_ast
         end
       end
 
@@ -2665,7 +2665,7 @@ module IJTAG
 
       module DataOutPortEnable1
         def to_ast
-          n :dataOutPort_enable, signal.to_ast
+          n :enable, signal.to_ast
         end
       end
 
@@ -2749,7 +2749,7 @@ module IJTAG
 
       module DataOutPortRefEnum1
         def to_ast
-          n :dataOutPort_refEnum, name.to_ast
+          n :refEnum, name.to_ast
         end
       end
 
@@ -3032,7 +3032,7 @@ module IJTAG
 
       module ToShiftEnPortSource1
         def to_ast
-          n :toShiftEnPort_source, signal.to_ast
+          n :source, signal.to_ast
         end
       end
 
@@ -3315,7 +3315,7 @@ module IJTAG
 
       module ToCaptureEnPortSource1
         def to_ast
-          n :toCaptureEnPort_source, signal.to_ast
+          n :source, signal.to_ast
         end
       end
 
@@ -3598,7 +3598,7 @@ module IJTAG
 
       module ToUpdateEnPortSource1
         def to_ast
-          n :toUpdateEnPort_source, signal.to_ast
+          n :source, signal.to_ast
         end
       end
 
@@ -4053,7 +4053,7 @@ module IJTAG
 
       module ToSelectPortSource1
         def to_ast
-          n :toSelectPort_source, signal.to_ast
+          n :source, signal.to_ast
         end
       end
 
@@ -4656,7 +4656,7 @@ module IJTAG
 
       module ToResetPortSource1
         def to_ast
-          n :toResetPort_source, signal.to_ast
+          n :source, signal.to_ast
         end
       end
 
@@ -5212,7 +5212,7 @@ module IJTAG
 
       module ToTmsPortSource1
         def to_ast
-          n :toTmsPort_source, signal.to_ast
+          n :source, signal.to_ast
         end
       end
 
@@ -6308,7 +6308,7 @@ module IJTAG
 
       module ToClockPortSource1
         def to_ast
-          n :toClockPort_source, signal.to_ast
+          n :source, signal.to_ast
         end
       end
 
@@ -7206,7 +7206,7 @@ module IJTAG
 
       module ToTrstPortSource1
         def to_ast
-          n :toTrstPort_source, signal.to_ast
+          n :source, signal.to_ast
         end
       end
 
@@ -8479,9 +8479,9 @@ module IJTAG
       module ScanRegisterDef2
         def to_ast
           if d.respond_to?(:items)
-            n :scanRegister_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }
+            n :scanRegister_def, name.to_ast, *d.items.elements.map{ |e| e.to_ast }, input: input, interval: interval
           else
-            n :scanRegister_def, name.to_ast
+            n :scanRegister_def, name.to_ast, input: input, interval: interval
           end
         end
       end
@@ -9060,7 +9060,7 @@ module IJTAG
 
       module ScanRegisterRefEnum1
         def to_ast
-          n :scanRegister_refEnum, name.to_ast
+          n :refEnum, name.to_ast
         end
       end
 
@@ -9632,7 +9632,7 @@ module IJTAG
 
       module DataRegisterRefEnum1
         def to_ast
-          n :dataRegister_refEnum, name.to_ast
+          n :refEnum, name.to_ast
         end
       end
 
@@ -13776,7 +13776,7 @@ module IJTAG
 
       module AliasRefEnum1
         def to_ast
-          n :alias_refEnum, name.to_ast
+          n :refEnum, name.to_ast
         end
       end
 
@@ -16342,17 +16342,17 @@ module IJTAG
         end
 
         i0 = index
-        r1 = _nt_number
+        r1 = _nt_hier_port
         if r1
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
         else
-          r2 = _nt_hier_port
+          r2 = _nt_reg_port_signal_id
           if r2
             r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
             r0 = r2
           else
-            r3 = _nt_reg_port_signal_id
+            r3 = _nt_number
             if r3
               r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
               r0 = r3

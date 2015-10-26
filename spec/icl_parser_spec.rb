@@ -86,7 +86,7 @@ END
           s(:SCALAR_ID, "Context"),
           s(:scanOutPort_def,
             s(:SCALAR_ID, "SO"),
-            s(:scanOutPort_source,
+            s(:source,
               s(:concat,
                 s(:scan_signal,
                   s(:hier_port,

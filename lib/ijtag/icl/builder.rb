@@ -35,9 +35,17 @@ module IJTAG
         end
 
         if items.size > 0
-          fail 'Port def items not implemented yet!'
+          #fail 'Port def items not implemented yet!'
         end
       end
+      alias_method :on_scanInPort_def, :on_port_def
+      alias_method :on_scanOutPort_def, :on_port_def
+      alias_method :on_shiftEnPort_def, :on_port_def
+      alias_method :on_captureEnPort_def, :on_port_def
+      alias_method :on_updateEnPort_def, :on_port_def
+      alias_method :on_selectPort_def, :on_port_def
+      alias_method :on_resetPort_def, :on_port_def
+      alias_method :on_tckPort_def , :on_port_def
       alias_method :on_dataInPort_def, :on_port_def
       alias_method :on_dataOutPort_def, :on_port_def
 
@@ -47,6 +55,15 @@ module IJTAG
 
       def on_enum_def(node)
         current_module.enumerations << node
+      end
+
+      def on_scanInterface_def(node)
+        current_module.scan_interfaces << node
+      end
+
+      def on_scanRegister_def(node)
+        name, *items = *process_all(node)
+        debugger
       end
 
       private
