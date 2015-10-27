@@ -11,7 +11,7 @@ module IJTAG
       @icl = options[:icl]
       @network = options[:network]
 
-      reg :dr, 0, size: size do |reg|
+      reg :dr, 0, size: size, path: :hidden do |reg|
         reg.bit (size - 1)..0, :data
       end
 

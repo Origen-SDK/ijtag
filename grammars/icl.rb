@@ -11048,17 +11048,7 @@ module IJTAG
       end
 
       module ScanMuxSelection0
-        def concat_number_list
-          elements[0]
-        end
-
-        def concat_scan_signal
-          elements[2]
-        end
-      end
-
-      module ScanMuxSelection1
-        def val
+        def v1
           elements[0]
         end
 
@@ -11069,11 +11059,23 @@ module IJTAG
         def s2
           elements[3]
         end
+
+        def v2
+          elements[4]
+        end
+
+        def s3
+          elements[5]
+        end
+
+        def s4
+          elements[7]
+        end
       end
 
-      module ScanMuxSelection2
+      module ScanMuxSelection1
         def to_ast
-          n :scanMux_selection, val.text_value, input: input, interval: interval, file: file
+          n :scanMux_selection, v1.to_ast, v2.to_ast, input: input, interval: interval, file: file
         end
       end
 
@@ -11089,53 +11091,52 @@ module IJTAG
         end
 
         i0, s0 = index, []
-        i1, s1 = index, []
-        r2 = _nt_concat_number_list
-        s1 << r2
-        if r2
-          if (match_len = has_terminal?(':', false, index))
-            r3 = true
-            @index += match_len
-          else
-            terminal_parse_failure('\':\'')
-            r3 = nil
-          end
-          s1 << r3
-          if r3
-            r4 = _nt_concat_scan_signal
-            s1 << r4
-          end
-        end
-        if s1.last
-          r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
-          r1.extend(ScanMuxSelection0)
-        else
-          @index = i1
-          r1 = nil
-        end
+        r1 = _nt_concat_number_list
         s0 << r1
         if r1
-          r5 = _nt_s
-          s0 << r5
-          if r5
-            if (match_len = has_terminal?(';', false, index))
-              r6 = true
+          r2 = _nt_s
+          s0 << r2
+          if r2
+            if (match_len = has_terminal?(':', false, index))
+              r3 = true
               @index += match_len
             else
-              terminal_parse_failure('\';\'')
-              r6 = nil
+              terminal_parse_failure('\':\'')
+              r3 = nil
             end
-            s0 << r6
-            if r6
-              r7 = _nt_s
-              s0 << r7
+            s0 << r3
+            if r3
+              r4 = _nt_s
+              s0 << r4
+              if r4
+                r5 = _nt_concat_scan_signal
+                s0 << r5
+                if r5
+                  r6 = _nt_s
+                  s0 << r6
+                  if r6
+                    if (match_len = has_terminal?(';', false, index))
+                      r7 = true
+                      @index += match_len
+                    else
+                      terminal_parse_failure('\';\'')
+                      r7 = nil
+                    end
+                    s0 << r7
+                    if r7
+                      r8 = _nt_s
+                      s0 << r8
+                    end
+                  end
+                end
+              end
             end
           end
         end
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(ScanMuxSelection0)
           r0.extend(ScanMuxSelection1)
-          r0.extend(ScanMuxSelection2)
         else
           @index = i0
           r0 = nil
@@ -20681,16 +20682,37 @@ module IJTAG
       end
 
       module ConcatNumberList0
-        def concat_number
-          elements[1]
+        def s1
+          elements[0]
+        end
+
+        def s2
+          elements[2]
+        end
+
+        def val
+          elements[3]
         end
       end
 
       module ConcatNumberList1
-        def concat_number
+        def s1
           elements[0]
         end
 
+        def s2
+          elements[1]
+        end
+      end
+
+      module ConcatNumberList2
+        def to_ast
+          if s2.empty?
+            s1.to_ast
+          else
+            n :concat_number_list, s1.to_ast, *s2.elements.map{ |e| e.val.to_ast }, input: input, interval: interval, file: file
+          end
+        end
       end
 
       def _nt_concat_number_list
@@ -20711,17 +20733,25 @@ module IJTAG
           s2, i2 = [], index
           loop do
             i3, s3 = index, []
-            if (match_len = has_terminal?("|", false, index))
-              r4 = true
-              @index += match_len
-            else
-              terminal_parse_failure('"|"')
-              r4 = nil
-            end
+            r4 = _nt_s
             s3 << r4
             if r4
-              r5 = _nt_concat_number
+              if (match_len = has_terminal?("|", false, index))
+                r5 = true
+                @index += match_len
+              else
+                terminal_parse_failure('"|"')
+                r5 = nil
+              end
               s3 << r5
+              if r5
+                r6 = _nt_s
+                s3 << r6
+                if r6
+                  r7 = _nt_concat_number
+                  s3 << r7
+                end
+              end
             end
             if s3.last
               r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
@@ -20742,6 +20772,7 @@ module IJTAG
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
           r0.extend(ConcatNumberList1)
+          r0.extend(ConcatNumberList2)
         else
           @index = i0
           r0 = nil

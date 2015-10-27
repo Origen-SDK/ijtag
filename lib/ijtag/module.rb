@@ -29,7 +29,7 @@ module IJTAG
 
     def netlist
       if top_level
-        @netlist ||= Netlist.new
+        @netlist ||= Netlist.new(self)
       else
         network.netlist
       end

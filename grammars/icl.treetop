@@ -967,9 +967,9 @@ module IJTAG
       end
 
       rule scanMux_selection
-        val:(concat_number_list ':' concat_scan_signal) s ';' s {
+        v1:concat_number_list s ':' s v2:concat_scan_signal s ';' s {
           def to_ast
-            n :scanMux_selection, val.text_value, input: input, interval: interval, file: file
+            n :scanMux_selection, v1.to_ast, v2.to_ast, input: input, interval: interval, file: file
           end
         }
       end
@@ -1977,7 +1977,15 @@ module IJTAG
       end
 
       rule concat_number_list
-        concat_number ("|" concat_number)*
+        s1:concat_number s2:(s "|" s val:concat_number)* {
+          def to_ast
+            if s2.empty?
+              s1.to_ast
+            else
+              n :concat_number_list, s1.to_ast, *s2.elements.map{ |e| e.val.to_ast }, input: input, interval: interval, file: file
+            end
+          end
+        }
       end
 
       ####################################################

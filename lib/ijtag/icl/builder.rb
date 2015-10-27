@@ -47,12 +47,7 @@ module IJTAG
             case item.type
             when :inputPort_connection
               a, b = *item
-              puts "*********************"
-              puts module_def.file
-              puts to_stem(model.path) + to_string(a)
-              puts to_string(b)
-              puts "*********************"
-              netlist.add_net(to_stem(current_module.path) + to_string(a), to_stem(current_module.parent.path) + to_string(b))
+              netlist.add_net(to_stem(current_module.path) + to_string(a), to_stem(current_module.parent.path) + to_string(b), :instance_inputPort)
             when :parameter_def
               # Do nothing, already applied
             else
@@ -81,7 +76,7 @@ module IJTAG
         items.each do |item|
           case item.type
           when :source
-            netlist.add_net(port.path, to_stem(port.parent.path) + to_string(item.to_a[0]))
+            netlist.add_net(port.path, to_stem(port.parent.path) + to_string(item.to_a[0]), "#{type}_source".to_sym)
           else
             fail "Don't know how to model #{item.type} in a port def"
           end
@@ -129,8 +124,14 @@ module IJTAG
           fail BuildError.new('A ScanRegister definition must declare a ScanInSource', node)
         end
         reg = current_module.add_block(:ScanRegister, name_and_size[0], size: name_and_size[1], icl: node, network: top_level)
-        netlist.add_net("#{reg.path}.si", to_stem(reg.parent.path) + to_string(elements[:scanInSource].to_a[0]))
-        netlist.add_net("#{reg.path}.capture", to_stem(reg.parent.path) + to_string(elements[:captureSource].to_a[0])) if elements[:captureSource]
+        netlist.add_net("#{reg.path}.si", to_stem(reg.parent.path) + to_string(elements[:scanInSource].to_a[0]), :scanInSource)
+        netlist.add_net("#{reg.path}.capture", to_stem(reg.parent.path) + to_string(elements[:captureSource].to_a[0]), :captureSource) if elements[:captureSource]
+      end
+
+      def on_scanMux_def(node)
+        name, selected_by, *items = *process_all(node)
+        name_and_size = name_and_size_from(name)
+        mux = current_module.add_block(:ScanMux, name_and_size[0], icl: node, network: top_level)
       end
 
       private
