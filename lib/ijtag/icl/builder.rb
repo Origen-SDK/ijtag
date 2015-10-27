@@ -12,6 +12,8 @@ module IJTAG
       attr_reader :top_level
       attr_reader :network_def
 
+      alias_method :network, :top_level
+
       def initialize(network_def)
         @network_def = network_def
       end
@@ -45,7 +47,7 @@ module IJTAG
             case item.type
             when :inputPort_connection
               a, b = *item
-              add_to_netlist(to_stem(model.path) + to_string(a), to_string(b))
+              netlist.add_net(to_stem(model.path) + to_string(a), to_string(b))
             when :parameter_def
               # Do nothing, already applied
             else
@@ -74,7 +76,7 @@ module IJTAG
         items.each do |item|
           case item.type
           when :source
-            add_to_netlist(port.path, to_stem(port.parent.path) + to_string(item.to_a[0]))
+            netlist.add_net(port.path, to_stem(port.parent.path) + to_string(item.to_a[0]))
           else
             fail "Don't know how to model #{item.type} in a port def"
           end
@@ -122,11 +124,15 @@ module IJTAG
           fail BuildError.new('A ScanRegister definition must declare a ScanInSource', node)
         end
         reg = current_module.add_block(:ScanRegister, name_and_size[0], size: name_and_size[1], icl: node, network: top_level)
-        add_to_netlist("#{reg.path}.scan_in", to_stem(reg.parent.path) + to_string(elements[:scanInSource].to_a[0]))
-        add_to_netlist("#{reg.path}.capture", to_stem(reg.parent.path) + to_string(elements[:captureSource].to_a[0])) if elements[:captureSource]
+        netlist.add_net("#{reg.path}.si", to_stem(reg.parent.path) + to_string(elements[:scanInSource].to_a[0]))
+        netlist.add_net("#{reg.path}.capture", to_stem(reg.parent.path) + to_string(elements[:captureSource].to_a[0])) if elements[:captureSource]
       end
 
       private
+
+      def netlist
+        network.netlist
+      end
 
       def to_stem(path)
         if path.empty?
@@ -134,12 +140,6 @@ module IJTAG
         else
           path + '.'
         end
-      end
-
-      def add_to_netlist(a, b)
-        netlist = top_level.network.netlist
-        netlist[a] = b
-        netlist[b] = a
       end
 
       def to_string(node)

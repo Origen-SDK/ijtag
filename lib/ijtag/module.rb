@@ -1,3 +1,4 @@
+require 'ijtag/netlist'
 module IJTAG
   # Corresponds to an ICL module instance
   class Module
@@ -22,16 +23,16 @@ module IJTAG
       end
     end
 
+    def scan_interfaces
+      @scan_interfaces ||= {}.with_indifferent_access
+    end
+
     def netlist
       if top_level
         @netlist ||= Netlist.new
       else
         network.netlist
       end
-    end
-
-    def scan_interfaces
-      @scan_interfaces ||= {}.with_indifferent_access
     end
 
     def add_block(type, name, options = {})
