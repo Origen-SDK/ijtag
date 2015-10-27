@@ -47,7 +47,12 @@ module IJTAG
             case item.type
             when :inputPort_connection
               a, b = *item
-              netlist.add_net(to_stem(model.path) + to_string(a), to_string(b))
+              puts "*********************"
+              puts module_def.file
+              puts to_stem(model.path) + to_string(a)
+              puts to_string(b)
+              puts "*********************"
+              netlist.add_net(to_stem(current_module.path) + to_string(a), to_stem(current_module.parent.path) + to_string(b))
             when :parameter_def
               # Do nothing, already applied
             else
