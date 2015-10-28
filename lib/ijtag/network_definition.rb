@@ -23,7 +23,6 @@ module IJTAG
       else
         fail "No ICL definition for module \"#{module_name}\""
       end
-      b.top_level.netlist.send(:finalize)
       b.top_level
     end
   end

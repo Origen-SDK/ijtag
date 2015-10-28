@@ -47,7 +47,7 @@ module IJTAG
             case item.type
             when :inputPort_connection
               a, b = *item
-              netlist.add_net(to_stem(current_module.path) + to_string(a), to_stem(current_module.parent.path) + to_string(b), :instance_inputPort)
+              netlist.add_net(to_vector(b, path: current_module.parent.path), to_vector(a, path: current_module.path), :instance_inputPort)
             when :parameter_def
               # Do nothing, already applied
             else
@@ -76,7 +76,7 @@ module IJTAG
         items.each do |item|
           case item.type
           when :source
-            netlist.add_net(port.path, to_stem(port.parent.path) + to_string(item.to_a[0]), "#{type}_source".to_sym)
+            netlist.add_net(to_vector(item.to_a[0], path: port.parent.path), to_vector(port.path), "#{type}_source".to_sym)
           else
             fail "Don't know how to model #{item.type} in a port def"
           end
@@ -124,8 +124,8 @@ module IJTAG
           fail BuildError.new('A ScanRegister definition must declare a ScanInSource', node)
         end
         reg = current_module.add_block(:ScanRegister, name_and_size[0], size: name_and_size[1], icl: node, network: top_level)
-        netlist.add_net("#{reg.path}.si", to_stem(reg.parent.path) + to_string(elements[:scanInSource].to_a[0]), :scanInSource)
-        netlist.add_net("#{reg.path}.capture", to_stem(reg.parent.path) + to_string(elements[:captureSource].to_a[0]), :captureSource) if elements[:captureSource]
+        netlist.add_net(to_vector(elements[:scanInSource].to_a[0],  path: reg.parent.path), to_vector(reg.path), :scanInSource)
+        netlist.add_net(to_vector(elements[:captureSource].to_a[0], path: reg.parent.path), to_vector(reg.path), :captureSource) if elements[:captureSource]
       end
 
       def on_scanMux_def(node)
@@ -151,6 +151,17 @@ module IJTAG
       def to_string(node)
         @to_string ||= ToString.new
         @to_string.process(node)
+      end
+
+      def to_vector(node, options={})
+        if node.is_a?(String)
+          v = Vector.new(node, nil, false, false)
+        else
+          @to_vector ||= ToVector.new
+          v = @to_vector.process(node)
+          v.path = to_stem(options[:path]) + v.path if options[:path]
+        end
+        v
       end
 
       def name_and_size_from(node)

@@ -19,17 +19,15 @@ describe "ICL Example 4 from the 1687 spec" do
     net.reg8.instance_name.should == "reg8"
   end
 
-  it 'the connections have been extracted to the netlist' do
-    net = IJTAG.import(file: file).instantiate("WrappedInstr")
-    net.netlist.outputs["SI"].should == "reg8.SI"
-    net.netlist.inputs["SO"].should == "reg8.SO"
-    net.netlist.inputs["reg8.DI"].should == "I1.DO"
-    net.netlist.outputs["reg8.DO"].should == "I1.DI"
-  end
-
   it 'the connections are hooked up' do
     net = IJTAG.import(file: file).instantiate("WrappedInstr")
-    net.si.to.path.should == "reg8.SI"
-    net.reg8.di.from.path.should == "I1.DO"
+    net.si.outputs[0].path.should == "reg8.SI"
+    net.reg8.si.inputs[0].path.should == "SI"
+    net.so.inputs[0].path.should == "reg8.SO"
+    net.reg8.so.outputs[0].path.should == "SO"
+    net.reg8.di.inputs[0].path.should == "I1.DO"
+    net.i1.do.outputs[0].path.should == "reg8.DI"
+    net.reg8.do.outputs[0].path.should == "I1.DI"
+    net.i1.di.inputs[0].path.should == "reg8.DO"
   end
 end

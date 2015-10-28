@@ -15,37 +15,22 @@ module IJTAG
       @type = options[:type]
     end
 
-    # Returns the downstream Port object that the current port connects to
-    def to
-      # Need some logic to handle the ScanRegister virtual ports
-      if path =~ /\.update$/ && parent.is_a?(ScanRegister)
-        lpath = path.sub(/.update$/, '')
-      elsif path =~ /\.so$/ && parent.is_a?(ScanRegister)
-        lpath = path.sub(/.so$/, '[0]')
-      else
-        lpath = path
-      end
-      if p = network.netlist.outputs[lpath]
-        eval "network.#{p}"
-      end
+    def outputs
+      output_paths.map { |p| network.path_to_node(p) }
     end
-    alias_method :output, :to
+    alias_method :to, :outputs
 
-    # Returns the upstream Port object that is connected to the current port
-    def from
-      if p = network.netlist.inputs[path]
-        port = eval "network.#{p}"
-        # Need some logic to handle the ScanRegister virtual ports
-        if port.is_a?(ScanRegister)
-          port.update
-        elsif port.is_a?(Origen::Registers::BitCollection) && port.position == 0 &&
-              port.parent.try(:parent).is_a?(ScanRegister)
-          port.parent.parent.so
-        else
-          port
-        end
-      end
+    def output_paths
+      (network.netlist.out_of[self.path] || []).map { |n| n.vector.path }
     end
-    alias_method :input, :from
+
+    def inputs
+      input_paths.map { |p| network.path_to_node(p) }
+    end
+    alias_method :from, :inputs
+
+    def input_paths
+      (network.netlist.into[self.path] || []).map { |n| n.vector.path }
+    end
   end
 end

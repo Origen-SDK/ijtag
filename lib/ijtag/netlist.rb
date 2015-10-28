@@ -1,15 +1,26 @@
 module IJTAG
   class Netlist
-    attr_reader :inputs, :outputs, :network
+    # Returns a hash that maps all nodes that connect into a given node
+    attr_reader :into
+    # Returns a hash that maps all nodes that connect out of a given node
+    attr_reader :out_of
+    attr_reader :network
+
+    Net = Struct.new(:vector, :type)
 
     def initialize(network)
       @network = network
-      @inputs = {}.with_indifferent_access
-      @outputs = {}.with_indifferent_access
+      @into = {}.with_indifferent_access
+      @out_of = {}.with_indifferent_access
     end
 
-    def add_net(to, from, type)
-      nets << [to, from, type]
+    def add_net(from, to, type)
+      net_to = Net.new(to, type)
+      net_from = Net.new(from, type)
+      self.into[to.path] ||= []
+      self.into[to.path] << net_from
+      self.out_of[from.path] ||= []
+      self.out_of[from.path] << net_to
     end
 
     private

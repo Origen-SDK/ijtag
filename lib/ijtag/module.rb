@@ -35,6 +35,13 @@ module IJTAG
       end
     end
 
+    def path_to_node(path)
+      unless node = eval("self.#{path}")
+        fail "Node #{path} was not found!"
+      end
+      node
+    end
+
     def add_block(type, name, options = {})
       options = options.merge(class_name: type.to_s.camelize)
       block = sub_block name, options

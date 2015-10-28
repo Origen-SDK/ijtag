@@ -14,12 +14,44 @@ module IJTAG
       reg :dr, 0, size: size, path: :hidden do |reg|
         reg.bit (size - 1)..0, :data
       end
+    end
 
-      # Virtual ports
-      sub_block :capture, class_name: 'Port', size: size, network: network
-      sub_block :update, class_name: 'Port', size: size, network: network
-      sub_block :si, class_name: 'Port', size: 1, network: network
-      sub_block :so, class_name: 'Port', size: 1, network: network
+    # Returns an array of network nodes that are connected to the register's scan out path
+    def so
+      so_paths.map { |p| network.path_to_node(p) }
+    end
+
+    def so_paths
+      network.netlist.out_of[self.path].select { |n| n.vector.index == 0  || n.type == :ScanOutPort_source }.
+        map { |n| n.vector.path }
+    end
+
+    # Returns the network node that is the register's scan in source
+    def si
+      si_paths.map { |p| network.path_to_node(p) }
+    end
+
+    def si_paths
+      network.netlist.into[self.path].select { |n| n.type == :scanInSource }.
+        map { |n| n.vector.path }
+    end
+
+    def capture
+      capture_paths.map { |p| network.path_to_node(p) }
+    end
+
+    def capture_paths
+      network.netlist.into[self.path].select { |n| n.type == :captureSource }.
+        map { |n| n.vector.path }
+    end
+
+    def update
+      update_paths.map { |p| network.path_to_node(p) }
+    end
+
+    def update_paths
+      network.netlist.out_of[self.path].select { |n| n.type == :DataOutPort_source }.
+        map { |n| n.vector.path }
     end
 
     # Proxy all other methods to the register object, this implements things
