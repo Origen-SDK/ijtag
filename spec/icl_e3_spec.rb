@@ -58,9 +58,9 @@ describe "ICL Example 3 from the 1687 spec" do
   it 'the connections are hooked up' do
     net = IJTAG.import(file: file).instantiate("SReg")
     net.di.outputs[0].path.should == "SR"
-    net.sr.capture[0].path.should == "DI"
+    net.sr.c[0].path.should == "DI"
     net.do.inputs[0].path.should == "SR"
-    net.sr.update[0].path.should == "DO"
+    net.sr.u[0].path.should == "DO"
     net.si.outputs[0].path.should == "SR"
     net.sr.si[0].path.should == "SI"
     net.so.inputs[0].path.should == "SR"

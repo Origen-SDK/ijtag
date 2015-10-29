@@ -36,21 +36,21 @@ module IJTAG
         map { |n| n.vector.path }
     end
 
-    def capture
-      capture_paths.map { |p| network.path_to_node(p) }
+    def c
+      c_paths.map { |p| network.path_to_node(p) }
     end
 
-    def capture_paths
+    def c_paths
       network.netlist.into[self.path].select { |n| n.type == :captureSource }.
         map { |n| n.vector.path }
     end
 
-    def update
-      update_paths.map { |p| network.path_to_node(p) }
+    def u
+      u_paths.map { |p| network.path_to_node(p) }
     end
 
-    def update_paths
-      network.netlist.out_of[self.path].select { |n| n.type == :DataOutPort_source }.
+    def u_paths
+      network.netlist.out_of[self.path].select { |n| ![:ScanOutPort_source, :captureSource].include?(n.type) }.
         map { |n| n.vector.path }
     end
 

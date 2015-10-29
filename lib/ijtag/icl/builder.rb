@@ -41,6 +41,7 @@ module IJTAG
       def on_instance_def(node)
         name, module_name, *items = *node.children
         module_def = network_def.modules[module_name.value]
+        fail BuildError.new("A module defintion for #{module_name.value} could not be found", node) unless module_def
         model = current_module.add_block(:Module, name.value, icl: module_def, module_name: module_name.value, network: top_level)
         define_module(model) do
           process_all(items).each do |item|
@@ -129,9 +130,15 @@ module IJTAG
       end
 
       def on_scanMux_def(node)
-        name, selected_by, *items = *process_all(node)
+        name, selected_by, *selections = *process_all(node)
         name_and_size = name_and_size_from(name)
         mux = current_module.add_block(:ScanMux, name_and_size[0], icl: node, network: top_level)
+        netlist.add_net(to_vector(selected_by,  path: mux.parent.path), to_vector(mux.path), :scanMux_selected_by)
+        selections.each do |selection|
+          from = to_vector(selection.to_a[1],  path: mux.parent.path)
+          mux.add_input(to_number(selection.to_a[0]), from.path)
+          netlist.add_net(from, to_vector(mux.path), :scanMux_selection)
+        end
       end
 
       private
@@ -162,6 +169,11 @@ module IJTAG
           v.path = to_stem(options[:path]) + v.path if options[:path]
         end
         v
+      end
+
+      def to_number(node)
+        @to_number ||= ToNumber.new
+        @to_number.process(node)
       end
 
       def name_and_size_from(node)
