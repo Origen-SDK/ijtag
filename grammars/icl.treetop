@@ -1195,7 +1195,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+              n :concat_hier_data_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
             end
           end
         }
@@ -1563,7 +1563,7 @@ module IJTAG
         invert:"~"? val:signal { 
           def to_ast
             fail "scan_signal invert not handled yet!" unless invert.empty?
-            val.to_ast
+            n :reset_signal, val.to_ast
           end
         }
       end
@@ -1572,7 +1572,7 @@ module IJTAG
         invert:"~"? val:signal { 
           def to_ast
             fail "scan_signal invert not handled yet!" unless invert.empty?
-            val.to_ast
+            n :scan_signal, val.to_ast
           end
         }
       end
@@ -1581,7 +1581,7 @@ module IJTAG
         invert:"~"? val:signal { 
           def to_ast
             fail "scan_signal invert not handled yet!" unless invert.empty?
-            val.to_ast
+            n :data_signal, val.to_ast
           end
         }
       end
@@ -1590,33 +1590,57 @@ module IJTAG
         invert:"~"? val:signal { 
           def to_ast
             fail "scan_signal invert not handled yet!" unless invert.empty?
-            val.to_ast
+            n :clock_signal, val.to_ast
           end
         }
       end
 
       rule tck_signal
-        signal
+        val:signal {
+          def to_ast
+            n :tck_signal, val.to_ast
+          end
+        }
       end
 
       rule tms_signal
-        signal
+        val:signal {
+          def to_ast
+            n :tms, val.to_ast
+          end
+        }
       end
 
       rule trst_signal
-        signal
+        val:signal {
+          def to_ast
+            n :trst, val.to_ast
+          end
+        }
       end
 
       rule shiftEn_signal
-        signal
+        val:signal {
+          def to_ast
+            n :shiftEn_signal, val.to_ast
+          end
+        }
       end
 
       rule captureEn_signal
-        signal
+        val:signal {
+          def to_ast
+            n :captureEn_signal, val.to_ast
+          end
+        }
       end
 
       rule updateEn_signal
-        signal
+        val:signal {
+          def to_ast
+            n :updateEn_signal, val.to_ast
+          end
+        }
       end
 
       rule concat_reset_signal
@@ -1625,7 +1649,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+              n :concat_reset_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
             end
           end
         }
@@ -1637,7 +1661,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+              n :concat_scan_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
             end
           end
         }
@@ -1649,7 +1673,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+              n :concat_data_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
             end
           end
         }
@@ -1661,7 +1685,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+              n :concat_clock_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
             end
           end
         }
@@ -1673,7 +1697,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+              n :concat_tck_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
             end
           end
         }
@@ -1685,7 +1709,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+              n :concat_shiftEn_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
             end
           end
         }
@@ -1697,7 +1721,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+              n :concat_captureEn_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
             end
           end
         }
@@ -1709,7 +1733,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+              n :concat_tms_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
             end
           end
         }
@@ -1721,7 +1745,7 @@ module IJTAG
             if s2.empty?
               s1.to_ast
             else
-              n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+              n :concat_trst_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
             end
           end
         }

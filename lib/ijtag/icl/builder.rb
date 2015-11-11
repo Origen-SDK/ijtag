@@ -48,7 +48,7 @@ module IJTAG
             case item.type
             when :inputPort_connection
               a, b = *item
-              netlist.add_net(to_vector(b, path: current_module.parent.path), to_vector(a, path: current_module.path), :instance_inputPort)
+              netlist.connect(to_path(b, path: current_module.parent.path), to_path(a, path: current_module.path))
             when :parameter_def
               # Do nothing, already applied
             else
@@ -73,11 +73,28 @@ module IJTAG
         name, *items = *process_all(node)
         name_and_size = name_and_size_from(name)
         type = node.type.to_s.sub('_def', '').camelize.to_sym
-        port = current_module.add_block(:Port, name_and_size[0], size: name_and_size[1], icl: node, network: top_level, type: type)
+        port = current_module.add_port(name_and_size[0].to_sym, size: name_and_size[1], type: type)
+
         items.each do |item|
           case item.type
           when :source
-            netlist.add_net(to_vector(item.to_a[0], path: port.parent.path), to_vector(port.path), "#{type}_source".to_sym)
+            to_connections(item.to_a[0], root: port.parent.path) do |connection|
+              # ICL doesn't provide the detail about whether a scan register connection is to a scan register's
+              # update stage or not, instead it is implied based on the type of the signal - data_signals are to
+              # the update path, scan_signals are not.
+              port.connect_to do |i|
+                if connection.type == :scan_signal
+                  node = network.path_to_node(connection.path)
+                  if node.is_a?(Origen::Models::ScanRegister)
+                    connection.path + '.sr' + connection.index_s
+                  else
+                    connection.to_s
+                  end
+                else
+                  connection.to_s
+                end
+              end
+            end
           else
             fail "Don't know how to model #{item.type} in a port def"
           end
@@ -124,20 +141,31 @@ module IJTAG
         unless elements[:scanInSource]
           fail BuildError.new('A ScanRegister definition must declare a ScanInSource', node)
         end
-        reg = current_module.add_block(:ScanRegister, name_and_size[0], size: name_and_size[1], icl: node, network: top_level)
-        netlist.add_net(to_vector(elements[:scanInSource].to_a[0],  path: reg.parent.path), to_vector(reg.path), :scanInSource)
-        netlist.add_net(to_vector(elements[:captureSource].to_a[0], path: reg.parent.path), to_vector(reg.path), :captureSource) if elements[:captureSource]
+        if elements[:resetValue]
+          reset = to_number(elements[:resetValue])
+        else
+          reset = 0
+        end
+        reg = current_module.add_block('Origen::Models::ScanRegister', name_and_size[0], size: name_and_size[1], reset: reset)
+        to_connections(elements[:scanInSource].to_a[0], root: reg.parent.path) do |connection|
+          reg.si.connect_to(connection.to_s)
+        end
+        if elements[:captureSource]
+          to_connections(elements[:captureSource].to_a[0], root: reg.parent.path) do |connection|
+            reg.c.connect_to(connection.to_s)
+          end
+        end
       end
 
       def on_scanMux_def(node)
         name, selected_by, *selections = *process_all(node)
         name_and_size = name_and_size_from(name)
         mux = current_module.add_block(:ScanMux, name_and_size[0], icl: node, network: top_level)
-        netlist.add_net(to_vector(selected_by,  path: mux.parent.path), to_vector(mux.path), :scanMux_selected_by)
+        netlist.add_net(to_path(selected_by,  path: mux.parent.path), to_path(mux.path), :scanMux_selected_by)
         selections.each do |selection|
-          from = to_vector(selection.to_a[1],  path: mux.parent.path)
+          from = to_path(selection.to_a[1],  path: mux.parent.path)
           mux.add_input(to_number(selection.to_a[0]), from.path)
-          netlist.add_net(from, to_vector(mux.path), :scanMux_selection)
+          netlist.add_net(from, to_path(mux.path), :scanMux_selection)
         end
       end
 
@@ -160,20 +188,41 @@ module IJTAG
         @to_string.process(node)
       end
 
-      def to_vector(node, options={})
+      def to_connections(node, options = {})
+        @to_connections ||= ToConnections.new
+        @to_connections.process(node).flatten.each do |connection|
+          connection.add_root(options[:root])
+          yield connection
+        end
+      end
+
+      def to_path(node, options = {})
         if node.is_a?(String)
-          v = Vector.new(node, nil, false, false)
+          node
         else
           @to_vector ||= ToVector.new
           v = @to_vector.process(node)
-          v.path = to_stem(options[:path]) + v.path if options[:path]
+          # If this is a pointer to a fixed logic level
+          if v.is_a?(Fixnum)
+            v
+          else
+            v.path = to_stem(options[:path]) + v.path if options[:path]
+            if v.index?
+              if v.range?
+                "#{v.path}[#{v.index.first}:#{v.index.last}]"
+              else
+                "#{v.path}[#{v.index}]"
+              end
+            else
+              v.path
+            end
+          end
         end
-        v
       end
 
       def to_number(node)
         @to_number ||= ToNumber.new
-        @to_number.process(node)
+        @to_number.process(node).value
       end
 
       def name_and_size_from(node)

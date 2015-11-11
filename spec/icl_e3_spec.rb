@@ -17,7 +17,7 @@ describe "ICL Example 3 from the 1687 spec" do
     net.ports.size.should == 10
     net.scan_interfaces.size.should == 1
     net.scan_registers.size.should == 1
-    net.sr.is_a?(IJTAG::ScanRegister).should == true
+    net.sr.is_a?(Origen::Models::ScanRegister).should == true
     net.sr.size.should == 8
     net.di.size.should == 8
   end
@@ -55,15 +55,34 @@ describe "ICL Example 3 from the 1687 spec" do
     net.do.size.should == 6
   end
 
-  it 'the connections are hooked up' do
-    net = IJTAG.import(file: file).instantiate("SReg")
-    net.di.outputs[0].path.should == "SR"
-    net.sr.c[0].path.should == "DI"
-    net.do.inputs[0].path.should == "SR"
-    net.sr.u[0].path.should == "DO"
-    net.si.outputs[0].path.should == "SR"
-    net.sr.si[0].path.should == "SI"
-    net.so.inputs[0].path.should == "SR"
-    net.sr.so[0].path.should == "SO"
+  it 'the model works' do
+    net = IJTAG.import(file: file).instantiate("SRegP3", Size: 3)
+    net.sr.size.should == 3
+
+    # Scan in some data
+    net.shift!(1)
+    net.shift!(0)
+    net.shift!(1)
+
+    net.so.data.should == 1
+    net.shift!(1)
+    net.so.data.should == 0
+    net.shift!(0)
+    net.so.data.should == 1
+    net.shift!(1)
+
+    # Update DO
+    net.do.data.should == 0b000
+    net.update!
+    net.do.data.should == 0b101
+
+    # Capture and shift out some data
+    net.di.drive(0b100)
+    net.capture!
+    net.so.data.should == 0
+    net.shift!
+    net.so.data.should == 0
+    net.shift!
+    net.so.data.should == 1
   end
 end

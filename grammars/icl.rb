@@ -14053,7 +14053,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+            n :concat_hier_data_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
           end
         end
       end
@@ -16674,7 +16674,7 @@ module IJTAG
 
         def to_ast
           fail "scan_signal invert not handled yet!" unless invert.empty?
-          val.to_ast
+          n :reset_signal, val.to_ast
         end
       end
 
@@ -16735,7 +16735,7 @@ module IJTAG
 
         def to_ast
           fail "scan_signal invert not handled yet!" unless invert.empty?
-          val.to_ast
+          n :scan_signal, val.to_ast
         end
       end
 
@@ -16796,7 +16796,7 @@ module IJTAG
 
         def to_ast
           fail "scan_signal invert not handled yet!" unless invert.empty?
-          val.to_ast
+          n :data_signal, val.to_ast
         end
       end
 
@@ -16857,7 +16857,7 @@ module IJTAG
 
         def to_ast
           fail "scan_signal invert not handled yet!" unless invert.empty?
-          val.to_ast
+          n :clock_signal, val.to_ast
         end
       end
 
@@ -16904,6 +16904,18 @@ module IJTAG
         r0
       end
 
+      module TckSignal0
+        def val
+          elements[0]
+        end
+      end
+
+      module TckSignal1
+        def to_ast
+          n :tck_signal, val.to_ast
+        end
+      end
+
       def _nt_tck_signal
         start_index = index
         if node_cache[:tck_signal].has_key?(index)
@@ -16915,11 +16927,33 @@ module IJTAG
           return cached
         end
 
-        r0 = _nt_signal
+        i0, s0 = index, []
+        r1 = _nt_signal
+        s0 << r1
+        if s0.last
+          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(TckSignal0)
+          r0.extend(TckSignal1)
+        else
+          @index = i0
+          r0 = nil
+        end
 
         node_cache[:tck_signal][start_index] = r0
 
         r0
+      end
+
+      module TmsSignal0
+        def val
+          elements[0]
+        end
+      end
+
+      module TmsSignal1
+        def to_ast
+          n :tms, val.to_ast
+        end
       end
 
       def _nt_tms_signal
@@ -16933,11 +16967,33 @@ module IJTAG
           return cached
         end
 
-        r0 = _nt_signal
+        i0, s0 = index, []
+        r1 = _nt_signal
+        s0 << r1
+        if s0.last
+          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(TmsSignal0)
+          r0.extend(TmsSignal1)
+        else
+          @index = i0
+          r0 = nil
+        end
 
         node_cache[:tms_signal][start_index] = r0
 
         r0
+      end
+
+      module TrstSignal0
+        def val
+          elements[0]
+        end
+      end
+
+      module TrstSignal1
+        def to_ast
+          n :trst, val.to_ast
+        end
       end
 
       def _nt_trst_signal
@@ -16951,11 +17007,33 @@ module IJTAG
           return cached
         end
 
-        r0 = _nt_signal
+        i0, s0 = index, []
+        r1 = _nt_signal
+        s0 << r1
+        if s0.last
+          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(TrstSignal0)
+          r0.extend(TrstSignal1)
+        else
+          @index = i0
+          r0 = nil
+        end
 
         node_cache[:trst_signal][start_index] = r0
 
         r0
+      end
+
+      module ShiftEnSignal0
+        def val
+          elements[0]
+        end
+      end
+
+      module ShiftEnSignal1
+        def to_ast
+          n :shiftEn_signal, val.to_ast
+        end
       end
 
       def _nt_shiftEn_signal
@@ -16969,11 +17047,33 @@ module IJTAG
           return cached
         end
 
-        r0 = _nt_signal
+        i0, s0 = index, []
+        r1 = _nt_signal
+        s0 << r1
+        if s0.last
+          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(ShiftEnSignal0)
+          r0.extend(ShiftEnSignal1)
+        else
+          @index = i0
+          r0 = nil
+        end
 
         node_cache[:shiftEn_signal][start_index] = r0
 
         r0
+      end
+
+      module CaptureEnSignal0
+        def val
+          elements[0]
+        end
+      end
+
+      module CaptureEnSignal1
+        def to_ast
+          n :captureEn_signal, val.to_ast
+        end
       end
 
       def _nt_captureEn_signal
@@ -16987,11 +17087,33 @@ module IJTAG
           return cached
         end
 
-        r0 = _nt_signal
+        i0, s0 = index, []
+        r1 = _nt_signal
+        s0 << r1
+        if s0.last
+          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(CaptureEnSignal0)
+          r0.extend(CaptureEnSignal1)
+        else
+          @index = i0
+          r0 = nil
+        end
 
         node_cache[:captureEn_signal][start_index] = r0
 
         r0
+      end
+
+      module UpdateEnSignal0
+        def val
+          elements[0]
+        end
+      end
+
+      module UpdateEnSignal1
+        def to_ast
+          n :updateEn_signal, val.to_ast
+        end
       end
 
       def _nt_updateEn_signal
@@ -17005,7 +17127,17 @@ module IJTAG
           return cached
         end
 
-        r0 = _nt_signal
+        i0, s0 = index, []
+        r1 = _nt_signal
+        s0 << r1
+        if s0.last
+          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(UpdateEnSignal0)
+          r0.extend(UpdateEnSignal1)
+        else
+          @index = i0
+          r0 = nil
+        end
 
         node_cache[:updateEn_signal][start_index] = r0
 
@@ -17042,7 +17174,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+            n :concat_reset_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
           end
         end
       end
@@ -17173,7 +17305,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+            n :concat_scan_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
           end
         end
       end
@@ -17304,7 +17436,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+            n :concat_data_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
           end
         end
       end
@@ -17407,7 +17539,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+            n :concat_clock_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
           end
         end
       end
@@ -17538,7 +17670,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+            n :concat_tck_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
           end
         end
       end
@@ -17669,7 +17801,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+            n :concat_shiftEn_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
           end
         end
       end
@@ -17799,7 +17931,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+            n :concat_captureEn_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
           end
         end
       end
@@ -17922,7 +18054,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+            n :concat_tms_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
           end
         end
       end
@@ -18037,7 +18169,7 @@ module IJTAG
           if s2.empty?
             s1.to_ast
           else
-            n :concat, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
+            n :concat_trst_signal, s1.to_ast, *s2.elements.map{ |e| e.signal.to_ast }, input: input, interval: interval, file: file
           end
         end
       end

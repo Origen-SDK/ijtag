@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "A ScanRegister" do
+describe "A ScanRegister statement" do
 
 #  it 'The scanRegister_name shall shift from left to right, meaning that the bit associated with the index
 #      to the left of the “:” in the index range shifts toward the index to the right of the “:”'

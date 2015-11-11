@@ -19,8 +19,12 @@ describe "ICL Example 4 from the 1687 spec" do
     net.reg8.instance_name.should == "reg8"
   end
 
-  it 'the connections are hooked up' do
+  it 'the model works' do
     net = IJTAG.import(file: file).instantiate("WrappedInstr")
+    
+
+
+
     net.si.outputs[0].path.should == "reg8.SI"
     net.reg8.si.inputs[0].path.should == "SI"
     net.so.inputs[0].path.should == "reg8.SO"

@@ -18,8 +18,8 @@ describe "ICL Example 2 from the 1687 spec" do
     network = defn.instantiate("Instrument")
     network.is_a?(IJTAG::Module).should == true
     network.ports.size.should == 2
-    network.ports[:DO].size.should == 8
-    network.ports[:DI].size.should == 8
+    network.DO.size.should == 8
+    network.DI.size.should == 8
   end 
 
   it 'captures alias and enumerations from the module def' do
