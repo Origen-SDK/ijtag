@@ -32,7 +32,16 @@ describe "ICL Example 5 from the 1687 spec" do
 
     net.chain_length.should == 24
 
+    net.wi1.i1.do.drive(0x11)
+    net.wi2.i1.do.drive(0x22)
+    net.wi3.i1.do.drive(0x33)
 
+    net.capture!
 
+    net.shift!(size: 8, expect: 0x33).should == true
+    net.shift!(size: 8, expect: 0x22).should == true
+    net.shift!(size: 8, expect: 0x11).should == true
+    net.shift!(size: 8, expect: 0x00).should == true
+    net.shift!(size: 8, expect: 0xFF).should == false
   end
 end

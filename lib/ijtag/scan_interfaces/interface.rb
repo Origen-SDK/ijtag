@@ -46,14 +46,23 @@ module IJTAG
       end
 
       def shift!(val = 0, options = {})
-        val, options = val, 0 if val.is_a?(Hash)
+        val, options = 0, val if val.is_a?(Hash)
+        miscompare = false
         with_select do
           with_shift do
             (options[:size] || 1).times do |i|
+              if options[:expect]
+                unless options[:expect][i] == so.data
+                  miscompare = true
+                end
+              end
               si.drive(val[i])
               parent.clock!
             end
           end
+        end
+        if options[:expect]
+          !miscompare
         end
       end
 
