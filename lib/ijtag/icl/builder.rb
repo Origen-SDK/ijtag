@@ -25,13 +25,6 @@ module IJTAG
         define_module(model) do
           params.each do |k, v|
             k = k.to_s
-            unless v.is_a?(AST::Node)
-              if v.is_a?(String)
-                v = AST::Node.new :STRING, [v]
-              else
-                v = AST::Node.new :POS_INT, [v]
-              end
-            end
             parameters[k] ||= v
           end
           process_all(items)
@@ -48,7 +41,8 @@ module IJTAG
             case item.type
             when :inputPort_connection
               a, b = *item
-              netlist.connect(to_path(b, path: current_module.parent.path), to_path(a, path: current_module.path))
+              netlist.connect(Connection.new(b).add_root(current_module.parent.path).to_s,
+                              Connection.new(a).add_root(current_module.path).to_s)
             when :parameter_def
               # Do nothing, already applied
             else
@@ -57,11 +51,19 @@ module IJTAG
           end
           process_all(module_def.children)
         end
+        # Finally hook up the implied connections to the new modules parent now that it has
+        # been full instantiated
+        current_module.send(:connect_module, model)
+      end
+
+      def on_range(node)
+        first, last = *process_all(node)
+        first..last
       end
 
       def on_parameter_def(node)
         name, val = *process_all(node)
-        parameters[name.value] ||= val
+        parameters[name] ||= val
         node
       end
 
@@ -69,16 +71,40 @@ module IJTAG
         parameters[node.value]
       end
 
+      def on_hier_port(node)
+        process_all(node).join('.')
+      end
+
+      def on_SCALAR_ID(node)
+        node.children.first
+      end
+
+      def on_vector_id(node)
+        nodes = process_all(node)
+        Connection.new(nodes[0], index: nodes[1])
+      end
+
+      def on_signal(node)
+        nodes = process_all(node)
+        if nodes.size > 1
+          fail BuildError.new('Signal definition expects only one child', node)
+        end
+        Connection.new(nodes[0], type: node.type)
+      end
+      alias_method :on_scan_signal, :on_signal
+      alias_method :on_data_signal, :on_signal
+      alias_method :on_reset_signal, :on_signal
+
       def on_port_def(node)
         name, *items = *process_all(node)
-        name_and_size = name_and_size_from(name)
+        c = Connection.new(name)
         type = node.type.to_s.sub('_def', '').camelize.to_sym
-        port = current_module.add_port(name_and_size[0].to_sym, size: name_and_size[1], type: type)
+        port = current_module.add_port(c.path, size: c.size, type: type)
 
         items.each do |item|
           case item.type
           when :source
-            to_connections(item.to_a[0], root: port.parent.path) do |connection|
+            item.to_a[0].add_root(port.parent.path).each do |connection|
               # ICL doesn't provide the detail about whether a scan register connection is to a scan register's
               # update stage or not, instead it is implied based on the type of the signal - data_signals are to
               # the update path, scan_signals are not.
@@ -96,7 +122,7 @@ module IJTAG
               end
             end
           else
-            fail "Don't know how to model #{item.type} in a port def"
+            fail BuildError.new("#{item.type} does not have a build rule yet in a port def", node)
           end
         end
       end
@@ -121,13 +147,20 @@ module IJTAG
 
       def on_scanInterface_def(node)
         name, *items = *process_all(node)
-        name_and_size = name_and_size_from(name)
-        current_module.scan_interfaces[name_and_size[0]] = node
+        int = current_module.add_scan_interface(name)
+        items.each do |item|
+          case item.type
+          when :scanInterfacePort_def
+            int.add_port item.to_a[0]
+          else
+            fail BuildError.new("#{item.type} does not have a build rule yet in a ScanInterface def", node)
+          end
+        end
       end
 
       def on_scanRegister_def(node)
         name, *items = *process_all(node)
-        name_and_size = name_and_size_from(name)
+        c = Connection.new(name)
         elements = { attributes: [] }
         items.each do |item|
           if item.type == :attribute_def
@@ -142,16 +175,16 @@ module IJTAG
           fail BuildError.new('A ScanRegister definition must declare a ScanInSource', node)
         end
         if elements[:resetValue]
-          reset = to_number(elements[:resetValue])
+          reset = elements[:resetValue].to_a[0]
         else
           reset = 0
         end
-        reg = current_module.add_block('Origen::Models::ScanRegister', name_and_size[0], size: name_and_size[1], reset: reset)
-        to_connections(elements[:scanInSource].to_a[0], root: reg.parent.path) do |connection|
+        reg = current_module.add_block('Origen::Models::ScanRegister', c.path, size: c.size, reset: reset)
+        elements[:scanInSource].to_a[0].add_root(reg.parent.path).each do |connection|
           reg.si.connect_to(connection.to_s)
         end
         if elements[:captureSource]
-          to_connections(elements[:captureSource].to_a[0], root: reg.parent.path) do |connection|
+          elements[:captureSource].to_a[0].add_root(reg.parent.path).each do |connection|
             reg.c.connect_to(connection.to_s)
           end
         end
@@ -173,72 +206,6 @@ module IJTAG
 
       def netlist
         network.netlist
-      end
-
-      def to_stem(path)
-        if path.empty?
-          ''
-        else
-          path + '.'
-        end
-      end
-
-      def to_string(node)
-        @to_string ||= ToString.new
-        @to_string.process(node)
-      end
-
-      def to_connections(node, options = {})
-        @to_connections ||= ToConnections.new
-        @to_connections.process(node).flatten.each do |connection|
-          connection.add_root(options[:root])
-          yield connection
-        end
-      end
-
-      def to_path(node, options = {})
-        if node.is_a?(String)
-          node
-        else
-          @to_vector ||= ToVector.new
-          v = @to_vector.process(node)
-          # If this is a pointer to a fixed logic level
-          if v.is_a?(Fixnum)
-            v
-          else
-            v.path = to_stem(options[:path]) + v.path if options[:path]
-            if v.index?
-              if v.range?
-                "#{v.path}[#{v.index.first}:#{v.index.last}]"
-              else
-                "#{v.path}[#{v.index}]"
-              end
-            else
-              v.path
-            end
-          end
-        end
-      end
-
-      def to_number(node)
-        @to_number ||= ToNumber.new
-        @to_number.process(node).value
-      end
-
-      def name_and_size_from(node)
-        if node.type == :vector_id && node.to_a[1].type == :range
-          a = node.to_a
-          [a[0].value, size_of(a[1])]
-        elsif node.type == :SCALAR_ID
-          [node.value, 1]
-        else
-          fail "Don't know how to extract name_and_size from node type #{node.type}!"
-        end
-      end
-
-      def size_of(range)
-        a, b = *range
-        (a.value - b.value).abs + 1
       end
 
       def define_module(model)

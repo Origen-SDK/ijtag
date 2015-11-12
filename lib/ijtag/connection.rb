@@ -1,7 +1,35 @@
 module IJTAG
   module ICL
-    Connection = Struct.new(:path, :index) do
-      attr_accessor :type, :size
+    class Connection
+      attr_accessor :type, :size, :path, :index
+
+      def initialize(path, options = {})
+        @size = options[:size]
+        @index = options[:index]
+        @type = options[:type]
+        if path.is_a?(Connection)
+          @size ||= path.size
+          @index ||= path.index
+          @type ||= path.type
+          path = path.path
+        elsif path =~ /(.*)\[(\d+):?(\d*)\]$/
+          if Regexp.last_match(3).empty?
+            path = Regexp.last_match(1)
+            @index ||= Regexp.last_match(2).to_i
+            @size ||= 1
+          else
+            path = Regexp.last_match(1)
+            @index ||= ((Regexp.last_match(2).to_i)..(Regexp.last_match(3).to_i))
+            @size ||= @index.to_a.size
+          end
+        end
+        @path = path
+        add_root(options[:root])
+      end
+
+      def each
+        yield self
+      end
 
       def index?
         !!index
@@ -17,8 +45,9 @@ module IJTAG
 
       def add_root(root)
         if root
-          self.path = to_stem(root) + path
+          @path = to_stem(root) + path
         end
+        self
       end
 
       def size

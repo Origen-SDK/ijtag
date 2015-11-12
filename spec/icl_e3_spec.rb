@@ -15,8 +15,14 @@ describe "ICL Example 3 from the 1687 spec" do
     net = IJTAG.import(file: file).instantiate("SReg")
     net.is_a?(IJTAG::Module).should == true
     net.ports.size.should == 10
-    net.scan_interfaces.size.should == 1
-    net.scan_registers.size.should == 1
+    net.scan_client.type.should == :client
+    net.scan_client.si.should == net.SI
+    net.scan_client.so.should == net.SO
+    net.scan_client.sel.should == net.SEL
+    net.scan_client.se.should == net.SE
+    net.scan_client.ce.should == net.CE
+    net.scan_client.ue.should == net.UE
+    net.client_interfaces[0].should == net.scan_client
     net.sr.is_a?(Origen::Models::ScanRegister).should == true
     net.sr.size.should == 8
     net.di.size.should == 8
@@ -58,6 +64,7 @@ describe "ICL Example 3 from the 1687 spec" do
   it 'the model works' do
     net = IJTAG.import(file: file).instantiate("SRegP3", Size: 3)
     net.sr.size.should == 3
+    net.chain_length.should == 3
 
     # Scan in some data
     net.shift!(1)
@@ -72,6 +79,9 @@ describe "ICL Example 3 from the 1687 spec" do
     net.shift!(1)
 
     # Update DO
+    # Peek at internal reg
+    net.sr.sr.data.should == 0b101
+    # Verify not exposed yet
     net.do.data.should == 0b000
     net.update!
     net.do.data.should == 0b101

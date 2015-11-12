@@ -1,9 +1,11 @@
+require 'ijtag/scan_interfaces'
 module IJTAG
   # Corresponds to an ICL module instance
   class Module
     include Origen::Model
     include IJTAG::Aliases
     include IJTAG::Enumerations
+    include IJTAG::ScanInterfaces
 
     attr_reader :icl, :module_name, :instance_name
     attr_reader :network, :top_level
@@ -22,15 +24,13 @@ module IJTAG
       end
     end
 
-    def scan_interfaces
-      @scan_interfaces ||= {}.with_indifferent_access
-    end
-
     def path_to_node(path)
-      unless node = eval("self.#{path}")
+      @path_to_node ||= {}
+      if node = @path_to_node[path] ||= eval("self.#{path}")
+        node
+      else
         fail "Node #{path} was not found!"
       end
-      node
     end
 
     def add_block(type, name, options = {})
@@ -43,85 +43,73 @@ module IJTAG
           send(name)
         end
       end
-      @cache = {}
       block
     end
 
-    def scan_registers
-      @cache[:scan_registers] ||= sub_blocks.select { |k, v| v.is_a?(Origen::Models::ScanRegister) }
-    end
-
-    def shift!(val = 0)
-      with_select do
-        with_shift do
-          ports.by_type['ScanInPort'].first.drive(val)
-          clock!
-        end
-      end
+    def shift!(*args)
+      client_interfaces[0].shift!(*args)
     end
 
     def update!
-      with_select do
-        with_update do
-          clock!
-        end
-      end
+      client_interfaces[0].update!
     end
 
     def capture!
-      with_select do
-        with_capture do
-          clock!
+      client_interfaces[0].capture!
+    end
+
+    # Returns the length of the chain between a modules SI port and SO port
+    def chain_length(timeout = 1000)
+      # There may be a quicker way of doing this by inspecting the netlist, but
+      # that could be difficult and may need to build a lot of knowledge about the
+      # circuit behavior into such an analyzer. So instead for now we will just shift
+      # some known data into SI and count how long it takes to come out the other side.
+
+      # Something suitably long and random
+      data = '1011101101000110110001101100011010101111111100000001010110100101'.to_i(2)
+      matched = false
+      read_data = 0
+      i = 0
+      while !matched && i < (timeout + 64)
+        shift!(data[i])
+        data_out = client_interfaces[0].so.data
+        read_data >>= 1
+        read_data |= data_out << 63
+        read_data &= 0xFFFF_FFFF_FFFF_FFFF
+        if read_data == data
+          matched = true
+        else
+          i += 1
         end
       end
-    end
 
-    def selected?
-      ports.by_type['SelectPort'].first.data == 1
-    end
-
-    def shift?
-      selected? && ports.by_type['ShiftEnPort'].first.data == 1
-    end
-
-    def capture?
-      selected? && ports.by_type['CaptureEnPort'].first.data == 1
-    end
-
-    def update?
-      selected? && ports.by_type['UpdateEnPort'].first.data == 1
+      if i == (timeout + 64)
+        fail "The chain is either not complete, or longer than #{timeout}"
+      else
+        i - 62
+      end
     end
 
     private
 
-    def with_select
-      ports.by_type['SelectPort'].first.drive(1)
-      yield
-      ports.by_type['SelectPort'].first.drive(0)
-    end
-
-    def with_capture
-      ports.by_type['CaptureEnPort'].first.drive(1)
-      yield
-      ports.by_type['CaptureEnPort'].first.drive(0)
-    end
-
-    def with_shift
-      ports.by_type['ShiftEnPort'].first.drive(1)
-      yield
-      ports.by_type['ShiftEnPort'].first.drive(0)
-    end
-
-    def with_update
-      ports.by_type['UpdateEnPort'].first.drive(1)
-      yield
-      ports.by_type['UpdateEnPort'].first.drive(0)
+    def root
+      r = path
+      r += '.' unless r.empty?
+      r
     end
 
     def connect_sr(sr)
-      sr.ue.connect_to { update? ? 1 : 0 }
-      sr.se.connect_to { shift? ? 1 : 0 }
-      sr.ce.connect_to { capture? ? 1 : 0 }
+      sr.ue.connect_to "#{root}client_interfaces[0].ue"
+      sr.se.connect_to "#{root}client_interfaces[0].se"
+      sr.ce.connect_to "#{root}client_interfaces[0].ce"
+    end
+
+    def connect_module(mod)
+      unless mod.client_interfaces.empty?
+        netlist.connect "#{mod.path}.client_interfaces[0].ue", "#{root}client_interfaces[0].ue"
+        netlist.connect "#{mod.path}.client_interfaces[0].se", "#{root}client_interfaces[0].se"
+        netlist.connect "#{mod.path}.client_interfaces[0].ce", "#{root}client_interfaces[0].ce"
+      end
     end
 
     # Performs final default hookup once all all blocks are instantiated, e.g. connect

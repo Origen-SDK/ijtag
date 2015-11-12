@@ -1,45 +1,41 @@
 module IJTAG
   module ICL
     module NumericExpressionProcessor
-      def compute_op(node)
-        # Process all child nodes to convert everything to INTs and resolve parameters,
-        # this will return something like this: [(POS-INT 2), (POS-INT 5)]
+      def on_SIZED_POS_INT(node)
         nodes = process_all(node)
+        SizedNumber.new(nodes[1], size: nodes[0])
+      end
 
-        values = nodes.map do |node|
-          if node.type == :SIZED_POS_INT
-            node.children[1].value
-          else
-            node.children[0]
-          end
-        end
-
-        node.updated :POS_INT, [yield(values)]
+      def on_POS_INT(node)
+        process_all(node)[0]
       end
 
       def on_add(node)
-        compute_op(node) { |left, right| left + right }
+        left, right = *process_all(node)
+        left + right
       end
 
       def on_subtract(node)
-        compute_op(node) { |left, right| left - right }
+        left, right = *process_all(node)
+        left - right
       end
 
       def on_UNSIZED_BIN_NUMBER(node)
         nodes = process_all(node)
-        node.updated :POS_INT, [nodes[0].to_i(2)]
+        nodes[0].to_i(2)
       end
 
       def on_UNSIZED_HEX_NUMBER(node)
         nodes = process_all(node)
-        node.updated :POS_INT, [nodes[0].to_i(16)]
+        nodes[0].to_i(16)
       end
 
       # These just get rid of the size component so that it can be treated
       # like a regular number in additions, don't think the size is really
       # required anywhere
       def on_sized_number(node)
-        node.updated :SIZED_POS_INT, process_all(node)
+        nodes = process_all(node)
+        SizedNumber.new(nodes[1], size: nodes[0])
       end
       alias_method :on_sized_dec_number, :on_sized_number
       alias_method :on_sized_bin_number, :on_sized_number

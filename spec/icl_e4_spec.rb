@@ -20,18 +20,38 @@ describe "ICL Example 4 from the 1687 spec" do
   end
 
   it 'the model works' do
-    net = IJTAG.import(file: file).instantiate("WrappedInstr")
+    net = IJTAG.import(file: file).instantiate("WrappedInstr", Size: 3)
+    net.chain_length.should == 8
     
+    # Scan in some data
+    net.shift!(0b1010_1010, size: 8)
+    net.reg8.sr.sr.data.should == 0b1010_1010  # Verify SI hookup
 
+    4.times do
+      net.so.data.should == 0
+      net.shift!
+      net.so.data.should == 1
+      net.shift!
+    end
 
+    # Update DO
+    net.shift!(0b1100_1100, size: 8)
+    net.i1.di.data.should == 0
+    net.update!
+    net.i1.di.data.should == 0b1100_1100
 
-    net.si.outputs[0].path.should == "reg8.SI"
-    net.reg8.si.inputs[0].path.should == "SI"
-    net.so.inputs[0].path.should == "reg8.SO"
-    net.reg8.so.outputs[0].path.should == "SO"
-    net.reg8.di.inputs[0].path.should == "I1.DO"
-    net.i1.do.outputs[0].path.should == "reg8.DI"
-    net.reg8.do.outputs[0].path.should == "I1.DI"
-    net.i1.di.inputs[0].path.should == "reg8.DO"
+    # Capture and shift out some data
+    net.i1.do.drive(0b1001_1001)
+    net.capture!
+    2.times do
+      net.so.data.should == 1
+      net.shift!
+      net.so.data.should == 0
+      net.shift!
+      net.so.data.should == 0
+      net.shift!
+      net.so.data.should == 1
+      net.shift!
+    end
   end
 end

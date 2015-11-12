@@ -18,7 +18,7 @@ describe "The ICL AST Resolver" do
                s(:POS_INT, 5)),
              s(:POS_INT, 3))
 
-     r.process(ast).should == s(:POS_INT, 10)             
+     r.process(ast).should == 10
   end
 
   it "can deal with binary and hex numbers in expressions" do
@@ -28,7 +28,7 @@ describe "The ICL AST Resolver" do
                s(:UNSIZED_HEX_NUMBER, "10")),
              s(:POS_INT, 3))
 
-     r.process(ast).should == s(:POS_INT, 21)             
+     r.process(ast).should == 21
   end
 
   it "also handles sized numbers in expressions" do
@@ -44,7 +44,7 @@ describe "The ICL AST Resolver" do
                s(:POS_INT, 16),
                s(:POS_INT, 3)))
 
-     r.process(ast).should == s(:POS_INT, 21)             
+     r.process(ast).should == 21
   end
 
   it "can resolve subtractions"
