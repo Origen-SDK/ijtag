@@ -7,7 +7,7 @@ PATH
       treetop (~> 1)
 
 PATH
-  remote: /proj/mem_c40tfs_testeng/r49409/origen
+  remote: /home/stephen/Code/github/origen
   specs:
     origen (0.5.7)
       activesupport (~> 4.1)
@@ -176,3 +176,6 @@ DEPENDENCIES
   ijtag!
   origen!
   origen_doc_helpers
+
+BUNDLED WITH
+   1.10.6
