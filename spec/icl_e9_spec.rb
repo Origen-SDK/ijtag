@@ -25,17 +25,17 @@ describe "ICL Example 9 from the 1687 spec" do
 
   it 'nodes can be tied off to logic levels' do
     net = IJTAG.import(file: file).instantiate("mux_inline3")
-    net.reg3.di.inputs[0].value.should == 0
+    net.reg3.di.data.should == 0
   end
 
-  it 'individual bits of a port can be tied to different nodes' do
+  it 'the model works' do
     net = IJTAG.import(file: file).instantiate("mux_inline3")
-    net.reg3.do[1].path.should == "reg3.DO[1]"
-    net.reg3.do[1..0].path.should == "reg3.DO[1:0]"
-    net.reg3.do[0].outputs[0].path.should == 'mux1'
-    net.reg3.do[1].outputs[0].path.should == 'mux2'
-    net.reg3.do[2].outputs[0].path.should == 'mux3'
+    net.chain_length.should == 3
+    net.shift!(0b001, size: 3)
+    net.update!
+    net.chain_length.should == 3 + 8
+    net.shift!(0b111, size: 11)
+    net.update!
+    net.chain_length.should == 3 + (8 * 3)
   end
-
-  it 'scan muxes are modelled accurately'
 end

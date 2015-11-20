@@ -43,8 +43,13 @@ module IJTAG
             case item.type
             when :inputPort_connection
               a, b = *item
-              defer_connection(Connection.new(b).add_root(current_module.parent.path).to_s,
-                               Connection.new(a).add_root(current_module.path).to_s)
+              a = Connection.new(a).add_root(current_module.path).to_s
+              if b.numeric?
+                b = b.path
+              else
+                b = Connection.new(b).add_root(current_module.parent.path).to_s
+              end
+              defer_connection(a, b)
             when :parameter_def
               # Do nothing, already applied
             else
@@ -208,7 +213,7 @@ module IJTAG
         c = Connection.new(name)
         mux = current_module.add_block('Origen::Models::Mux', c.path)
         selected_by.add_root(mux.parent.path).each do |connection|
-          mux.select_by connection.path
+          mux.select_by connection.to_s
         end
         options.each do |option|
           o = option.to_a

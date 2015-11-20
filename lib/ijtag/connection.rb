@@ -27,6 +27,10 @@ module IJTAG
         add_root(options[:root])
       end
 
+      def numeric?
+        path.is_a?(Numeric)
+      end
+
       def each
         yield self
       end
