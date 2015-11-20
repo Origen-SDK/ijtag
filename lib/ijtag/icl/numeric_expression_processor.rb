@@ -3,7 +3,7 @@ module IJTAG
     module NumericExpressionProcessor
       def on_SIZED_POS_INT(node)
         nodes = process_all(node)
-        SizedNumber.new(nodes[1], size: nodes[0])
+        Origen::SizedNumber.new(nodes[1], nodes[0])
       end
 
       def on_POS_INT(node)
@@ -35,7 +35,7 @@ module IJTAG
       # required anywhere
       def on_sized_number(node)
         nodes = process_all(node)
-        SizedNumber.new(nodes[1], size: nodes[0])
+        Origen::SizedNumber.new(nodes[1], nodes[0])
       end
       alias_method :on_sized_dec_number, :on_sized_number
       alias_method :on_sized_bin_number, :on_sized_number

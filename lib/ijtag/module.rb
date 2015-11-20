@@ -106,22 +106,10 @@ module IJTAG
 
     def connect_module(mod)
       unless mod.client_interfaces.empty?
-        netlist.connect "#{mod.path}.client_interfaces[0].ue", "#{root}client_interfaces[0].ue"
-        netlist.connect "#{mod.path}.client_interfaces[0].se", "#{root}client_interfaces[0].se"
-        netlist.connect "#{mod.path}.client_interfaces[0].ce", "#{root}client_interfaces[0].ce"
+        mod.client_interfaces[0].ue.connect_to "#{root}client_interfaces[0].ue"
+        mod.client_interfaces[0].se.connect_to "#{root}client_interfaces[0].se"
+        mod.client_interfaces[0].ce.connect_to "#{root}client_interfaces[0].ce"
       end
-    end
-
-    # Performs final default hookup once all all blocks are instantiated, e.g. connect
-    # all scan registers to their modules scan interface ports
-    def finalize
-      sub_blocks.each do |name, block|
-        if block.is_a?(IJTAG::Module)
-          block.send(:finalize)
-        elsif block.is_a?(Origen::Models::ScanRegister)
-        end
-      end
-      self
     end
   end
 end

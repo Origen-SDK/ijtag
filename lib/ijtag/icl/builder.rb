@@ -29,6 +29,8 @@ module IJTAG
           end
           process_all(items)
         end
+        connect
+        top_level
       end
 
       def on_instance_def(node)
@@ -41,8 +43,8 @@ module IJTAG
             case item.type
             when :inputPort_connection
               a, b = *item
-              netlist.connect(Connection.new(b).add_root(current_module.parent.path).to_s,
-                              Connection.new(a).add_root(current_module.path).to_s)
+              defer_connection(Connection.new(b).add_root(current_module.parent.path).to_s,
+                               Connection.new(a).add_root(current_module.path).to_s)
             when :parameter_def
               # Do nothing, already applied
             else
@@ -99,7 +101,12 @@ module IJTAG
         name, *items = *process_all(node)
         c = Connection.new(name)
         type = node.type.to_s.sub('_def', '').camelize.to_sym
-        port = current_module.add_port(c.path, size: c.size, type: type)
+        if type == :ScanOutPort
+          size = c.size || 1
+        else
+          size = c.size
+        end
+        port = current_module.add_port(c.path, size: size, type: type)
 
         items.each do |item|
           case item.type
@@ -108,16 +115,16 @@ module IJTAG
               # ICL doesn't provide the detail about whether a scan register connection is to a scan register's
               # update stage or not, instead it is implied based on the type of the signal - data_signals are to
               # the update path, scan_signals are not.
-              port.connect_to do |i|
+              port.connect_to do
+                node = network.path_to_node(connection.path)
                 if connection.type == :scan_signal
-                  node = network.path_to_node(connection.path)
                   if node.is_a?(Origen::Models::ScanRegister)
-                    connection.path + '.sr' + connection.index_s
+                    node.sr.data
                   else
-                    connection.to_s
+                    node.data
                   end
                 else
-                  connection.to_s
+                  node.data
                 end
               end
             end
@@ -204,8 +211,15 @@ module IJTAG
 
       private
 
-      def netlist
-        network.netlist
+      def connect
+        (@deferred_connections || []).each do |a, b|
+          eval("top_level.#{a}").connect_to b
+        end
+      end
+
+      def defer_connection(a, b)
+        @deferred_connections ||= []
+        @deferred_connections << [a, b]
       end
 
       def define_module(model)
