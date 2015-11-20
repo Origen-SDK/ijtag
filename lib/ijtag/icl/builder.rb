@@ -29,7 +29,7 @@ module IJTAG
           end
           process_all(items)
         end
-        connect
+        apply_deferred_connections
         top_level
       end
 
@@ -143,6 +143,12 @@ module IJTAG
       alias_method :on_tckPort_def, :on_port_def
       alias_method :on_dataInPort_def, :on_port_def
       alias_method :on_dataOutPort_def, :on_port_def
+      alias_method :on_toCaptureEnPort_def, :on_port_def
+      alias_method :on_toShiftEnPort_def, :on_port_def
+      alias_method :on_toUpdateEnPort_def, :on_port_def
+      alias_method :on_toSelectPort_def, :on_port_def
+      alias_method :on_toResetPort_def, :on_port_def
+      alias_method :on_toTckPort_def, :on_port_def
 
       def on_alias_def(node)
         current_module.aliases << node
@@ -186,7 +192,7 @@ module IJTAG
         else
           reset = 0
         end
-        reg = current_module.add_block('Origen::Models::ScanRegister', c.path, size: c.size, reset: reset)
+        reg = current_module.add_block('Origen::Models::ScanRegister', c.path, size: c.size || 1, reset: reset)
         elements[:scanInSource].to_a[0].add_root(reg.parent.path).each do |connection|
           reg.si.connect_to(connection.to_s)
         end
@@ -198,20 +204,21 @@ module IJTAG
       end
 
       def on_scanMux_def(node)
-        name, selected_by, *selections = *process_all(node)
-        name_and_size = name_and_size_from(name)
-        mux = current_module.add_block(:ScanMux, name_and_size[0], icl: node, network: top_level)
-        netlist.add_net(to_path(selected_by,  path: mux.parent.path), to_path(mux.path), :scanMux_selected_by)
-        selections.each do |selection|
-          from = to_path(selection.to_a[1],  path: mux.parent.path)
-          mux.add_input(to_number(selection.to_a[0]), from.path)
-          netlist.add_net(from, to_path(mux.path), :scanMux_selection)
+        name, selected_by, *options = *process_all(node)
+        c = Connection.new(name)
+        mux = current_module.add_block('Origen::Models::Mux', c.path)
+        selected_by.add_root(mux.parent.path).each do |connection|
+          mux.select_by connection.path
+        end
+        options.each do |option|
+          o = option.to_a
+          mux.option o[0], o[1].add_root(current_module.path).to_s
         end
       end
 
       private
 
-      def connect
+      def apply_deferred_connections
         (@deferred_connections || []).each do |a, b|
           eval("top_level.#{a}").connect_to b
         end

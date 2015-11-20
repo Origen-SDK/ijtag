@@ -18,4 +18,15 @@ describe "ICL Example 7 from the 1687 spec" do
     net.wi2.should be
     net.wi3.should be
   end
+
+  it 'the model works' do
+    net = IJTAG.import(file: file).instantiate("Single_SIB_3WI")
+    net.chain_length.should == 1
+    net.shift!(1)
+    net.update!
+    net.chain_length.should == 25
+    net.shift!(0, size: 25)
+    net.update!
+    net.chain_length.should == 1
+  end
 end

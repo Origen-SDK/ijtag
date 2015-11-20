@@ -29,7 +29,6 @@ describe "ICL Example 5 from the 1687 spec" do
 
   it 'the model works' do
     net = IJTAG.import(file: file).instantiate("Daisy_3WI")
-    debugger
     net.chain_length.should == 24
 
     net.wi1.i1.do.drive(0x11)

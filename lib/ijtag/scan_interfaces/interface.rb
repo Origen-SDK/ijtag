@@ -45,8 +45,8 @@ module IJTAG
         end
       end
 
-      def shift!(val = 0, options = {})
-        val, options = 0, val if val.is_a?(Hash)
+      def shift!(val = nil, options = {})
+        val, options = nil, val if val.is_a?(Hash)
         miscompare = false
         with_select do
           with_shift do
@@ -56,7 +56,7 @@ module IJTAG
                   miscompare = true
                 end
               end
-              si.drive(val[i])
+              si.drive(val[i]) if val
               parent.clock!
             end
           end
