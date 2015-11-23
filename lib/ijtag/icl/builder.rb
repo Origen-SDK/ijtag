@@ -29,6 +29,7 @@ module IJTAG
           end
           process_all(items)
         end
+        apply_deferred_operations
         apply_deferred_connections
         top_level
       end
@@ -45,11 +46,18 @@ module IJTAG
               a, b = *item
               a = Connection.new(a).add_root(current_module.path).to_s
               if b.numeric?
-                b = b.path
+                defer_connection(a, b.path)
               else
                 b = Connection.new(b).add_root(current_module.parent.path).to_s
+                defer_connection a, -> do
+                  node = network.path_to_node(b)
+                  if node.is_a?(Origen::Models::Mux)
+                    node.output
+                  else
+                    node
+                  end
+                end
               end
-              defer_connection(a, b)
             when :parameter_def
               # Do nothing, already applied
             else
@@ -235,11 +243,29 @@ module IJTAG
         end
         options.each do |option|
           o = option.to_a
-          mux.option o[0], o[1].add_root(current_module.path).to_s
+          p = o[1].add_root(current_module.path).to_s
+          defer do
+            node = network.path_to_node(p)
+            if node.is_a?(Origen::Models::Mux)
+              node = node.output
+            end
+            mux.option o[0], node
+          end
         end
       end
 
       private
+
+      def defer(&block)
+        @deferred_operations ||= []
+        @deferred_operations << block
+      end
+
+      def apply_deferred_operations
+        (@deferred_operations || []).each do |op|
+          op.call
+        end
+      end
 
       def apply_deferred_connections
         (@deferred_connections || []).each do |a, b|

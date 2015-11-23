@@ -87,15 +87,15 @@ module IJTAG
       end
 
       def shift?
-        se.data == 1
+        selected? && se.data == 1
       end
 
       def capture?
-        ce.data == 1
+        selected? && ce.data == 1
       end
 
       def update?
-        ue.data == 1
+        selected? && ue.data == 1
       end
 
       def si

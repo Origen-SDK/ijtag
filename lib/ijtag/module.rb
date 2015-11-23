@@ -66,27 +66,69 @@ module IJTAG
       client_interfaces[0].capture!
     end
 
-    def so_visible?(options = {})
-      connected?(so, local_top_level.so, options)
+    def so_visible?
+      connected?(so, local_top_level.so)
     end
 
-    def connected?(input, output, options = {})
-      !!chain_length(options.merge(input: input, output: output, fail_on_timeout: false))
+    def connected?(p1, p2)
+      !!nodes_between(p1, p2)
     end
 
+    def chain_length
+      if nodes = nodes_between(si, so)
+        nodes.reduce(0) do |sum, node|
+          if node.is_a?(Origen::Models::ScanRegister)
+            sum + node.size
+          else
+            sum
+          end
+        end
+      end
+    end
 
-    def chain_length(options = {})
+    def nodes_between(p1, p2, nodes=[])
+      nodes = (nodes.dup) << p1
+      (p1.ports - nodes).map do |port|
+        if port == p2
+          nodes << port
+        else
+          if port.parent.is_a?(Origen::Models::Mux) && port.path =~ /input\d+$/
+            if port.parent.active_input == port
+              out = port.parent.output
+              nodes << port
+              nodes << port.parent
+              nodes_between(out, p2, nodes)
+            end
+          elsif port.parent.is_a?(Origen::Models::ScanRegister) &&
+            port.parent.si == port
+            nodes << port
+            nodes << port.parent
+            nodes_between(port.parent.so, p2, nodes)
+          else
+            nodes_between(port, p2, nodes)
+          end
+        end
+      end.compact.first
+    end
 
-
-
+    def chain
+      nodes_between(si, so).map do |node|
+        if node.is_a?(Origen::Models::ScanRegister)
+          node.path
+        elsif node.is_a?(Origen::Models::Mux)
+          node.path
+        else
+          node.path
+        end
+      end
     end
 
     # Returns the length of the chain between a modules SI port and SO port
-    def chain_length(options = {})
+    def orig_chain_length(options = {})
       options = {
         input: si,
         output: client_interfaces[0].so,
-        timeout: 128,
+        timeout: 1000,
         fail_on_timeout: true
       }.merge(options)
       result = nil
@@ -165,15 +207,28 @@ module IJTAG
 
     def connect_module(mod)
       unless mod.client_interfaces.empty?
-        mod.client_interfaces[0].ue.connect_to "#{root}client_interfaces[0].ue"
-        mod.client_interfaces[0].se.connect_to do
-          #if so_visible?
-            client_interfaces[0].se
-          #else
-          #  0
-          #end
+        mod.client_interfaces[0].ue.connect_to do
+          if mod.so_visible? && client_interfaces[0].update?
+            1
+          else
+            0
+          end
         end
-        mod.client_interfaces[0].ce.connect_to "#{root}client_interfaces[0].ce"
+        mod.client_interfaces[0].se.connect_to do
+          if mod.so_visible? && client_interfaces[0].shift?
+            1
+          else
+            0
+          end
+        end
+        mod.client_interfaces[0].ce.connect_to do
+          if mod.so_visible? && client_interfaces[0].capture?
+            1
+          else
+            0
+          end
+        end
+        mod.client_interfaces[0].sel.connect_to "#{root}client_interfaces[0].sel"
       end
     end
   end
