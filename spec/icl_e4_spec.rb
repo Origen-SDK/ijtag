@@ -19,6 +19,16 @@ describe "ICL Example 4 from the 1687 spec" do
     net.reg8.instance_name.should == "reg8"
   end
 
+  it 'the scan chain can be traversed' do
+    net = IJTAG.import(file: file).instantiate("WrappedInstr", Size: 3)
+    net.si.ports.should == [net.reg8.si]
+    net.reg8.si.ports.should == [net.si, net.reg8.sr.si]
+    net.reg8.sr.si.ports.should == [net.reg8.si]
+    net.reg8.sr.so.ports.should == [net.reg8.so]
+    net.reg8.so.ports.should == [net.reg8.sr.so, net.so]
+    net.so.ports.should == [net.reg8.so]
+  end
+
   it 'the model works' do
     net = IJTAG.import(file: file).instantiate("WrappedInstr", Size: 3)
     net.chain_length.should == 8

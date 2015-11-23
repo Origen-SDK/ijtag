@@ -17,6 +17,13 @@ describe "ICL Example 6 from the 1687 spec" do
     net.SIBmux.should be
   end
 
+  it 'the scan chain can be traversed' do
+    net = IJTAG.import(file: file).instantiate("SIB_mux_pre", Size: 3)
+    net.si.ports.should == [net.tosi, net.sibmux.input0]
+    net.sibmux.output.ports.should == [net.sr.si]
+    net.sr.so.ports.should == [net.so]
+  end
+
   it 'the model works' do
     net = IJTAG.import(file: file).instantiate("SIB_mux_pre")
     a = net.si

@@ -120,16 +120,16 @@ module IJTAG
               # ICL doesn't provide the detail about whether a scan register connection is to a scan register's
               # update stage or not, instead it is implied based on the type of the signal - data_signals are to
               # the update path, scan_signals are not.
-              port.connect_to do
+              defer_connection port.path, -> do
                 node = network.path_to_node(connection.path)
                 if connection.type == :scan_signal
                   if node.is_a?(Origen::Models::ScanRegister)
-                    node.sr.data
+                    node.so
                   else
-                    node.data
+                    node
                   end
                 else
-                  node.data
+                  node
                 end
               end
             end
@@ -199,11 +199,29 @@ module IJTAG
         end
         reg = current_module.add_block('Origen::Models::ScanRegister', c.path, size: c.size || 1, reset: reset)
         elements[:scanInSource].to_a[0].add_root(reg.parent.path).each do |connection|
-          reg.si.connect_to(connection.to_s)
+          defer_connection reg.si, -> do
+            if connection.numeric?
+              obj = connection.path
+            else
+              obj = eval("top_level.#{connection}")
+            end
+            if obj.is_a?(Origen::Models::Mux) 
+              obj.output
+            elsif obj.is_a?(Origen::Models::ScanRegister)
+              obj.so
+            else
+              obj
+            end
+          end
         end
         if elements[:captureSource]
-          elements[:captureSource].to_a[0].add_root(reg.parent.path).each do |connection|
-            reg.c.connect_to(connection.to_s)
+          source = elements[:captureSource].to_a[0]
+          if source.numeric?
+            reg.c.connect_to(source.path)
+          else
+            source.add_root(reg.parent.path).each do |connection|
+              reg.c.connect_to(connection.to_s)
+            end
           end
         end
       end
@@ -225,7 +243,10 @@ module IJTAG
 
       def apply_deferred_connections
         (@deferred_connections || []).each do |a, b|
-          eval("top_level.#{a}").connect_to b
+          a = a.call if a.is_a?(Proc)
+          b = b.call if b.is_a?(Proc)
+          a = eval("top_level.#{a}") if a.is_a?(String)
+          a.connect_to b
         end
       end
 

@@ -66,37 +66,66 @@ module IJTAG
       client_interfaces[0].capture!
     end
 
+    def so_visible?(options = {})
+      connected?(so, local_top_level.so, options)
+    end
+
+    def connected?(input, output, options = {})
+      !!chain_length(options.merge(input: input, output: output, fail_on_timeout: false))
+    end
+
+
+    def chain_length(options = {})
+
+
+
+    end
+
     # Returns the length of the chain between a modules SI port and SO port
-    def chain_length(timeout = 1000)
+    def chain_length(options = {})
+      options = {
+        input: si,
+        output: client_interfaces[0].so,
+        timeout: 128,
+        fail_on_timeout: true
+      }.merge(options)
       result = nil
       preserve_scan_register_data do
-        # There may be a quicker way of doing this by inspecting the netlist, but
-        # that could be difficult and may need to build a lot of knowledge about the
-        # circuit behavior into such an analyzer. So instead for now we will just shift
-        # some known data into SI and count how long it takes to come out the other side.
+        options[:input].preserve_drive_data do
 
-        # Something suitably long and random
-        data = '1011101101000110110001101100011010101111111100000001010110100101'.to_i(2)
-        matched = false
-        read_data = 0
-        i = 0
-        while !matched && i < (timeout + 64)
-          shift!(data[i])
-          data_out = client_interfaces[0].so.data
-          read_data >>= 1
-          read_data |= data_out << 63
-          read_data &= 0xFFFF_FFFF_FFFF_FFFF
-          if read_data == data
-            matched = true
-          else
-            i += 1
+          # There may be a quicker way of doing this by inspecting the netlist, but
+          # that could be difficult and may need to build a lot of knowledge about the
+          # circuit behavior into such an analyzer. So instead for now we will just shift
+          # some known data into SI and count how long it takes to come out the other side.
+
+          # Something suitably long and random
+          data = '1011101101000110110001101100011010101111111100000001010110100101'.to_i(2)
+          matched = false
+          read_data = 0
+          i = 0
+          while !matched && i < (options[:timeout] + 64)
+            options[:input].drive(data[i])
+            shift!
+            data_out = options[:output].data
+            read_data >>= 1
+            read_data |= data_out << 63
+            read_data &= 0xFFFF_FFFF_FFFF_FFFF
+            if read_data == data
+              matched = true
+            else
+              i += 1
+            end
           end
-        end
 
-        if i == (timeout + 64)
-          fail "The chain is either not complete, or longer than #{timeout}"
-        else
-          result = i - 62
+          if i == (options[:timeout] + 64)
+            if options[:fail_on_timeout]
+              fail "The chain is either not complete, or longer than #{options[:timeout]}"
+            else
+              result = nil
+            end
+          else
+            result = i - 62
+          end
         end
       end
       result
@@ -137,7 +166,13 @@ module IJTAG
     def connect_module(mod)
       unless mod.client_interfaces.empty?
         mod.client_interfaces[0].ue.connect_to "#{root}client_interfaces[0].ue"
-        mod.client_interfaces[0].se.connect_to "#{root}client_interfaces[0].se"
+        mod.client_interfaces[0].se.connect_to do
+          #if so_visible?
+            client_interfaces[0].se
+          #else
+          #  0
+          #end
+        end
         mod.client_interfaces[0].ce.connect_to "#{root}client_interfaces[0].ce"
       end
     end
