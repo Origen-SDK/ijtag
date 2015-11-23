@@ -39,7 +39,11 @@ module IJTAG
 
     def method_missing(method, *args, &block)
       if scan_interfaces.key?(method.to_s.symbolize)
-        scan_interfaces[method.to_s.symbolize]
+        s = scan_interfaces[method.to_s.symbolize]
+        define_singleton_method "#{method}" do
+          s
+        end
+        s
       else
         super
       end

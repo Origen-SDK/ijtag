@@ -30,4 +30,5 @@ Gem::Specification.new do |spec|
 
   # Add any gems that your plugin needs for its development environment only
   spec.add_development_dependency "origen_doc_helpers"
+  spec.add_development_dependency "stackprof"
 end
