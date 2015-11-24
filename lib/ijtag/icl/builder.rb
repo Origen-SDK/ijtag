@@ -1,12 +1,12 @@
 require 'ijtag/icl/processor'
-require 'ijtag/icl/numeric_expression_processor'
+require 'ijtag/icl/expression_processor'
 module IJTAG
   module ICL
     class BuildError < AST::Error
     end
 
     class Builder < Processor
-      include NumericExpressionProcessor
+      include ExpressionProcessor
 
       # Returns the built network object after the processor has run
       attr_reader :top_level

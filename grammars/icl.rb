@@ -19538,8 +19538,12 @@ module IJTAG
           elements[0]
         end
 
-        def expr
+        def s
           elements[1]
+        end
+
+        def expr
+          elements[2]
         end
       end
 
@@ -19548,8 +19552,12 @@ module IJTAG
           elements[0]
         end
 
-        def right
+        def s
           elements[1]
+        end
+
+        def right
+          elements[2]
         end
       end
 
@@ -19582,52 +19590,60 @@ module IJTAG
         r1 = _nt_integer_expr_lvl2
         s0 << r1
         if r1
-          i3, s3 = index, []
-          i4 = index
-          if (match_len = has_terminal?("+", false, index))
-            r5 = true
-            @index += match_len
-          else
-            terminal_parse_failure('"+"')
-            r5 = nil
-          end
-          if r5
-            r5 = SyntaxNode.new(input, (index-1)...index) if r5 == true
-            r4 = r5
-          else
-            if (match_len = has_terminal?("-", false, index))
+          r2 = _nt_s
+          s0 << r2
+          if r2
+            i4, s4 = index, []
+            i5 = index
+            if (match_len = has_terminal?("+", false, index))
               r6 = true
               @index += match_len
             else
-              terminal_parse_failure('"-"')
+              terminal_parse_failure('"+"')
               r6 = nil
             end
             if r6
               r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
-              r4 = r6
+              r5 = r6
+            else
+              if (match_len = has_terminal?("-", false, index))
+                r7 = true
+                @index += match_len
+              else
+                terminal_parse_failure('"-"')
+                r7 = nil
+              end
+              if r7
+                r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
+                r5 = r7
+              else
+                @index = i5
+                r5 = nil
+              end
+            end
+            s4 << r5
+            if r5
+              r8 = _nt_s
+              s4 << r8
+              if r8
+                r9 = _nt_integer_expr_lvl1
+                s4 << r9
+              end
+            end
+            if s4.last
+              r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
+              r4.extend(IntegerExprLvl10)
             else
               @index = i4
               r4 = nil
             end
+            if r4
+              r3 = r4
+            else
+              r3 = instantiate_node(SyntaxNode,input, index...index)
+            end
+            s0 << r3
           end
-          s3 << r4
-          if r4
-            r7 = _nt_integer_expr_lvl1
-            s3 << r7
-          end
-          if s3.last
-            r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
-            r3.extend(IntegerExprLvl10)
-          else
-            @index = i3
-            r3 = nil
-          end
-          if r3
-            r2 = r3
-          else
-            r2 = instantiate_node(SyntaxNode,input, index...index)
-          end
-          s0 << r2
         end
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
@@ -19648,8 +19664,12 @@ module IJTAG
           elements[0]
         end
 
-        def expr
+        def s
           elements[1]
+        end
+
+        def expr
+          elements[2]
         end
       end
 
@@ -19658,8 +19678,12 @@ module IJTAG
           elements[0]
         end
 
-        def right
+        def s
           elements[1]
+        end
+
+        def right
+          elements[2]
         end
       end
 
@@ -19694,64 +19718,72 @@ module IJTAG
         r1 = _nt_integer_expr_arg
         s0 << r1
         if r1
-          i3, s3 = index, []
-          i4 = index
-          if (match_len = has_terminal?("*", false, index))
-            r5 = true
-            @index += match_len
-          else
-            terminal_parse_failure('"*"')
-            r5 = nil
-          end
-          if r5
-            r5 = SyntaxNode.new(input, (index-1)...index) if r5 == true
-            r4 = r5
-          else
-            if (match_len = has_terminal?("/", false, index))
+          r2 = _nt_s
+          s0 << r2
+          if r2
+            i4, s4 = index, []
+            i5 = index
+            if (match_len = has_terminal?("*", false, index))
               r6 = true
               @index += match_len
             else
-              terminal_parse_failure('"/"')
+              terminal_parse_failure('"*"')
               r6 = nil
             end
             if r6
               r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
-              r4 = r6
+              r5 = r6
             else
-              if (match_len = has_terminal?("%", false, index))
+              if (match_len = has_terminal?("/", false, index))
                 r7 = true
                 @index += match_len
               else
-                terminal_parse_failure('"%"')
+                terminal_parse_failure('"/"')
                 r7 = nil
               end
               if r7
                 r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
-                r4 = r7
+                r5 = r7
               else
-                @index = i4
-                r4 = nil
+                if (match_len = has_terminal?("%", false, index))
+                  r8 = true
+                  @index += match_len
+                else
+                  terminal_parse_failure('"%"')
+                  r8 = nil
+                end
+                if r8
+                  r8 = SyntaxNode.new(input, (index-1)...index) if r8 == true
+                  r5 = r8
+                else
+                  @index = i5
+                  r5 = nil
+                end
               end
             end
+            s4 << r5
+            if r5
+              r9 = _nt_s
+              s4 << r9
+              if r9
+                r10 = _nt_integer_expr_lvl2
+                s4 << r10
+              end
+            end
+            if s4.last
+              r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
+              r4.extend(IntegerExprLvl20)
+            else
+              @index = i4
+              r4 = nil
+            end
+            if r4
+              r3 = r4
+            else
+              r3 = instantiate_node(SyntaxNode,input, index...index)
+            end
+            s0 << r3
           end
-          s3 << r4
-          if r4
-            r8 = _nt_integer_expr_lvl2
-            s3 << r8
-          end
-          if s3.last
-            r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
-            r3.extend(IntegerExprLvl20)
-          else
-            @index = i3
-            r3 = nil
-          end
-          if r3
-            r2 = r3
-          else
-            r2 = instantiate_node(SyntaxNode,input, index...index)
-          end
-          s0 << r2
         end
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
@@ -19768,8 +19800,16 @@ module IJTAG
       end
 
       module IntegerExprParen0
-        def expr
+        def s1
           elements[1]
+        end
+
+        def expr
+          elements[2]
+        end
+
+        def s2
+          elements[3]
         end
 
       end
@@ -19801,17 +19841,25 @@ module IJTAG
         end
         s0 << r1
         if r1
-          r2 = _nt_integer_expr
+          r2 = _nt_s
           s0 << r2
           if r2
-            if (match_len = has_terminal?(")", false, index))
-              r3 = true
-              @index += match_len
-            else
-              terminal_parse_failure('")"')
-              r3 = nil
-            end
+            r3 = _nt_integer_expr
             s0 << r3
+            if r3
+              r4 = _nt_s
+              s0 << r4
+              if r4
+                if (match_len = has_terminal?(")", false, index))
+                  r5 = true
+                  @index += match_len
+                else
+                  terminal_parse_failure('")"')
+                  r5 = nil
+                end
+                s0 << r5
+              end
+            end
           end
         end
         if s0.last
@@ -19866,6 +19914,18 @@ module IJTAG
         r0
       end
 
+      module LogicExpr0
+        def expr
+          elements[0]
+        end
+      end
+
+      module LogicExpr1
+        def to_ast
+          expr.to_ast
+        end
+      end
+
       def _nt_logic_expr
         start_index = index
         if node_cache[:logic_expr].has_key?(index)
@@ -19877,7 +19937,17 @@ module IJTAG
           return cached
         end
 
-        r0 = _nt_logic_expr_lvl1
+        i0, s0 = index, []
+        r1 = _nt_logic_expr_lvl1
+        s0 << r1
+        if s0.last
+          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(LogicExpr0)
+          r0.extend(LogicExpr1)
+        else
+          @index = i0
+          r0 = nil
+        end
 
         node_cache[:logic_expr][start_index] = r0
 
@@ -19885,16 +19955,45 @@ module IJTAG
       end
 
       module LogicExprLvl10
-        def logic_expr_lvl1
+        def op
+          elements[0]
+        end
+
+        def s
           elements[1]
+        end
+
+        def expr
+          elements[2]
         end
       end
 
       module LogicExprLvl11
-        def logic_expr_lvl2
+        def left
           elements[0]
         end
 
+        def s
+          elements[1]
+        end
+
+        def right
+          elements[2]
+        end
+      end
+
+      module LogicExprLvl12
+        def to_ast
+          if right.respond_to?(:op)
+            if right.op.text_value == "&&"
+              n :boolean_and, left.to_ast, right.expr.to_ast, input: input, interval: interval, file: file
+            else
+              n :boolean_or, left.to_ast, right.expr.to_ast, input: input, interval: interval, file: file
+            end
+          else
+            left.to_ast
+          end
+        end
       end
 
       def _nt_logic_expr_lvl1
@@ -19912,56 +20011,65 @@ module IJTAG
         r1 = _nt_logic_expr_lvl2
         s0 << r1
         if r1
-          i3, s3 = index, []
-          i4 = index
-          if (match_len = has_terminal?('&&', false, index))
-            r5 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-            @index += match_len
-          else
-            terminal_parse_failure('\'&&\'')
-            r5 = nil
-          end
-          if r5
-            r5 = SyntaxNode.new(input, (index-1)...index) if r5 == true
-            r4 = r5
-          else
-            if (match_len = has_terminal?('||', false, index))
+          r2 = _nt_s
+          s0 << r2
+          if r2
+            i4, s4 = index, []
+            i5 = index
+            if (match_len = has_terminal?('&&', false, index))
               r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
               @index += match_len
             else
-              terminal_parse_failure('\'||\'')
+              terminal_parse_failure('\'&&\'')
               r6 = nil
             end
             if r6
               r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
-              r4 = r6
+              r5 = r6
+            else
+              if (match_len = has_terminal?('||', false, index))
+                r7 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                @index += match_len
+              else
+                terminal_parse_failure('\'||\'')
+                r7 = nil
+              end
+              if r7
+                r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
+                r5 = r7
+              else
+                @index = i5
+                r5 = nil
+              end
+            end
+            s4 << r5
+            if r5
+              r8 = _nt_s
+              s4 << r8
+              if r8
+                r9 = _nt_logic_expr_lvl1
+                s4 << r9
+              end
+            end
+            if s4.last
+              r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
+              r4.extend(LogicExprLvl10)
             else
               @index = i4
               r4 = nil
             end
+            if r4
+              r3 = r4
+            else
+              r3 = instantiate_node(SyntaxNode,input, index...index)
+            end
+            s0 << r3
           end
-          s3 << r4
-          if r4
-            r7 = _nt_logic_expr_lvl1
-            s3 << r7
-          end
-          if s3.last
-            r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
-            r3.extend(LogicExprLvl10)
-          else
-            @index = i3
-            r3 = nil
-          end
-          if r3
-            r2 = r3
-          else
-            r2 = instantiate_node(SyntaxNode,input, index...index)
-          end
-          s0 << r2
         end
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
           r0.extend(LogicExprLvl11)
+          r0.extend(LogicExprLvl12)
         else
           @index = i0
           r0 = nil
@@ -19973,21 +20081,46 @@ module IJTAG
       end
 
       module LogicExprLvl20
-        def logic_expr_lvl2
+        def op
+          elements[0]
+        end
+
+        def s
           elements[1]
+        end
+
+        def expr
+          elements[2]
         end
       end
 
       module LogicExprLvl21
-        def logic_expr_lvl3
+        def left
           elements[0]
         end
 
+        def s
+          elements[1]
+        end
+
+        def right
+          elements[2]
+        end
       end
 
       module LogicExprLvl22
-        def logic_expr_lvl2
-          elements[1]
+        def to_ast
+          if right.respond_to?(:op)
+            if right.op.text_value == "&"
+              n :bitwise_and, left.to_ast, right.expr.to_ast, input: input, interval: interval, file: file
+            elsif right.op.text_value == "|"
+              n :bitwise_or, left.to_ast, right.expr.to_ast, input: input, interval: interval, file: file
+            else
+              n :bitwise_xor, left.to_ast, right.expr.to_ast, input: input, interval: interval, file: file
+            end
+          else
+            left.to_ast
+          end
         end
       end
 
@@ -20002,140 +20135,84 @@ module IJTAG
           return cached
         end
 
-        i0 = index
-        i1, s1 = index, []
-        r2 = _nt_logic_expr_lvl3
-        s1 << r2
-        if r2
-          i4, s4 = index, []
-          i5 = index
-          if (match_len = has_terminal?('&', false, index))
-            r6 = true
-            @index += match_len
-          else
-            terminal_parse_failure('\'&\'')
-            r6 = nil
-          end
-          if r6
-            r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
-            r5 = r6
-          else
-            if (match_len = has_terminal?('|', false, index))
-              r7 = true
-              @index += match_len
-            else
-              terminal_parse_failure('\'|\'')
-              r7 = nil
-            end
-            if r7
-              r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
-              r5 = r7
-            else
-              if (match_len = has_terminal?('^', false, index))
-                r8 = true
-                @index += match_len
-              else
-                terminal_parse_failure('\'^\'')
-                r8 = nil
-              end
-              if r8
-                r8 = SyntaxNode.new(input, (index-1)...index) if r8 == true
-                r5 = r8
-              else
-                @index = i5
-                r5 = nil
-              end
-            end
-          end
-          s4 << r5
-          if r5
-            r9 = _nt_logic_expr_lvl2
-            s4 << r9
-          end
-          if s4.last
-            r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
-            r4.extend(LogicExprLvl20)
-          else
-            @index = i4
-            r4 = nil
-          end
-          if r4
-            r3 = r4
-          else
-            r3 = instantiate_node(SyntaxNode,input, index...index)
-          end
-          s1 << r3
-        end
-        if s1.last
-          r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
-          r1.extend(LogicExprLvl21)
-        else
-          @index = i1
-          r1 = nil
-        end
+        i0, s0 = index, []
+        r1 = _nt_logic_expr_lvl3
+        s0 << r1
         if r1
-          r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
-          r0 = r1
-        else
-          i10, s10 = index, []
-          i11 = index
-          if (match_len = has_terminal?('&', false, index))
-            r12 = true
-            @index += match_len
-          else
-            terminal_parse_failure('\'&\'')
-            r12 = nil
-          end
-          if r12
-            r12 = SyntaxNode.new(input, (index-1)...index) if r12 == true
-            r11 = r12
-          else
-            if (match_len = has_terminal?('|', false, index))
-              r13 = true
+          r2 = _nt_s
+          s0 << r2
+          if r2
+            i4, s4 = index, []
+            i5 = index
+            if (match_len = has_terminal?('&', false, index))
+              r6 = true
               @index += match_len
             else
-              terminal_parse_failure('\'|\'')
-              r13 = nil
+              terminal_parse_failure('\'&\'')
+              r6 = nil
             end
-            if r13
-              r13 = SyntaxNode.new(input, (index-1)...index) if r13 == true
-              r11 = r13
+            if r6
+              r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
+              r5 = r6
             else
-              if (match_len = has_terminal?('^', false, index))
-                r14 = true
+              if (match_len = has_terminal?('|', false, index))
+                r7 = true
                 @index += match_len
               else
-                terminal_parse_failure('\'^\'')
-                r14 = nil
+                terminal_parse_failure('\'|\'')
+                r7 = nil
               end
-              if r14
-                r14 = SyntaxNode.new(input, (index-1)...index) if r14 == true
-                r11 = r14
+              if r7
+                r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
+                r5 = r7
               else
-                @index = i11
-                r11 = nil
+                if (match_len = has_terminal?('^', false, index))
+                  r8 = true
+                  @index += match_len
+                else
+                  terminal_parse_failure('\'^\'')
+                  r8 = nil
+                end
+                if r8
+                  r8 = SyntaxNode.new(input, (index-1)...index) if r8 == true
+                  r5 = r8
+                else
+                  @index = i5
+                  r5 = nil
+                end
               end
             end
+            s4 << r5
+            if r5
+              r9 = _nt_s
+              s4 << r9
+              if r9
+                r10 = _nt_logic_expr_lvl2
+                s4 << r10
+              end
+            end
+            if s4.last
+              r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
+              r4.extend(LogicExprLvl20)
+            else
+              @index = i4
+              r4 = nil
+            end
+            if r4
+              r3 = r4
+            else
+              r3 = instantiate_node(SyntaxNode,input, index...index)
+            end
+            s0 << r3
           end
-          s10 << r11
-          if r11
-            r15 = _nt_logic_expr_lvl2
-            s10 << r15
-          end
-          if s10.last
-            r10 = instantiate_node(SyntaxNode,input, i10...index, s10)
-            r10.extend(LogicExprLvl22)
-          else
-            @index = i10
-            r10 = nil
-          end
-          if r10
-            r10 = SyntaxNode.new(input, (index-1)...index) if r10 == true
-            r0 = r10
-          else
-            @index = i0
-            r0 = nil
-          end
+        end
+        if s0.last
+          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(LogicExprLvl21)
+          r0.extend(LogicExprLvl22)
+        else
+          @index = i0
+          r0 = nil
         end
 
         node_cache[:logic_expr_lvl2][start_index] = r0
@@ -20144,16 +20221,45 @@ module IJTAG
       end
 
       module LogicExprLvl30
-        def logic_expr_num_arg
+        def op
+          elements[0]
+        end
+
+        def s
           elements[1]
+        end
+
+        def expr
+          elements[2]
         end
       end
 
       module LogicExprLvl31
-        def logic_expr_lvl4
+        def left
           elements[0]
         end
 
+        def s
+          elements[1]
+        end
+
+        def right
+          elements[2]
+        end
+      end
+
+      module LogicExprLvl32
+        def to_ast
+          if right.respond_to?(:op)
+            if right.op.text_value == "=="
+              n :equal, left.to_ast, right.expr.to_ast, input: input, interval: interval, file: file
+            else
+              n :not_equal, left.to_ast, right.expr.to_ast, input: input, interval: interval, file: file
+            end
+          else
+            left.to_ast
+          end
+        end
       end
 
       def _nt_logic_expr_lvl3
@@ -20171,56 +20277,65 @@ module IJTAG
         r1 = _nt_logic_expr_lvl4
         s0 << r1
         if r1
-          i3, s3 = index, []
-          i4 = index
-          if (match_len = has_terminal?('==', false, index))
-            r5 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-            @index += match_len
-          else
-            terminal_parse_failure('\'==\'')
-            r5 = nil
-          end
-          if r5
-            r5 = SyntaxNode.new(input, (index-1)...index) if r5 == true
-            r4 = r5
-          else
-            if (match_len = has_terminal?('!=', false, index))
+          r2 = _nt_s
+          s0 << r2
+          if r2
+            i4, s4 = index, []
+            i5 = index
+            if (match_len = has_terminal?('==', false, index))
               r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
               @index += match_len
             else
-              terminal_parse_failure('\'!=\'')
+              terminal_parse_failure('\'==\'')
               r6 = nil
             end
             if r6
               r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
-              r4 = r6
+              r5 = r6
+            else
+              if (match_len = has_terminal?('!=', false, index))
+                r7 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                @index += match_len
+              else
+                terminal_parse_failure('\'!=\'')
+                r7 = nil
+              end
+              if r7
+                r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
+                r5 = r7
+              else
+                @index = i5
+                r5 = nil
+              end
+            end
+            s4 << r5
+            if r5
+              r8 = _nt_s
+              s4 << r8
+              if r8
+                r9 = _nt_logic_expr_num_arg
+                s4 << r9
+              end
+            end
+            if s4.last
+              r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
+              r4.extend(LogicExprLvl30)
             else
               @index = i4
               r4 = nil
             end
+            if r4
+              r3 = r4
+            else
+              r3 = instantiate_node(SyntaxNode,input, index...index)
+            end
+            s0 << r3
           end
-          s3 << r4
-          if r4
-            r7 = _nt_logic_expr_num_arg
-            s3 << r7
-          end
-          if s3.last
-            r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
-            r3.extend(LogicExprLvl30)
-          else
-            @index = i3
-            r3 = nil
-          end
-          if r3
-            r2 = r3
-          else
-            r2 = instantiate_node(SyntaxNode,input, index...index)
-          end
-          s0 << r2
         end
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
           r0.extend(LogicExprLvl31)
+          r0.extend(LogicExprLvl32)
         else
           @index = i0
           r0 = nil
@@ -20229,19 +20344,6 @@ module IJTAG
         node_cache[:logic_expr_lvl3][start_index] = r0
 
         r0
-      end
-
-      module LogicExprLvl40
-        def logic_expr_lvl4
-          elements[1]
-        end
-      end
-
-      module LogicExprLvl41
-        def logic_expr_arg
-          elements[0]
-        end
-
       end
 
       def _nt_logic_expr_lvl4
@@ -20255,44 +20357,7 @@ module IJTAG
           return cached
         end
 
-        i0, s0 = index, []
-        r1 = _nt_logic_expr_arg
-        s0 << r1
-        if r1
-          i3, s3 = index, []
-          if (match_len = has_terminal?(',', false, index))
-            r4 = true
-            @index += match_len
-          else
-            terminal_parse_failure('\',\'')
-            r4 = nil
-          end
-          s3 << r4
-          if r4
-            r5 = _nt_logic_expr_lvl4
-            s3 << r5
-          end
-          if s3.last
-            r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
-            r3.extend(LogicExprLvl40)
-          else
-            @index = i3
-            r3 = nil
-          end
-          if r3
-            r2 = r3
-          else
-            r2 = instantiate_node(SyntaxNode,input, index...index)
-          end
-          s0 << r2
-        end
-        if s0.last
-          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-          r0.extend(LogicExprLvl41)
-        else
-          @index = i0
-          r0 = nil
-        end
+        r0 = _nt_logic_expr_arg
 
         node_cache[:logic_expr_lvl4][start_index] = r0
 
@@ -20300,8 +20365,22 @@ module IJTAG
       end
 
       module LogicUnaryExpr0
-        def logic_expr_arg
+        def op
+          elements[0]
+        end
+
+        def expr
           elements[1]
+        end
+      end
+
+      module LogicUnaryExpr1
+        def to_ast
+          if op.text_value == '~'
+            n :bitwise_not, expr.to_ast, input: input, interval: interval, file: file
+          else
+            n :boolean_not, expr.to_ast, input: input, interval: interval, file: file
+          end
         end
       end
 
@@ -20352,6 +20431,7 @@ module IJTAG
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
           r0.extend(LogicUnaryExpr0)
+          r0.extend(LogicUnaryExpr1)
         else
           @index = i0
           r0 = nil
@@ -20367,7 +20447,7 @@ module IJTAG
           elements[1]
         end
 
-        def logic_expr
+        def expr
           elements[2]
         end
 
@@ -20375,6 +20455,12 @@ module IJTAG
           elements[3]
         end
 
+      end
+
+      module LogicExprParen1
+        def to_ast
+          expr.to_ast
+        end
       end
 
       def _nt_logic_expr_paren
@@ -20422,6 +20508,7 @@ module IJTAG
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
           r0.extend(LogicExprParen0)
+          r0.extend(LogicExprParen1)
         else
           @index = i0
           r0 = nil
@@ -20470,21 +20557,6 @@ module IJTAG
         r0
       end
 
-      module LogicExprNumArg0
-        def s1
-          elements[1]
-        end
-
-        def logic_expr_num_arg
-          elements[2]
-        end
-
-        def s2
-          elements[3]
-        end
-
-      end
-
       def _nt_logic_expr_num_arg
         start_index = index
         if node_cache[:logic_expr_num_arg].has_key?(index)
@@ -20507,51 +20579,8 @@ module IJTAG
             r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
             r0 = r2
           else
-            i3, s3 = index, []
-            if (match_len = has_terminal?('(', false, index))
-              r4 = true
-              @index += match_len
-            else
-              terminal_parse_failure('\'(\'')
-              r4 = nil
-            end
-            s3 << r4
-            if r4
-              r5 = _nt_s
-              s3 << r5
-              if r5
-                r6 = _nt_logic_expr_num_arg
-                s3 << r6
-                if r6
-                  r7 = _nt_s
-                  s3 << r7
-                  if r7
-                    if (match_len = has_terminal?(')', false, index))
-                      r8 = true
-                      @index += match_len
-                    else
-                      terminal_parse_failure('\')\'')
-                      r8 = nil
-                    end
-                    s3 << r8
-                  end
-                end
-              end
-            end
-            if s3.last
-              r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
-              r3.extend(LogicExprNumArg0)
-            else
-              @index = i3
-              r3 = nil
-            end
-            if r3
-              r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
-              r0 = r3
-            else
-              @index = i0
-              r0 = nil
-            end
+            @index = i0
+            r0 = nil
           end
         end
 

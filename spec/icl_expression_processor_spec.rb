@@ -1,9 +1,9 @@
 require "spec_helper"
 
-describe "The ICL AST Resolver" do
+describe "The ICL Expression processor" do
 
   class Resolver < IJTAG::ICL::Processor
-    include IJTAG::ICL::NumericExpressionProcessor
+    include IJTAG::ICL::ExpressionProcessor
   end
 
   def r
@@ -47,8 +47,43 @@ describe "The ICL AST Resolver" do
      r.process(ast).should == 21
   end
 
-  it "can resolve subtractions"
-  it "can resolve multiplications"
-  it "can resolve divisions"
-  it "can resolve mods"
+  it "can resolve subtractions" do
+     ast = s(:subtract,
+             s(:subtract,
+               s(:POS_INT, 15),
+               s(:POS_INT, 5)),
+             s(:POS_INT, 3))
+
+     r.process(ast).should == 7
+  end
+
+  it "can resolve multiplications" do
+     ast = s(:multiply,
+             s(:multiply,
+               s(:POS_INT, 15),
+               s(:POS_INT, 5)),
+             s(:POS_INT, 3))
+
+     r.process(ast).should == 225
+  end
+
+  it "can resolve divisions" do
+     ast = s(:divide,
+             s(:divide,
+               s(:POS_INT, 45),
+               s(:POS_INT, 5)),
+             s(:POS_INT, 3))
+
+     r.process(ast).should == 3
+  end
+
+  it "can resolve mods" do
+     ast = s(:modulus,
+             s(:modulus,
+               s(:POS_INT, 49),
+               s(:POS_INT, 5)),
+             s(:POS_INT, 3))
+
+     r.process(ast).should == 1
+  end
 end

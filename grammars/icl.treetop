@@ -1888,7 +1888,7 @@ module IJTAG
       end
 
       rule integer_expr_lvl1
-        left:integer_expr_lvl2 right:(op:("+" / "-") expr:integer_expr_lvl1)? {
+        left:integer_expr_lvl2 s right:(op:("+" / "-") s expr:integer_expr_lvl1)? {
           def to_ast
             if right.respond_to?(:op)
               if right.op.text_value == "+"
@@ -1904,7 +1904,7 @@ module IJTAG
       end
 
       rule integer_expr_lvl2
-        left:integer_expr_arg right:(op:("*" / "/" / "%") expr:integer_expr_lvl2)? {
+        left:integer_expr_arg s right:(op:("*" / "/" / "%") s expr:integer_expr_lvl2)? {
           def to_ast
             if right.respond_to?(:op)
               if right.op.text_value == "*"
@@ -1922,7 +1922,7 @@ module IJTAG
       end
 
       rule integer_expr_paren
-        "(" expr:integer_expr ")" {
+        "(" s expr:integer_expr s ")" {
           def to_ast
             expr.to_ast
           end
@@ -1934,31 +1934,89 @@ module IJTAG
       end
 
       rule logic_expr
-        logic_expr_lvl1
+        expr:logic_expr_lvl1 {
+          def to_ast
+            expr.to_ast
+          end
+        }
       end
 
       rule logic_expr_lvl1
-        logic_expr_lvl2 (('&&' / '||') logic_expr_lvl1)?
+        left:logic_expr_lvl2 s right:(op:('&&' / '||') s expr:logic_expr_lvl1)? {
+          def to_ast
+            if right.respond_to?(:op)
+              if right.op.text_value == "&&"
+                n :boolean_and, left.to_ast, right.expr.to_ast, input: input, interval: interval, file: file
+              else
+                n :boolean_or, left.to_ast, right.expr.to_ast, input: input, interval: interval, file: file
+              end
+            else
+              left.to_ast
+            end
+          end
+        }
       end
 
       rule logic_expr_lvl2
-        logic_expr_lvl3 (('&' / '|' / '^') logic_expr_lvl2)? / (('&' / '|' / '^') logic_expr_lvl2)
+        # This is the rule in the spec, but suspect it is wrong:
+        # logic_expr_lvl3 (('&' / '|' / '^') logic_expr_lvl2)? / (('&' / '|' / '^') logic_expr_lvl2)
+        left:logic_expr_lvl3 s right:(op:('&' / '|' / '^') s expr:logic_expr_lvl2)? {
+          def to_ast
+            if right.respond_to?(:op)
+              if right.op.text_value == "&"
+                n :bitwise_and, left.to_ast, right.expr.to_ast, input: input, interval: interval, file: file
+              elsif right.op.text_value == "|"
+                n :bitwise_or, left.to_ast, right.expr.to_ast, input: input, interval: interval, file: file
+              else
+                n :bitwise_xor, left.to_ast, right.expr.to_ast, input: input, interval: interval, file: file
+              end
+            else
+              left.to_ast
+            end
+          end
+        }
       end
 
       rule logic_expr_lvl3
-        logic_expr_lvl4 (('==' / '!=') logic_expr_num_arg)?
+        left:logic_expr_lvl4 s right:(op:('==' / '!=') s expr:logic_expr_num_arg)? {
+          def to_ast
+            if right.respond_to?(:op)
+              if right.op.text_value == "=="
+                n :equal, left.to_ast, right.expr.to_ast, input: input, interval: interval, file: file
+              else
+                n :not_equal, left.to_ast, right.expr.to_ast, input: input, interval: interval, file: file
+              end
+            else
+              left.to_ast
+            end
+          end
+        }
       end
 
       rule logic_expr_lvl4
-        logic_expr_arg (',' logic_expr_lvl4 )?
+        # This is the rule in the spec, but don't understand it:
+        #logic_expr_arg (',' logic_expr_lvl4 )?
+        logic_expr_arg
       end
 
       rule logic_unary_expr
-        ('~' / '!') logic_expr_arg
+        op:('~' / '!') expr:logic_expr_arg {
+          def to_ast
+            if op.text_value == '~'
+              n :bitwise_not, expr.to_ast, input: input, interval: interval, file: file
+            else
+              n :boolean_not, expr.to_ast, input: input, interval: interval, file: file
+            end
+          end
+        }
       end
 
       rule logic_expr_paren
-        '(' s logic_expr s ')'
+        '(' s expr:logic_expr s ')' {
+          def to_ast
+            expr.to_ast
+          end
+        }
       end
 
       rule logic_expr_arg
@@ -1968,7 +2026,12 @@ module IJTAG
       end
 
       rule logic_expr_num_arg
-        concat_number / enum_name / '(' s logic_expr_num_arg s ')' 
+        #expr1:concat_number / expr2:enum_name / '(' s expr3:logic_expr_num_arg s ')'  {
+        #  def to_ast
+        #    expr1.to_ast
+        #  end
+        #}
+        concat_number / enum_name
       end
 
       rule parameter_ref

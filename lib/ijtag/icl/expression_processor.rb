@@ -1,6 +1,6 @@
 module IJTAG
   module ICL
-    module NumericExpressionProcessor
+    module ExpressionProcessor
       def on_SIZED_POS_INT(node)
         nodes = process_all(node)
         Origen::SizedNumber.new(nodes[1], nodes[0])
@@ -18,6 +18,21 @@ module IJTAG
       def on_subtract(node)
         left, right = *process_all(node)
         left - right
+      end
+
+      def on_multiply(node)
+        left, right = *process_all(node)
+        left * right
+      end
+
+      def on_divide(node)
+        left, right = *process_all(node)
+        left / right
+      end
+
+      def on_modulus(node)
+        left, right = *process_all(node)
+        left % right
       end
 
       def on_UNSIZED_BIN_NUMBER(node)
