@@ -11,6 +11,25 @@ describe "ICL Example 14 from the 1687 spec" do
     ast = icl_parser.parse(icl).to_ast
   end
 
+  it 'the logic signals work' do
+    net = IJTAG.import(file: file).instantiate("Exclusive")
+    net.sel.drive(0)
+    net.sel1.data.should == 0
+    net.sel2.data.should == 0
+    net.sel3.data.should == 0
+    net.sel.drive(1)
+    net.shift!(0b01, size: 2)
+    net.sel1.data.should == 0
+    net.sel2.data.should == 0
+    net.sel3.data.should == 0
+    net.update!
+    net.sel.drive(1)
+    net.sel1.data.should == 1
+    net.sel2.data.should == 0
+    net.sel3.data.should == 0
+
+  end
+
   it 'the model works' do
     net = IJTAG.import(file: file).instantiate("Exclusive")
     net.wi1.so_visible?.should == false

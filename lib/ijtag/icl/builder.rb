@@ -1,3 +1,4 @@
+# rubocop:disable Style/MethodName: Use snake_case for method names.
 require 'ijtag/icl/processor'
 require 'ijtag/icl/expression_processor'
 module IJTAG
@@ -29,8 +30,8 @@ module IJTAG
           end
           process_all(items)
         end
-        apply_deferred_operations
         apply_deferred_connections
+        apply_deferred_operations
         top_level
       end
 
@@ -39,6 +40,8 @@ module IJTAG
         module_def = network_def.modules[module_name.value]
         fail BuildError.new("A module defintion for #{module_name.value} could not be found", node) unless module_def
         model = current_module.add_block(:Module, name.value, icl: module_def, module_name: module_name.value, network: top_level)
+        # Connect up the default connections at the end once fully instantiated
+        defer { connect_module(model) }
         define_module(model) do
           process_all(items).each do |item|
             case item.type
@@ -49,7 +52,7 @@ module IJTAG
                 defer_connection(a, b.path)
               else
                 b = Connection.new(b).add_root(current_module.parent.path).to_s
-                defer_connection a, -> do
+                defer_connection a, lambda do
                   node = network.path_to_node(b)
                   if node.is_a?(Origen::Models::Mux)
                     node.output
@@ -66,9 +69,6 @@ module IJTAG
           end
           process_all(module_def.children)
         end
-        # Finally hook up the implied connections to the new modules parent now that it has
-        # been full instantiated
-        current_module.send(:connect_module, model)
       end
 
       def on_range(node)
@@ -114,10 +114,10 @@ module IJTAG
         name, *items = *process_all(node)
         c = Connection.new(name)
         type = node.type.to_s.sub('_def', '').camelize.to_sym
-        if type == :ScanOutPort
-          size = c.size || 1
-        else
+        if type == :DataInPort || type == :DataOutPort
           size = c.size
+        else
+          size = 1
         end
         port = current_module.add_port(c.path, size: size, type: type)
 
@@ -128,7 +128,7 @@ module IJTAG
               # ICL doesn't provide the detail about whether a scan register connection is to a scan register's
               # update stage or not, instead it is implied based on the type of the signal - data_signals are to
               # the update path, scan_signals are not.
-              defer_connection port.path, -> do
+              defer_connection port.path, lambda do
                 node = network.path_to_node(connection.path)
                 if connection.type == :scan_signal
                   if node.is_a?(Origen::Models::ScanRegister)
@@ -206,14 +206,15 @@ module IJTAG
           reset = 0
         end
         reg = current_module.add_block('Origen::Models::ScanRegister', c.path, size: c.size || 1, reset: reset)
+        defer { connect_sr(reg) }
         elements[:scanInSource].to_a[0].add_root(reg.parent.path).each do |connection|
-          defer_connection reg.si, -> do
+          defer_connection reg.si, lambda do
             if connection.numeric?
               obj = connection.path
             else
               obj = eval("top_level.#{connection}")
             end
-            if obj.is_a?(Origen::Models::Mux) 
+            if obj.is_a?(Origen::Models::Mux)
               obj.output
             elsif obj.is_a?(Origen::Models::ScanRegister)
               obj.so
@@ -254,6 +255,16 @@ module IJTAG
         end
       end
 
+      def on_logicSignal_def(node)
+        name, *items = *process_all(node)
+        port = current_module.add_port(name, size: 1)
+        @logic_processor ||= LogicProcessor.new
+        logic = node.to_a[1]
+        port.connect_to do
+          @logic_processor.evaluate(logic, port.parent) ? 1 : 0
+        end
+      end
+
       private
 
       def defer(&block)
@@ -262,9 +273,7 @@ module IJTAG
       end
 
       def apply_deferred_operations
-        (@deferred_operations || []).each do |op|
-          op.call
-        end
+        (@deferred_operations || []).each(&:call)
       end
 
       def apply_deferred_connections
@@ -304,6 +313,39 @@ module IJTAG
       def parameters
         _parameters.last
       end
+
+      def connect_module(mod)
+        parent = mod.parent
+        unless mod.client_interfaces.empty? || parent.client_interfaces.empty?
+          if mod.client_interfaces[0].ue.connections.empty?
+            mod.client_interfaces[0].ue.connect_to do
+              mod.so_visible? && parent.client_interfaces[0].update? ? 1 : 0
+            end
+          end
+          if mod.client_interfaces[0].se.connections.empty?
+            mod.client_interfaces[0].se.connect_to do
+              mod.so_visible? && parent.client_interfaces[0].shift? ? 1 : 0
+            end
+          end
+          if mod.client_interfaces[0].ce.connections.empty?
+            mod.client_interfaces[0].ce.connect_to do
+              mod.so_visible? && parent.client_interfaces[0].capture? ? 1 : 0
+            end
+          end
+          if mod.client_interfaces[0].sel.connections.empty?
+            mod.client_interfaces[0].sel.connect_to parent.client_interfaces[0].sel
+          end
+        end
+      end
+
+      def connect_sr(sr)
+        unless sr.parent.client_interfaces.empty?
+          sr.ue.connect_to sr.parent.client_interfaces[0].ue
+          sr.se.connect_to sr.parent.client_interfaces[0].se
+          sr.ce.connect_to sr.parent.client_interfaces[0].ce
+        end
+      end
     end
   end
 end
+# rubocop:enable Style/MethodName: Use snake_case for method names.

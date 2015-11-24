@@ -41,7 +41,6 @@ module IJTAG
       block = sub_block name, options
       if block.is_a?(Origen::Models::ScanRegister)
         @scan_registers << block
-        connect_sr(block) 
       else
         @modules << block if block.is_a?(IJTAG::Module)
       end
@@ -86,7 +85,7 @@ module IJTAG
       end
     end
 
-    def nodes_between(p1, p2, nodes=[])
+    def nodes_between(p1, p2, nodes = [])
       nodes = (nodes.dup) << p1
       (p1.ports - nodes).map do |port|
         if port == p2
@@ -100,7 +99,7 @@ module IJTAG
               nodes_between(out, p2, nodes)
             end
           elsif port.parent.is_a?(Origen::Models::ScanRegister) &&
-            port.parent.si == port
+                port.parent.si == port
             nodes << port
             nodes << port.parent
             nodes_between(port.parent.so, p2, nodes)
@@ -126,15 +125,14 @@ module IJTAG
     # Returns the length of the chain between a modules SI port and SO port
     def orig_chain_length(options = {})
       options = {
-        input: si,
-        output: client_interfaces[0].so,
-        timeout: 1000,
+        input:           si,
+        output:          client_interfaces[0].so,
+        timeout:         1000,
         fail_on_timeout: true
       }.merge(options)
       result = nil
       preserve_scan_register_data do
         options[:input].preserve_drive_data do
-
           # There may be a quicker way of doing this by inspecting the netlist, but
           # that could be difficult and may need to build a lot of knowledge about the
           # circuit behavior into such an analyzer. So instead for now we will just shift
@@ -188,48 +186,15 @@ module IJTAG
     private
 
     def preserve_scan_register_data
-      all_scan_registers.each { |r| r.save_sr_data }
+      all_scan_registers.each(&:save_sr_data)
       yield
-      all_scan_registers.each { |r| r.restore_sr_data }
+      all_scan_registers.each(&:restore_sr_data)
     end
 
     def root
       r = path
       r += '.' unless r.empty?
       r
-    end
-
-    def connect_sr(sr)
-      sr.ue.connect_to "#{root}client_interfaces[0].ue"
-      sr.se.connect_to "#{root}client_interfaces[0].se"
-      sr.ce.connect_to "#{root}client_interfaces[0].ce"
-    end
-
-    def connect_module(mod)
-      unless mod.client_interfaces.empty?
-        mod.client_interfaces[0].ue.connect_to do
-          if mod.so_visible? && client_interfaces[0].update?
-            1
-          else
-            0
-          end
-        end
-        mod.client_interfaces[0].se.connect_to do
-          if mod.so_visible? && client_interfaces[0].shift?
-            1
-          else
-            0
-          end
-        end
-        mod.client_interfaces[0].ce.connect_to do
-          if mod.so_visible? && client_interfaces[0].capture?
-            1
-          else
-            0
-          end
-        end
-        mod.client_interfaces[0].sel.connect_to "#{root}client_interfaces[0].sel"
-      end
     end
   end
 end

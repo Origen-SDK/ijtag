@@ -19,10 +19,9 @@ Module Exclusive {
   }
 
   // This logic matches the SO selection logic of the mux
-
   LogicSignal SEL1 {(SEL,reg2[1],reg2[0]) == 3'b101;}
-  //LogicSignal SEL2 {(SEL,reg2[1],reg2[0]) == 3'b110;}
-  //LogicSignal SEL3 {(SEL,reg2[1],reg2[0]) == 3'b111;}
+  LogicSignal SEL2 {(SEL,reg2[1],reg2[0]) == 3'b110;}
+  LogicSignal SEL3 {(SEL,reg2[1],reg2[0]) == 3'b111;}
 
   ScanMux M4 SelectedBy reg2 {2'b00 : SI;
                               2'b01 : WI1.SO;

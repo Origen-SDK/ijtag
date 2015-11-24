@@ -1,3 +1,4 @@
+# rubocop:disable Style/MethodName: Use snake_case for method names.
 module IJTAG
   module ICL
     module ExpressionProcessor
@@ -45,6 +46,10 @@ module IJTAG
         nodes[0].to_i(16)
       end
 
+      def on_concat_data_signal(node)
+        nodes = process_all(node)
+      end
+
       # These just get rid of the size component so that it can be treated
       # like a regular number in additions, don't think the size is really
       # required anywhere
@@ -58,3 +63,4 @@ module IJTAG
     end
   end
 end
+# rubocop:enable Style/MethodName: Use snake_case for method names.

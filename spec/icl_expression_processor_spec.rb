@@ -10,7 +10,6 @@ describe "The ICL Expression processor" do
     @r ||= Resolver.new
   end
 
-
   it "can resolve addition expressions" do
      ast = s(:add,
              s(:add,

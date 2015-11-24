@@ -1,3 +1,4 @@
+# rubocop:disable Style/MethodName: Use snake_case for method names.
 require 'ijtag/icl/processor'
 module IJTAG
   module ICL
@@ -38,3 +39,4 @@ module IJTAG
     end
   end
 end
+# rubocop:enable Style/MethodName: Use snake_case for method names.
