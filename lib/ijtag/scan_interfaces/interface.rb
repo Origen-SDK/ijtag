@@ -82,22 +82,6 @@ module IJTAG
         end
       end
 
-      def selected?
-        sel.data == 1
-      end
-
-      def shift?
-        selected? && se.data == 1
-      end
-
-      def capture?
-        selected? && ce.data == 1
-      end
-
-      def update?
-        selected? && ue.data == 1
-      end
-
       def si
         port_map[:ScanInPort]
       end

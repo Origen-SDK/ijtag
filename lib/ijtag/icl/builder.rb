@@ -1,4 +1,5 @@
 # rubocop:disable Style/MethodName: Use snake_case for method names.
+# rubocop:disable Style/Lambda: Use the lambda method for multi-line lambdas.
 require 'ijtag/icl/processor'
 require 'ijtag/icl/expression_processor'
 module IJTAG
@@ -52,7 +53,7 @@ module IJTAG
                 defer_connection(a, b.path)
               else
                 b = Connection.new(b).add_root(current_module.parent.path).to_s
-                defer_connection a, lambda do
+                defer_connection a, -> do
                   node = network.path_to_node(b)
                   if node.is_a?(Origen::Models::Mux)
                     node.output
@@ -63,6 +64,8 @@ module IJTAG
               end
             when :parameter_def
               # Do nothing, already applied
+            when :allowBroadcast_def
+              model.instance_variable_set('@allow_broadcast', item.to_a[0])
             else
               fail "Don't know how to model #{item.type} in an instance def"
             end
@@ -128,7 +131,7 @@ module IJTAG
               # ICL doesn't provide the detail about whether a scan register connection is to a scan register's
               # update stage or not, instead it is implied based on the type of the signal - data_signals are to
               # the update path, scan_signals are not.
-              defer_connection port.path, lambda do
+              defer_connection port.path, -> do
                 node = network.path_to_node(connection.path)
                 if connection.type == :scan_signal
                   if node.is_a?(Origen::Models::ScanRegister)
@@ -208,7 +211,7 @@ module IJTAG
         reg = current_module.add_block('Origen::Models::ScanRegister', c.path, size: c.size || 1, reset: reset)
         defer { connect_sr(reg) }
         elements[:scanInSource].to_a[0].add_root(reg.parent.path).each do |connection|
-          defer_connection reg.si, lambda do
+          defer_connection reg.si, -> do
             if connection.numeric?
               obj = connection.path
             else
@@ -261,7 +264,7 @@ module IJTAG
         @logic_processor ||= LogicProcessor.new
         logic = node.to_a[1]
         port.connect_to do
-          @logic_processor.evaluate(logic, port.parent) ? 1 : 0
+          @logic_processor.evaluate(logic, port.parent)
         end
       end
 
@@ -319,23 +322,41 @@ module IJTAG
         unless mod.client_interfaces.empty? || parent.client_interfaces.empty?
           if mod.client_interfaces[0].ue.connections.empty?
             mod.client_interfaces[0].ue.connect_to do
-              mod.so_visible? && parent.client_interfaces[0].update? ? 1 : 0
+              bitwise_and(mod.client_interfaces[0].sel.data, parent.client_interfaces[0].ue.data)
             end
           end
           if mod.client_interfaces[0].se.connections.empty?
             mod.client_interfaces[0].se.connect_to do
-              mod.so_visible? && parent.client_interfaces[0].shift? ? 1 : 0
+              bitwise_and(mod.client_interfaces[0].sel.data, parent.client_interfaces[0].se.data)
             end
           end
           if mod.client_interfaces[0].ce.connections.empty?
             mod.client_interfaces[0].ce.connect_to do
-              mod.so_visible? && parent.client_interfaces[0].capture? ? 1 : 0
+              bitwise_and(mod.client_interfaces[0].sel.data, parent.client_interfaces[0].ce.data)
             end
           end
+          # If no select signal connection is explicitly defined, consider a module
+          # selected whenever its scan out is visible at the top-level
           if mod.client_interfaces[0].sel.connections.empty?
-            mod.client_interfaces[0].sel.connect_to parent.client_interfaces[0].sel
+            mod.client_interfaces[0].sel.connect_to do
+              # If a module can be in a broadcast configuration, then it could be enabled while
+              # its SO is not visible, so in that case we can't infer selection by visibility
+              if mod.can_be_in_broadcast_config?
+                parent.client_interfaces[0].sel
+              else
+                mod.so_visible? ? 1 : 0
+              end
+            end
           end
         end
+      end
+
+      # Cheating a bit here, but easier to treat undefined as 0 these behavioral models rather than
+      # require all signals to be explicitly setup
+      def bitwise_and(a, b)
+        a = 0 if a == undefined
+        b = 0 if b == undefined
+        a & b
       end
 
       def connect_sr(sr)
@@ -349,3 +370,4 @@ module IJTAG
   end
 end
 # rubocop:enable Style/MethodName: Use snake_case for method names.
+# rubocop:enable Style/Lambda: Use the lambda method for multi-line lambdas.

@@ -23,7 +23,8 @@ module IJTAG
 
       # Returns the first child node of the given type that is found
       def find(type)
-        find(type)
+        nodes = find_all(type)
+        nodes.first
       end
 
       # Returns an array containing all child nodes of the given type(s)

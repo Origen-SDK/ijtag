@@ -10,6 +10,7 @@ module IJTAG
     attr_reader :icl, :module_name, :instance_name
     attr_reader :network, :top_level
     attr_reader :scan_registers, :modules
+    attr_reader :allow_broadcast
 
     alias_method :blocks, :sub_blocks
     alias_method :instance_name, :name
@@ -181,6 +182,10 @@ module IJTAG
         end
         s
       end
+    end
+
+    def can_be_in_broadcast_config?
+      allow_broadcast || (parent && parent.can_be_in_broadcast_config?)
     end
 
     private
