@@ -91,25 +91,26 @@ module IJTAG
     end
 
     def nodes_between(p1, p2, nodes = [])
-      nodes = (nodes.dup) << p1
-      (p1.ports - nodes).map do |port|
+      chain = (nodes.dup) << p1
+      (p1.ports - chain).map do |port|
+        current_chain = chain.dup
         if port == p2
-          nodes << port
+          current_chain << port
         else
           if port.parent.is_a?(Origen::Models::Mux) && port.path =~ /input\d+$/
             if port.parent.active_input == port
               out = port.parent.output
-              nodes << port
-              nodes << port.parent
-              nodes_between(out, p2, nodes)
+              current_chain << port
+              current_chain << port.parent
+              nodes_between(out, p2, current_chain)
             end
           elsif port.parent.is_a?(Origen::Models::ScanRegister) &&
                 port.parent.si == port
-            nodes << port
-            nodes << port.parent
-            nodes_between(port.parent.so, p2, nodes)
+            current_chain << port
+            current_chain << port.parent
+            nodes_between(port.parent.so, p2, current_chain)
           else
-            nodes_between(port, p2, nodes)
+            nodes_between(port, p2, current_chain)
           end
         end
       end.compact.first

@@ -136,6 +136,8 @@ module IJTAG
                 if connection.type == :scan_signal
                   if node.is_a?(Origen::Models::ScanRegister)
                     node.so
+                  elsif node.is_a?(Origen::Models::Mux)
+                    node.output
                   else
                     node
                   end
@@ -249,11 +251,20 @@ module IJTAG
           o = option.to_a
           p = o[1].add_root(current_module.path).to_s
           defer do
-            node = network.path_to_node(p)
-            if node.is_a?(Origen::Models::Mux)
-              node = node.output
+            n = network.path_to_node(p)
+            if n.is_a?(Origen::Models::ScanRegister)
+              n = n.so
+            elsif n.is_a?(Origen::Models::Mux)
+              n = n.output
+            elsif n.is_a?(Origen::Registers::BitCollection)
+              # If this is a scan connection to bit 0 of a scan register
+              if o[1].type == :scan_signal
+                if n.parent.try(:parent).is_a?(Origen::Models::ScanRegister)
+                  n = n.parent.parent.so
+                end
+              end
             end
-            mux.option o[0], node
+            mux.option o[0], n
           end
         end
       end
