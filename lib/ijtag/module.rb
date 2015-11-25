@@ -74,8 +74,12 @@ module IJTAG
       !!nodes_between(p1, p2)
     end
 
-    def chain_length
-      if nodes = nodes_between(si, so)
+    def chain_length(options={})
+      options = {
+        si: client_interfaces[0].si,
+        so: client_interfaces[0].so,
+      }.merge(options)
+      if nodes = nodes_between(options[:si], options[:so])
         nodes.reduce(0) do |sum, node|
           if node.is_a?(Origen::Models::ScanRegister)
             sum + node.size
