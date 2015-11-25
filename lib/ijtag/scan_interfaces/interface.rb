@@ -83,7 +83,7 @@ module IJTAG
       end
 
       def si
-        port_map[:ScanInPort]
+        port_map[:ScanInPort] || find_port(:ScanInPort, [:client, :client_tap, :host, :host_tap], true)
       end
 
       def so

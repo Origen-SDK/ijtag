@@ -16,8 +16,6 @@ describe "ICL Example 17 from the 1687 spec" do
 
     net.client_interfaces.size.should == 2
 
-
-    debugger
     net.chain_length.should == 16
     net.chain_length(so: net.so2).should == 8
   end

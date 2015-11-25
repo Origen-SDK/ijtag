@@ -74,10 +74,10 @@ module IJTAG
       !!nodes_between(p1, p2)
     end
 
-    def chain_length(options={})
+    def chain_length(options = {})
       options = {
         si: client_interfaces[0].si,
-        so: client_interfaces[0].so,
+        so: client_interfaces[0].so
       }.merge(options)
       if nodes = nodes_between(options[:si], options[:so])
         nodes.reduce(0) do |sum, node|

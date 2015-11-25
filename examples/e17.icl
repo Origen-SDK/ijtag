@@ -1,11 +1,16 @@
 #include "e4.icl"
 
 Module Branched_SI {
-  ScanInPort SI; CaptureEnPort CE; ShiftEnPort SE;
-  UpdateEnPort UE; SelectPort SEL1; ResetPort RST;
+  ScanInPort SI;
+  CaptureEnPort CE;
+  ShiftEnPort SE;
+  UpdateEnPort UE;
+  ResetPort RST;
   TCKPort TCK;
 
+  SelectPort SEL1;
   ScanOutPort SO1 { Source WI2.SO; }
+
   SelectPort SEL2;
   ScanOutPort SO2 { Source WI3.SO; }
 
