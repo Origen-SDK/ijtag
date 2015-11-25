@@ -29,5 +29,5 @@ Module remote_control {
   TCKPort TCK; ScanOutPort SO { Source reg3.SO; }
   DataOutPort RS[2:0] { Source reg3.DO[2:0]; }
 
-  Instance reg3 Of SRegP3 { InputPort SI = SI; Parameter Size = 3;}
+  Instance reg3 Of SReg { InputPort SI = SI; Parameter Size = 3;}
 }

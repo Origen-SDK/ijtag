@@ -9,8 +9,8 @@ Module mux_inline3 {
   Instance WI2 Of WrappedInstr { InputPort SI = mux1; }
   Instance WI3 Of WrappedInstr { InputPort SI = mux2; }
 
-  Instance reg3 Of SRegP3 { InputPort SI = mux3; Parameter Size = 3;
-                            InputPort DI = 'b0; }
+  Instance reg3 Of SReg { InputPort SI = mux3; Parameter Size = 3;
+                          InputPort DI = 'b0; }
 
   ScanMux mux1 SelectedBy reg3.DO[2] {
     1'b0 : SI;

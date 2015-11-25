@@ -1,4 +1,4 @@
-Module SReg {    
+Module SRegP0 {    
   ScanInPort      SI;
   ScanOutPort     SO { Source SR[0];}
   ShiftEnPort     SE;
@@ -40,7 +40,7 @@ Module SRegP2 {
   Instance p1 of SRegP1 { Parameter MSB = 2; }
 }
 
-Module SRegP3 {    
+Module SReg {    
   Parameter Size = 8;
 
   ScanInPort      SI;

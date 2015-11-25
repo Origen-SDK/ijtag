@@ -12,7 +12,7 @@ describe "ICL Example 3 from the 1687 spec" do
   end
 
   it 'instantiates the top level module' do
-    net = IJTAG.import(file: file).instantiate("SReg")
+    net = IJTAG.import(file: file).instantiate("SRegP0")
     net.is_a?(IJTAG::Module).should == true
     net.ports.size.should == 10
     net.scan_client.type.should == :client
@@ -51,18 +51,18 @@ describe "ICL Example 3 from the 1687 spec" do
 
   it 'resolves parameter overrides with simple math' do
     defn = IJTAG.import(file: file)
-    net = defn.instantiate("SRegP3")
+    net = defn.instantiate("SReg")
     net.sr.size.should == 8
     net.di.size.should == 8
     net.do.size.should == 8
-    net = defn.instantiate("SRegP3", Size: 6) 
+    net = defn.instantiate("SReg", Size: 6) 
     net.sr.size.should == 6
     net.di.size.should == 6
     net.do.size.should == 6
   end
 
   it 'the model works' do
-    net = IJTAG.import(file: file).instantiate("SRegP3", Size: 3)
+    net = IJTAG.import(file: file).instantiate("SReg", Size: 3)
     net.sr.size.should == 3
     net.chain_length.should == 3
 

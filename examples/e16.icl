@@ -20,7 +20,7 @@ Module Broadcast {
     InputPort SEL = SEL;
     AllowBroadcastOnScanInterface scan_client;
   }
-  Instance reg1 Of SRegP3 {
+  Instance reg1 Of SReg {
     InputPort SI = WI3.SO;
     Parameter Size = 1;
     InputPort DI = 'b0;
