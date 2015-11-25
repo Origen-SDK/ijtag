@@ -20,9 +20,9 @@ module IJTAG
             :client
           elsif port_map[:ToSelectPort] || port_map[:ToShiftEnPort]
             :host
-          elsif port_map[:TMSPort]
+          elsif port_map[:TmsPort]
             :client_tap
-          elsif port_map[:ToTMSPort]
+          elsif port_map[:ToTmsPort]
             :host_tap
           else
             fail "Unidentified Scan interface #{id}"
@@ -42,6 +42,33 @@ module IJTAG
             end
           end
           map
+        end
+      end
+
+      def tap
+        return @tap if @tap
+        @tap = IJTAG::TAPDriver.new(parent)
+        @tap.tms.connect_to tms
+        @tap.reset
+        @tap
+      end
+
+      def shift_ir!(val = nil, options = {})
+        val, options = nil, val if val.is_a?(Hash)
+        miscompare = false
+        tap.shift_ir do
+          (options[:size] || 1).times do |i|
+            if options[:expect]
+              unless options[:expect][i] == so.data
+                miscompare = true
+              end
+            end
+            si.drive(val[i]) if val
+            parent.clock!
+          end
+        end
+        if options[:expect]
+          !miscompare
         end
       end
 
@@ -111,7 +138,7 @@ module IJTAG
       end
 
       def tck
-        find_port(:TCKPort, [:client, :client_tap])
+        find_port(:TckPort, [:client, :client_tap])
       end
 
       def to_sel
@@ -135,23 +162,23 @@ module IJTAG
       end
 
       def to_tck
-        find_port(:ToTCKPort, [:host, :host_tap])
+        find_port(:ToTckPort, [:host, :host_tap])
       end
 
       def tms
-        find_port(:TMSPort, :client_tap)
+        find_port(:TmsPort, :client_tap)
       end
 
       def trst
-        find_port(:TRSTPort, :client_tap)
+        find_port(:TrstPort, :client_tap)
       end
 
       def to_tms
-        find_port(:ToTMSPort, :host_tap)
+        find_port(:ToTmsPort, :host_tap)
       end
 
       def to_trst
-        find_port(:ToTRSTPort, :host_tap)
+        find_port(:ToTrstPort, :host_tap)
       end
 
       private

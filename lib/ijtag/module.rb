@@ -64,7 +64,19 @@ module IJTAG
     end
 
     def shift!(*args)
-      client_interfaces[0].shift!(*args)
+      default_client_interface.shift!(*args)
+    end
+
+    def shift_ir!(*args)
+      default_client_interface.shift_ir!(*args)
+    end
+
+    def shift_dr!(*args)
+      default_client_interface.shift_dr!(*args)
+    end
+
+    def default_client_interface
+      client_interfaces[0] || client_tap_interfaces[0]
     end
 
     def update!
@@ -76,7 +88,7 @@ module IJTAG
     end
 
     def so_visible?
-      connected?(so, local_top_level.so)
+      connected?(default_so, local_top_level.default_so)
     end
 
     def connected?(p1, p2)
@@ -85,8 +97,8 @@ module IJTAG
 
     def chain_length(options = {})
       options = {
-        si: client_interfaces[0].si,
-        so: client_interfaces[0].so
+        si: default_si,
+        so: default_so
       }.merge(options)
       if nodes = nodes_between(options[:si], options[:so])
         nodes.reduce(0) do |sum, node|
@@ -96,6 +108,26 @@ module IJTAG
             sum
           end
         end
+      end
+    end
+
+    def default_si
+      if !client_interfaces.empty?
+        client_interfaces[0].si
+      elsif !client_tap_interfaces.empty?
+        client_tap_interfaces[0].si
+      else
+        fail 'Module has no scan in port'
+      end
+    end
+
+    def default_so
+      if !client_interfaces.empty?
+        client_interfaces[0].so
+      elsif !client_tap_interfaces.empty?
+        client_tap_interfaces[0].so
+      else
+        fail 'Module has no scan out port'
       end
     end
 
@@ -125,14 +157,21 @@ module IJTAG
       end.compact.first
     end
 
-    def chain
-      nodes_between(si, so).map do |node|
-        if node.is_a?(Origen::Models::ScanRegister)
-          node.path
-        elsif node.is_a?(Origen::Models::Mux)
-          node.path
-        else
-          node.path
+    def chain(options = {})
+      options = {
+        si: default_si,
+        so: default_so
+      }.merge(options)
+      nodes = nodes_between(options[:si], options[:so])
+      if nodes
+        nodes.map do |node|
+          if node.is_a?(Origen::Models::ScanRegister)
+            node.path
+          elsif node.is_a?(Origen::Models::Mux)
+            node.path
+          else
+            node.path
+          end
         end
       end
     end

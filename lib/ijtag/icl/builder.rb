@@ -54,13 +54,13 @@ module IJTAG
               else
                 b = Connection.new(b).add_root(current_module.parent.path).to_s
                 defer_connection a, -> do
-                  node = path_to_node(b, node)
-                  if node.is_a?(Origen::Models::Mux)
-                    node.output
-                  elsif node.is_a?(Origen::Models::ScanRegister)
-                    node.so
+                  n = path_to_node(b, node)
+                  if n.is_a?(Origen::Models::Mux)
+                    n.output
+                  elsif n.is_a?(Origen::Models::ScanRegister)
+                    n.so
                   else
-                    node
+                    n
                   end
                 end
               end
@@ -114,6 +114,9 @@ module IJTAG
       alias_method :on_scan_signal, :on_signal
       alias_method :on_data_signal, :on_signal
       alias_method :on_reset_signal, :on_signal
+      alias_method :on_captureEn_signal, :on_signal
+      alias_method :on_shiftEn_signal, :on_signal
+      alias_method :on_updateEn_signal, :on_signal
 
       def on_port_def(node)
         name, *items = *process_all(node)
@@ -129,6 +132,9 @@ module IJTAG
         items.each do |item|
           case item.type
           when :source
+            unless item.to_a[0].is_a?(Connection)
+              fail BuildError.new("#{item.to_a[0].type} node was not correctly resolved to a connection object", node)
+            end
             item.to_a[0].add_root(port.parent.path).each do |connection|
               # ICL doesn't provide the detail about whether a scan register connection is to a scan register's
               # update stage or not, instead it is implied based on the type of the signal - data_signals are to
@@ -161,6 +167,8 @@ module IJTAG
       alias_method :on_selectPort_def, :on_port_def
       alias_method :on_resetPort_def, :on_port_def
       alias_method :on_tckPort_def, :on_port_def
+      alias_method :on_tmsPort_def, :on_port_def
+      alias_method :on_trstPort_def, :on_port_def
       alias_method :on_dataInPort_def, :on_port_def
       alias_method :on_dataOutPort_def, :on_port_def
       alias_method :on_toCaptureEnPort_def, :on_port_def
@@ -169,6 +177,9 @@ module IJTAG
       alias_method :on_toSelectPort_def, :on_port_def
       alias_method :on_toResetPort_def, :on_port_def
       alias_method :on_toTckPort_def, :on_port_def
+      alias_method :on_toTmsPort_def, :on_port_def
+      alias_method :on_toIRSelectPort_def, :on_port_def
+      alias_method :on_toTrstPort_def, :on_port_def
 
       def on_alias_def(node)
         current_module.aliases << node

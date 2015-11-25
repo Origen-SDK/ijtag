@@ -7,7 +7,7 @@ module IJTAG
           p = ports.by_type.keys
           if p.include?('ScanInPort') && p.include?('ScanOutPort') &&
              (p.include?('SelectPort') || p.include?('ShiftEnPort'))
-            int = Interface.new(:default, self)
+            int = Interface.new(:undeclared_client_interface, self)
             int.add_port(ports.by_type['ScanInPort'].first.name)
             int.add_port(ports.by_type['ScanOutPort'].first.name)
             if ports.by_type['SelectPort']
@@ -15,6 +15,26 @@ module IJTAG
             end
             if ports.by_type['ShiftEnPort']
               int.add_port(ports.by_type['ShiftEnPort'].first.name)
+            end
+            i << int
+          end
+        end
+        i
+      end
+    end
+
+    def client_tap_interfaces
+      @client_tap_interfaces ||= begin
+        i = scan_interfaces.select { |k, v| v.type == :client_tap }.values
+        if i.empty?
+          p = ports.by_type.keys
+          if p.include?('ScanInPort') && p.include?('ScanOutPort') &&
+             p.include?('TmsPort')
+            int = Interface.new(:undeclared_client_tap_interface, self)
+            int.add_port(ports.by_type['ScanInPort'].first.name)
+            int.add_port(ports.by_type['ScanOutPort'].first.name)
+            if ports.by_type['TmsPort']
+              int.add_port(ports.by_type['TmsPort'].first.name)
             end
             i << int
           end

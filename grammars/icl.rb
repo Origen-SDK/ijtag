@@ -4961,9 +4961,9 @@ module IJTAG
       module TmsPortDef2
         def to_ast
           if d.respond_to?(:attrs)
-            n :tmsPort_name, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval, file: file
+            n :tmsPort_def, name.to_ast, *d.attrs.elements.map{ |e| e.to_ast }, input: input, interval: interval, file: file
           else
-            n :tmsPort_name, name.to_ast, input: input, interval: interval, file: file
+            n :tmsPort_def, name.to_ast, input: input, interval: interval, file: file
           end
         end
       end
