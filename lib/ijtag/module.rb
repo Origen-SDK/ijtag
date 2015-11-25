@@ -28,6 +28,15 @@ module IJTAG
       @modules = []
     end
 
+    def [](index)
+      d = ports.by_type['DataOutPort']
+      if d && d[0]
+        d[0][index]
+      else
+        fail "Module #{path} does not have a data out port!"
+      end
+    end
+
     def path_to_node(path)
       @path_to_node ||= {}
       if node = @path_to_node[path] ||= eval("self.#{path}")

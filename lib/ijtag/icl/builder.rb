@@ -39,7 +39,7 @@ module IJTAG
       def on_instance_def(node)
         name, module_name, *items = *node.children
         module_def = network_def.modules[module_name.value]
-        fail BuildError.new("A module defintion for #{module_name.value} could not be found", node) unless module_def
+        fail BuildError.new("A module definition for #{module_name.value} could not be found", node) unless module_def
         model = current_module.add_block(:Module, name.value, icl: module_def, module_name: module_name.value, network: top_level)
         # Connect up the default connections at the end once fully instantiated
         defer { connect_module(model) }
@@ -54,9 +54,11 @@ module IJTAG
               else
                 b = Connection.new(b).add_root(current_module.parent.path).to_s
                 defer_connection a, -> do
-                  node = network.path_to_node(b)
+                  node = path_to_node(b, node)
                   if node.is_a?(Origen::Models::Mux)
                     node.output
+                  elsif node.is_a?(Origen::Models::ScanRegister)
+                    node.so
                   else
                     node
                   end
@@ -132,7 +134,7 @@ module IJTAG
               # update stage or not, instead it is implied based on the type of the signal - data_signals are to
               # the update path, scan_signals are not.
               defer_connection port.path, -> do
-                node = network.path_to_node(connection.path)
+                node = path_to_node(connection.path, node)
                 if connection.type == :scan_signal
                   if node.is_a?(Origen::Models::ScanRegister)
                     node.so
@@ -251,7 +253,7 @@ module IJTAG
           o = option.to_a
           p = o[1].add_root(current_module.path).to_s
           defer do
-            n = network.path_to_node(p)
+            n = path_to_node(p, node)
             if n.is_a?(Origen::Models::ScanRegister)
               n = n.so
             elsif n.is_a?(Origen::Models::Mux)
@@ -262,6 +264,12 @@ module IJTAG
                 if n.parent.try(:parent).is_a?(Origen::Models::ScanRegister)
                   n = n.parent.parent.so
                 end
+              end
+            elsif n.is_a?(Origen::Ports::Section)
+              # If this is a scan connection to bit 0 of a module
+              if o[1].type == :scan_signal && n.parent.is_a?(IJTAG::Module) &&
+                 n.index == 0
+                n = n.parent.client_interfaces[0].so
               end
             end
             mux.option o[0], n
@@ -280,6 +288,12 @@ module IJTAG
       end
 
       private
+
+      def path_to_node(path, ast_node)
+        network.path_to_node(path)
+      rescue
+        raise BuildError.new("The network path #{path} could not be resolved", ast_node)
+      end
 
       def defer(&block)
         @deferred_operations ||= []
