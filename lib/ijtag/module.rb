@@ -87,6 +87,14 @@ module IJTAG
       client_interfaces[0].capture!
     end
 
+    def tap
+      client_tap_interfaces.first.tap
+    end
+
+    def tap_driver
+      client_tap_interfaces.first.tap_driver
+    end
+
     def so_visible?
       connected?(default_so, local_top_level.default_so)
     end
@@ -239,6 +247,22 @@ module IJTAG
 
     def can_be_in_broadcast_config?
       allow_broadcast || (parent && parent.can_be_in_broadcast_config?)
+    end
+
+    def clock_prepare
+      client_tap_interfaces.each do |int|
+        int.tap.clock_prepare
+      end
+    end
+
+    def clock_apply
+      client_tap_interfaces.each do |int|
+        int.tap.clock_apply
+      end
+    end
+
+    def siblings
+      parent.modules
     end
 
     private

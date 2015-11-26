@@ -47,5 +47,11 @@ END
     l(expr, b).should == 1
     b.reg3.write(0b010)
     l(expr, b).should == 0
+
+    b = LB1.new
+    expr = "reg2[1:0] == 2'b01"
+    l(expr, b).should == 0
+    b.reg2.write(0b01)
+    l(expr, b).should == 1
   end
 end

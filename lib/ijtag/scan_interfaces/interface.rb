@@ -45,26 +45,55 @@ module IJTAG
         end
       end
 
+      def tap_driver
+        @tap_driver ||= IJTAG::TAPDriver.new(self)
+      end
+
       def tap
-        return @tap if @tap
-        @tap = IJTAG::TAPDriver.new(parent)
-        @tap.tms.connect_to tms
-        @tap.reset
-        @tap
+        @tap ||= begin
+          tap = IJTAG::TAP.new
+          tap.tms.connect_to tms
+          tap
+        end
       end
 
       def shift_ir!(val = nil, options = {})
         val, options = nil, val if val.is_a?(Hash)
         miscompare = false
-        tap.shift_ir do
-          (options[:size] || 1).times do |i|
+        tap_driver.shift_ir do
+          n = (options[:size] || 1)
+          n.times do |i|
             if options[:expect]
               unless options[:expect][i] == so.data
                 miscompare = true
               end
             end
             si.drive(val[i]) if val
-            parent.clock!
+            # Don't clock the last one as the TAP driver will do that as TMS
+            # must be driven too
+            parent.clock! unless i == n - 1
+          end
+        end
+        if options[:expect]
+          !miscompare
+        end
+      end
+
+      def shift_dr!(val = nil, options = {})
+        val, options = nil, val if val.is_a?(Hash)
+        miscompare = false
+        tap_driver.shift_dr do
+          n = (options[:size] || 1)
+          n.times do |i|
+            if options[:expect]
+              unless options[:expect][i] == so.data
+                miscompare = true
+              end
+            end
+            si.drive(val[i]) if val
+            # Don't clock the last one as the TAP driver will do that as TMS
+            # must be driven too
+            parent.clock! unless i == n - 1
           end
         end
         if options[:expect]
@@ -109,6 +138,10 @@ module IJTAG
         end
       end
 
+      def clock!
+        parent.clock!
+      end
+
       def si
         port_map[:ScanInPort] || find_port(:ScanInPort, [:client, :client_tap, :host, :host_tap], true)
       end
@@ -150,11 +183,11 @@ module IJTAG
       end
 
       def to_ce
-        find_port(:CaptureEnPort, :host, true)
+        find_port(:ToCaptureEnPort, :host, true)
       end
 
       def to_ue
-        find_port(:UpdateEnPort, :host, true)
+        find_port(:ToUpdateEnPort, :host, true)
       end
 
       def to_rst

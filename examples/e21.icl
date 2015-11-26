@@ -32,8 +32,8 @@ Module eTAPC {
   ToSelectPort en { Source tdrEn0; }
   ToResetPort tlr { Source FSM.tlr; }
   ToCaptureEnPort CE { Source FSM.CE; }
-  ToShiftEnPort SE { Source FSM.CE; }
-  ToUpdateEnPort UE { Source FSM.CE; }
+  ToShiftEnPort SE { Source FSM.SE; }
+  ToUpdateEnPort UE { Source FSM.UE; }
 
   Instance FSM Of TapStates {
     InputPort tms = eTMS;
@@ -74,7 +74,9 @@ Module TapStates {
   TCKPort tck;
   ToResetPort tlr;
   ToIRSelectPort IRSel;
-  ToCaptureEnPort CE;
-  ToShiftEnPort SE;
-  ToUpdateEnPort UE;
+  // Had to add these source attributes, how could a connection
+  // to a TAP controller be implied?
+  ToCaptureEnPort CE { Source tap.capture; }
+  ToShiftEnPort SE { Source tap.shift; }
+  ToUpdateEnPort UE { Source tap.update; }
 }

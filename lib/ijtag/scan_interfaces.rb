@@ -28,13 +28,35 @@ module IJTAG
         i = scan_interfaces.select { |k, v| v.type == :client_tap }.values
         if i.empty?
           p = ports.by_type.keys
-          if p.include?('ScanInPort') && p.include?('ScanOutPort') &&
-             p.include?('TmsPort')
+          if p.include?('TmsPort')
             int = Interface.new(:undeclared_client_tap_interface, self)
-            int.add_port(ports.by_type['ScanInPort'].first.name)
-            int.add_port(ports.by_type['ScanOutPort'].first.name)
+            int.add_port(ports.by_type['ScanInPort'].first.name) if p.include?('ScanInPort')
+            int.add_port(ports.by_type['ScanOutPort'].first.name) if p.include?('ScanOutPort')
             if ports.by_type['TmsPort']
               int.add_port(ports.by_type['TmsPort'].first.name)
+            end
+            i << int
+          end
+        end
+        i
+      end
+    end
+
+    def host_interfaces
+      @host_interfaces ||= begin
+        i = scan_interfaces.select { |k, v| v.type == :host }.values
+        if i.empty?
+          p = ports.by_type.keys
+          if p.include?('ScanInPort') && p.include?('ScanOutPort') &&
+             (p.include?('ToSelectPort') || p.include?('ToShiftEnPort'))
+            int = Interface.new(:undeclared_host_interface, self)
+            int.add_port(ports.by_type['ScanInPort'].first.name)
+            int.add_port(ports.by_type['ScanOutPort'].first.name)
+            if ports.by_type['ToSelectPort']
+              int.add_port(ports.by_type['ToSelectPort'].first.name)
+            end
+            if ports.by_type['ToShiftEnPort']
+              int.add_port(ports.by_type['ToShiftEnPort'].first.name)
             end
             i << int
           end

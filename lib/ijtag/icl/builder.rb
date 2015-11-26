@@ -128,6 +128,9 @@ module IJTAG
           size = 1
         end
         port = current_module.add_port(c.path, size: size, type: type)
+        if type == :ToIRSelectPort
+          defer { port.connect_to port.parent.tap.ir_sel }
+        end
 
         items.each do |item|
           case item.type
@@ -355,20 +358,50 @@ module IJTAG
 
       def connect_module(mod)
         parent = mod.parent
-        unless mod.client_interfaces.empty? || parent.client_interfaces.empty?
+        unless mod.client_interfaces.empty?
           if mod.client_interfaces[0].ue.connections.empty?
-            mod.client_interfaces[0].ue.connect_to do
-              bitwise_and(mod.client_interfaces[0].sel.data, parent.client_interfaces[0].ue.data)
+            if parent.client_interfaces[0]
+              mod.client_interfaces[0].ue.connect_to do
+                bitwise_and(mod.client_interfaces[0].sel.data, parent.client_interfaces[0].ue.data)
+              end
+            else
+              mod.siblings.each do |sib|
+                if sib.host_interfaces[0]
+                  mod.client_interfaces[0].ue.connect_to do
+                    bitwise_and(sib.host_interfaces[0].to_sel.data, sib.host_interfaces[0].to_ue.data)
+                  end
+                end
+              end
             end
           end
           if mod.client_interfaces[0].se.connections.empty?
-            mod.client_interfaces[0].se.connect_to do
-              bitwise_and(mod.client_interfaces[0].sel.data, parent.client_interfaces[0].se.data)
+            if parent.client_interfaces[0]
+              mod.client_interfaces[0].se.connect_to do
+                bitwise_and(mod.client_interfaces[0].sel.data, parent.client_interfaces[0].se.data)
+              end
+            else
+              mod.siblings.each do |sib|
+                if sib.host_interfaces[0]
+                  mod.client_interfaces[0].se.connect_to do
+                    bitwise_and(sib.host_interfaces[0].to_sel.data, sib.host_interfaces[0].to_se.data)
+                  end
+                end
+              end
             end
           end
           if mod.client_interfaces[0].ce.connections.empty?
-            mod.client_interfaces[0].ce.connect_to do
-              bitwise_and(mod.client_interfaces[0].sel.data, parent.client_interfaces[0].ce.data)
+            if parent.client_interfaces[0]
+              mod.client_interfaces[0].ce.connect_to do
+                bitwise_and(mod.client_interfaces[0].sel.data, parent.client_interfaces[0].ce.data)
+              end
+            else
+              mod.siblings.each do |sib|
+                if sib.host_interfaces[0]
+                  mod.client_interfaces[0].ce.connect_to do
+                    bitwise_and(sib.host_interfaces[0].to_sel.data, sib.host_interfaces[0].to_ce.data)
+                  end
+                end
+              end
             end
           end
           # If no select signal connection is explicitly defined, consider a module
@@ -385,6 +418,12 @@ module IJTAG
             end
           end
         end
+
+        unless mod.client_tap_interfaces.empty? || parent.client_tap_interfaces.empty?
+          if mod.client_tap_interfaces[0].tms.connections.empty?
+            mod.client_tap_interfaces[0].tms.connect_to parent.client_tap_interfaces[0].tms
+          end
+        end
       end
 
       # Cheating a bit here, but easier to treat undefined as 0 these behavioral models rather than
@@ -396,10 +435,14 @@ module IJTAG
       end
 
       def connect_sr(sr)
-        unless sr.parent.client_interfaces.empty?
+        if !sr.parent.client_interfaces.empty?
           sr.ue.connect_to sr.parent.client_interfaces[0].ue
           sr.se.connect_to sr.parent.client_interfaces[0].se
           sr.ce.connect_to sr.parent.client_interfaces[0].ce
+        elsif !sr.parent.client_tap_interfaces.empty?
+          sr.ue.connect_to sr.parent.client_tap_interfaces[0].tap.update
+          sr.se.connect_to sr.parent.client_tap_interfaces[0].tap.shift
+          sr.ce.connect_to sr.parent.client_tap_interfaces[0].tap.capture
         end
       end
     end

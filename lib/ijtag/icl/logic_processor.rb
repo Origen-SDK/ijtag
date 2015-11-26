@@ -73,6 +73,12 @@ module IJTAG
         end
         if nodes[0].is_a?(String)
           context.send(nodes[0])
+        elsif nodes[0].try(:type) == :hier_port
+          val = context
+          nodes[0].to_a.each do |op|
+            val = val.send(op)
+          end
+          val
         else
           nodes[0]
         end
@@ -101,6 +107,11 @@ module IJTAG
         else
           obj
         end
+      end
+
+      def on_range(node)
+        first, last = *process_all(node)
+        first..last
       end
 
       # Override the default behavior of returning the unmodified

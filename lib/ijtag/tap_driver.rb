@@ -9,15 +9,13 @@ module IJTAG
     def initialize(network)
       @network = network
       @state = :unknown
-
-      port :tms, size: 1
     end
 
     def log(msg, options = {})
     end
 
     def tms!(data)
-      tms.drive(data)
+      network.tms.drive(data)
       network.clock!
     end
   end
