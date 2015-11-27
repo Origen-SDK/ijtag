@@ -10,7 +10,7 @@ task default: [:compile]
 desc 'Compile the latest grammar files'
 task :compile do
   Dir.chdir Origen.root do
-    sh %(lbin/tt --force grammars/icl.treetop)
+    #    sh %(lbin/tt --force grammars/icl.treetop)
     sh %(lbin/tt --force grammars/pdl.treetop)
   end
 end

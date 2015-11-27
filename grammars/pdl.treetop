@@ -1,0 +1,457 @@
+module IJTAG
+  module PDL
+    grammar Grammar
+      rule pdl_source
+        pdlSource_items+ {
+          def to_ast
+            n :pdl_source, *elements.map{ |e| e.to_ast if e.respond_to?(:to_ast) }.compact, input: input, interval: interval, file: file
+          end
+        }
+      end
+
+      rule pdlSource_items
+        S / sl_comment / eoc / pdl_level_def / iprocsformodule_def /
+        iuseprocnamespace_def / iproc_def 
+      end
+
+      ####################################################
+      # TOP LEVEL NODES
+      ####################################################
+
+      rule sl_comment
+        "#" (!N .)* N
+      end
+
+      rule pdl_level_def
+        'iPDLLevel' S level:([0-9])+ S '-version' S version:([0-9a-zA-Z_])+ s {
+          def to_ast
+            n :pdl_level_def, level.text_value, level.version, input: input, interval: interval, file: file
+          end
+        }
+      end
+
+      rule iprocsformodule_def
+        'iProcsForModule' S name:module_name d:(S '-iProcNameSpace' S namespace:pdl_namespace_name)? eoc {
+          def to_ast
+            if d.respond_to?(:namespace)
+              n :iprocsformodule_def, name.to_ast, d.namespace.to_ast, input: input, interval: interval, file: file
+            else
+              n :iprocsformodule_def, name.to_ast, input: input, interval: interval, file: file
+            end
+          end
+        }
+      end
+
+      rule iuseprocnamespace_def
+        'iUseProcNameSpace' S name:(pdl_namespace_name / '-') {
+          def to_ast
+            n :iuseprocnamespace_def, name.to_ast, input: input, interval: interval, file: file
+          end
+        }
+      end
+
+      rule iproc_def
+        iproc_def_without_args / iproc_def_with_args
+      end
+
+      rule iproc_def_with_args
+        'iProc' S name:procName s '{' s args:argument+ s '}' s '{' s commands:command+ s '}' eoc {
+          def to_ast
+            a1 = n :args, *args.elements.map{ |c| c.to_ast }
+            a2 = n :commands, *commands.elements.map{ |c| c.to_ast }
+            n :iproc_def, name.to_ast, a1, a2, input: input, interval: interval, file: file
+          end
+        }
+      end
+
+      rule iproc_def_without_args
+        'iProc' S name:procName s ('{' s '}')? s '{' s commands:command+ s '}' eoc {
+          def to_ast
+            a1 = n :args
+            a2 = n :commands, *commands.elements.map{ |c| c.to_ast }
+            n :iproc_def, name.to_ast, a1, a2, input: input, interval: interval, file: file
+          end
+        }
+      end
+
+      ####################################################
+      # Generic Identifiers
+      ####################################################
+
+      rule module_name
+        (icl_namespace_name '::')? SCALAR_ID {
+          def to_ast
+            text_value
+          end
+        }
+      end
+
+      rule instancePath
+        dot_id
+      end
+
+      rule scanInterface_name
+        (instancePath '.')? SCALAR_ID
+      end
+
+      rule port
+        hier_signal
+      end
+
+      rule reg_or_port
+        hier_signal
+      end
+
+      rule reg_port_or_instance
+        hier_signal
+      end
+
+      rule hier_signal
+        ins:(path:instancePath '.')? signal:(reg_port_signal_id / ARGUMENT_REF) {
+          def to_ast
+            if ins.elements
+              n :hier_port, *ins.elements.map{ |e| e.path.to_ast }, signal.to_ast, input: input, interval: interval, file: file
+            else
+              n :hier_port, signal.to_ast, input: input, interval: interval, file: file
+            end
+          end
+        }
+      end
+
+      rule reg_port_signal_id
+        vector_id / SCALAR_ID
+      end
+
+      rule vector_id
+        id:SCALAR_ID ('[' / '(') ind:(index / range) (']' / ')') {
+          def to_ast
+            n :vector_id, id.to_ast, ind.to_ast, input: input, interval: interval, file: file
+          end
+        }
+      end
+
+      rule index
+        pdl_number
+      end
+
+      rule range
+        start:index ':' stop:index {
+          def to_ast
+            n :hier_port, start.to_ast, stop.to_ast, input: input, interval: interval, file: file
+          end
+        }
+      end
+
+      rule enum_name
+        SCALAR_ID
+      end
+
+      rule instance_name
+        SCALAR_ID
+      end
+
+      ####################################################
+      # Command tokens
+      ####################################################
+
+      rule cycleCount
+        pdl_number
+      end
+
+      rule sysClock
+        hier_signal
+      end
+
+      rule sourceClock
+        hier_signal
+      end
+
+      rule chain_id
+        SCALAR_ID
+      end
+
+      rule length
+        POS_INT
+      end
+
+      rule procName
+        SCALAR_ID
+      end
+
+      ####################################################
+      # Numbers
+      ####################################################
+
+      rule pdl_number
+        TCL_HEX_NUMBER / TCL_BIN_NUMBER / POS_INT / ARGUMENT_REF
+      end
+
+      rule POS_INT
+        [0-9]+ {
+          def to_ast
+            text_value.to_i
+          end
+        }
+      end
+
+      rule TCL_HEX_NUMBER
+        '0x' num:([0-9A-Fa-fxX])+ {
+          def to_ast
+            if num.text_value =~ /[xX]/
+              size = num.text_value.length * 4
+              Origen::XNumber.new("h#{size}_#{num.text_value}")
+            else
+              num.text_value.to_i(16)
+            end
+          end
+        }
+      end
+
+      rule TCL_BIN_NUMBER
+        '0b' num:([01xX])+ {
+          def to_ast
+            if num.text_value =~ /[xX]/
+              size = num.text_value.length
+              Origen::XNumber.new("b#{size}_#{num.text_value}")
+            else
+              num.text_value.to_i(2)
+            end
+          end
+        }
+      end
+
+      rule ISCAN_HEX_NUMBER
+        ('"' / '{') s '0x' num:([0-9A-Fa-fxX] / s)+ ('}' / '"') {
+          def to_ast
+            debugger
+          end
+        }
+      end
+      
+      rule ISCAN_BIN_NUMBER
+        ('"' / '{') s '0b' num:([01xX] / s)+ ('}' / '"') {
+          def to_ast
+            debugger
+          end
+        }
+      end
+
+      rule tvalue
+        (EVALUE / DVALUE) TSUFFIX
+      end
+
+      rule EVALUE
+        POS_INT '.' POS_INT 'e-' POS_INT
+      end
+
+      rule DVALUE
+        POS_INT '.' POS_INT
+      end
+
+      rule TSUFFIX
+        's' / 'ms' / 'us' / 'ns' / 'ps' / 'fs' / 'as'
+      end
+
+      ####################################################
+      # Commands
+      ####################################################
+
+      rule argument
+        s a1:SCALAR_ID / ('{' s a2:argWithDefault s '}') {
+          def to_ast
+            a1.empty? ? a2.to_ast : a1.to_ast
+          end
+        }
+      end
+
+      rule argWithDefault
+        SCALAR_ID s args
+      end
+
+      rule args
+        pdl_number / enum_name / reg_or_port
+      end
+
+      rule command 
+        s op:(icall_def /
+        iuseprocnamespace_def /
+        iprefix_def /
+        ireset_def /
+        iread_def /
+        iwrite_def /
+        iscan_def /
+        iapply_def /
+        inote_def /
+        ioverridescaninterface_def /
+        imerge_def /
+        itake_def /
+        irelease_def /
+        iclock_def /
+        iclock_override_def /
+        istate_def /
+        irunloop_def /
+        sl_comment) eoc {
+          def to_ast
+            op.to_ast
+          end
+        }
+      end
+
+      rule iprefix_def
+        'iPrefix' S (instancePath / '-')
+      end
+
+      rule icall_def
+        'iCall' S (instancePath '.')? (pdl_namespace_name '::')? procName s args*
+      end
+
+      rule ireset_def
+        'iReset' (s '-sync')?
+      end
+
+      rule iread_def
+        'iRead' S a1:reg_or_port s a2:(pdl_number / enum_name)? {
+          def to_ast
+            if a2.empty?
+              n :iread_def, a1.to_ast, input: input, interval: interval, file: file
+            else
+              n :iread_def, a1.to_ast, a2.to_ast, input: input, interval: interval, file: file
+            end
+          end
+        }
+      end
+
+      rule iwrite_def
+        'iWrite' S a1:reg_or_port S a2:(pdl_number / enum_name) {
+          def to_ast
+            n :iwrite_def, a1.to_ast, a2.to_ast, input: input, interval: interval, file: file
+          end
+        }
+      end
+
+      rule iscan_def
+        'iScan' S ('-ir')? s scanInterface_name s ('–chain' S chain_id)? s length s ('-si' S iscan_data)? s ('-so' S iscan_data)? s ('-stable')?
+      end
+
+      rule iscan_data
+        pdl_number / ISCAN_HEX_NUMBER / ISCAN_BIN_NUMBER
+      end
+
+      rule ioverridescaninterface_def
+        'iOverrideScanInterface' S scanInterfaceRef_list s ('-capture' S ('on' / 'off'))? s ('-update' S ('on' / 'off'))? s ('-broadcast' S ('on' / 'off'))?
+      end
+
+      rule scanInterfaceRef_list
+        scanInterfaceRef (s scanInterfaceRef)*
+      end
+
+      rule scanInterfaceRef
+        (instancePath DOT)? scanInterface_name
+      end
+
+      rule iapply_def
+        'iApply' a1:(s '-together')? {
+          def to_ast
+            n :iapply_def, !a1.empty?, input: input, interval: interval, file: file
+          end
+        }
+      end
+
+      rule iclock_def
+        'iClock' S sysClock
+      end
+
+      rule iclock_override_def
+        'iClockOverride' S sysClock s ('-source' S sourceClock)? s ('-freqMultiplier' S POS_INT)? s ('-freqDivider' S POS_INT)?
+      end
+
+      rule irunloop_def
+        'iRunLoop' S (cycleCount S ('-tck' / ('-sck' S port)) / ('-time' S tvalue))
+      end
+
+      rule imerge_def
+        'iMerge' S ('-begin' / '-end')
+      end
+
+      rule itake_def
+        'iTake' S reg_port_or_instance
+      end
+
+      rule irelease_def
+        'iRelease' S reg_port_or_instance
+      end
+
+      rule inote_def
+        'iNote' S ('-comment' / '-status') S QUOTED
+      end
+
+      rule istate_def
+        'iState' S reg_or_port S pdl_number s ('-LastWrittenValue' / '-LastReadValue' / '-LastMiscompareValue')?
+      end
+
+      rule icl_namespace_name
+        SCALAR_ID
+      end
+
+      rule pdl_namespace_name
+        SCALAR_ID
+      end
+
+      ####################################################
+      # VALUE FORMATS
+      ####################################################
+
+      rule ARGUMENT_REF
+        '$' id:SCALAR_ID {
+          def to_ast
+            n :ARGUMENT_REF, id.text_value, input: input, interval: interval, file: file
+          end
+        }
+      end
+
+      rule SCALAR_ID
+        [a-zA-Z] ([a-zA-Z0-9_])* {
+          def to_ast
+            n :SCALAR_ID, text_value, input: input, interval: interval, file: file
+          end
+        }
+      end
+
+      rule dot_id
+        SCALAR_ID ('.' SCALAR_ID)* {
+          def to_ast
+            n :dot_id, text_value, input: input, interval: interval, file: file
+          end
+        }
+      end
+
+      ####################################################
+      # HELPERS
+      ####################################################
+
+      rule eoc
+        (" " / "\t")* (';' / N / sl_comment)
+      end
+
+      # Optional space, including new lines and comments
+      rule s
+        (" " / "\t" / N / sl_comment)*
+      end
+
+      # Required space, including new lines and comments
+      rule S
+        (" " / "\t" / N / sl_comment)+
+      end
+
+      # Optional end of line
+      rule n
+        "\r"? "\n"?
+      end
+
+      # Required end of line
+      rule N
+        "\r"? "\n"
+      end
+    end
+  end
+end

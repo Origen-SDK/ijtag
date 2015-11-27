@@ -1,0 +1,10 @@
+iProcsForModule MyInstrument
+iProc ResetInstr {
+  iWrite In[0] 0;
+}
+iProc CheckInstr {
+  iWrite In 0x1; # note the use of hex (“0x” prefix)
+  iApply;
+  iRead Out;
+  iApply;
+}
