@@ -35,6 +35,10 @@ def icl_parser
   @icl_parser ||= IJTAG::ICL::Parser
 end
 
+def pdl_parser
+  @pdl_parser ||= IJTAG::PDL::Parser
+end
+
 def s(type, *children)
   IJTAG::AST::Node.new(type, children)
 end

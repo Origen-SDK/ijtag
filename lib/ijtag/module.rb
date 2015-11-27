@@ -49,7 +49,7 @@ module IJTAG
     def add_block(type, name, options = {})
       options = options.merge(class_name: type.to_s)
       block = sub_block name, options
-      if block.is_a?(Origen::Models::ScanRegister)
+      if block.is_a?(ScanRegister)
         @scan_registers << block
       else
         @modules << block if block.is_a?(IJTAG::Module)
@@ -110,7 +110,7 @@ module IJTAG
       }.merge(options)
       if nodes = nodes_between(options[:si], options[:so])
         nodes.reduce(0) do |sum, node|
-          if node.is_a?(Origen::Models::ScanRegister)
+          if node.is_a?(ScanRegister)
             sum + node.size
           else
             sum
@@ -153,7 +153,7 @@ module IJTAG
               current_chain << port.parent
               nodes_between(out, p2, current_chain)
             end
-          elsif port.parent.is_a?(Origen::Models::ScanRegister) &&
+          elsif port.parent.is_a?(ScanRegister) &&
                 port.parent.si == port
             current_chain << port
             current_chain << port.parent
@@ -173,7 +173,7 @@ module IJTAG
       nodes = nodes_between(options[:si], options[:so])
       if nodes
         nodes.map do |node|
-          if node.is_a?(Origen::Models::ScanRegister)
+          if node.is_a?(ScanRegister)
             node.path
           elsif node.is_a?(Origen::Models::Mux)
             node.path

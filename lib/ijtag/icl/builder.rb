@@ -57,7 +57,7 @@ module IJTAG
                   n = path_to_node(b, node)
                   if n.is_a?(Origen::Models::Mux)
                     n.output
-                  elsif n.is_a?(Origen::Models::ScanRegister)
+                  elsif n.is_a?(ScanRegister)
                     n.so
                   else
                     n
@@ -145,7 +145,7 @@ module IJTAG
               defer_connection port.path, -> do
                 node = path_to_node(connection.path, node)
                 if connection.type == :scan_signal
-                  if node.is_a?(Origen::Models::ScanRegister)
+                  if node.is_a?(ScanRegister)
                     node.so
                   elsif node.is_a?(Origen::Models::Mux)
                     node.output
@@ -226,7 +226,7 @@ module IJTAG
         else
           reset = 0
         end
-        reg = current_module.add_block('Origen::Models::ScanRegister', c.path, size: c.size || 1, reset: reset)
+        reg = current_module.add_block('ScanRegister', c.path, size: c.size || 1, reset: reset)
         defer { connect_sr(reg) }
         elements[:scanInSource].to_a[0].add_root(reg.parent.path).each do |connection|
           defer_connection reg.si, -> do
@@ -237,7 +237,7 @@ module IJTAG
             end
             if obj.is_a?(Origen::Models::Mux)
               obj.output
-            elsif obj.is_a?(Origen::Models::ScanRegister)
+            elsif obj.is_a?(ScanRegister)
               obj.so
             else
               obj
@@ -268,14 +268,14 @@ module IJTAG
           p = o[1].add_root(current_module.path).to_s
           defer do
             n = path_to_node(p, node)
-            if n.is_a?(Origen::Models::ScanRegister)
+            if n.is_a?(ScanRegister)
               n = n.so
             elsif n.is_a?(Origen::Models::Mux)
               n = n.output
             elsif n.is_a?(Origen::Registers::BitCollection)
               # If this is a scan connection to bit 0 of a scan register
               if o[1].type == :scan_signal
-                if n.parent.try(:parent).is_a?(Origen::Models::ScanRegister)
+                if n.parent.try(:parent).is_a?(ScanRegister)
                   n = n.parent.parent.so
                 end
               end

@@ -35,6 +35,7 @@ describe "ICL Example 21 from the 1687 spec" do
     net.client_interfaces.size.should == 0
     net.client_tap_interfaces.size.should == 1
     net.etapc1.scan_host.type.should == :host
+    net.etapc1.ir.ir?.should == true
 
     net.sel.drive(0)
     net.chain_length.should == 0
@@ -65,7 +66,6 @@ describe "ICL Example 21 from the 1687 spec" do
     net.wi2.i1.do.drive(0xF2)
     net.wi3.i1.do.drive(0xF3)
     
-    #net.shift_dr!(0, expect: 0xF1_F2_F3, size: 24).should == true
-    net.shift_dr!(0, expect: 0x11_22_33, size: 24).should == true
+    net.shift_dr!(0, expect: 0xF1_F2_F3, size: 24).should == true
   end
 end
