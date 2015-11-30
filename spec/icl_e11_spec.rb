@@ -34,5 +34,6 @@ describe "ICL Example 11 from the 1687 spec" do
     net.shift!(0, size: 27)
     net.update!
     net.chain_length.should == 1
+    net.to_graph.lookup["SI"].to_img
   end
 end

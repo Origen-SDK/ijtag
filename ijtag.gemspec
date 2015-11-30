@@ -28,6 +28,8 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "treetop", '~>1'
   spec.add_runtime_dependency "ast"
   spec.add_runtime_dependency "origen_jtag"
+  spec.add_runtime_dependency "ruby-minisat"
+  spec.add_runtime_dependency "graph"
 
   # Add any gems that your plugin needs for its development environment only
   spec.add_development_dependency "origen_doc_helpers"

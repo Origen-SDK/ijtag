@@ -1,5 +1,18 @@
 module IJTAG
   class ScanRegister < Origen::Models::ScanRegister
+    def path_with_index
+      if size > 1
+        "#{path}[#{size - 1}:0]"
+      else
+        path
+      end
+    end
+
+    def to_img(img)
+      so.ports.each { |p| img.edge path_with_index, p.path }
+      img.rectangle << img.node(path_with_index)
+    end
+
     # Returns true if the scan register is an IR register, this is determined
     # by looking at the context of its local connections
     def ir?

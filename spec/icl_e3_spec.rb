@@ -94,5 +94,6 @@ describe "ICL Example 3 from the 1687 spec" do
     net.so.data.should == 0
     net.shift!
     net.so.data.should == 1
+    #net.to_graph.lookup["SI"].to_img
   end
 end

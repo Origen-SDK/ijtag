@@ -28,6 +28,14 @@ module IJTAG
       @modules = []
     end
 
+    def to_graph
+      @to_graph ||= IJTAG::Graph.new(self)
+    end
+
+    def data_ports
+      (ports.by_type[:ScanInPort] || []) + (ports.by_type[:DataInPort] || []) + (ports.by_type[:DataOutPort] || [])
+    end
+
     def [](index)
       d = ports.by_type['DataOutPort']
       if d && d[0]

@@ -28,6 +28,27 @@ when "specs"
   require "rspec"
   exit RSpec::Core::Runner.run(['spec'])
 
+when 'graph'
+  require "graph"
+
+digraph do
+  rotate
+  boxes
+
+  ObjectSpace.each_object Class do |mod|
+    next if mod.name =~ /Errno/
+    next unless mod < Exception
+
+    edge mod.superclass.to_s, mod.to_s
+  end
+
+  blue << node("StandardError")
+  red  << node("RuntimeError")
+
+  save "tmp", "png"
+end
+  exit 0
+
 ## Example of how to make a command to run diff-based tests
 #when "examples", "test"
 #  Origen.load_application
