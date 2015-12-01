@@ -40,5 +40,6 @@ describe "ICL Example 8 from the 1687 spec" do
     net.shift!
     net.shift!
     net.shift!(size: 8, expect: 0x11).should == true
+    net.to_graph.lookup["SI"].to_img
   end
 end
