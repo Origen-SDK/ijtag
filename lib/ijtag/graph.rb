@@ -1,5 +1,7 @@
 module IJTAG
   class Graph
+    autoload :Node, "ijtag/graph/node"
+
     # Fast node lookup by path
     attr_reader :lookup
     attr_reader :sibs_by_mux
@@ -12,7 +14,20 @@ module IJTAG
     end
 
     def node(type, obj, predecessor, meta = {})
-      @lookup[obj.path] = Node.new(type, obj, predecessor, self, meta)
+      case type
+      when :sib
+        n = SIB.new(obj, predecessor, self, meta)
+      when :mux
+        n = Mux.new(obj, predecessor, self, meta)
+      when :si, :so, :port
+        n = Port.new(obj, predecessor, self, meta)
+      when :sr
+        n = ScanRegister.new(obj, predecessor, self, meta)
+      else
+        fail "Unknown graph node type: #{type}"
+      end
+
+      @lookup[obj.path] = n
     end
   end
 end

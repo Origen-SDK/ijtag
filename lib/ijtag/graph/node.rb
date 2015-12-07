@@ -1,10 +1,9 @@
 module IJTAG
   class Graph
     class Node
-      attr_reader :predecessor, :graph, :model, :type, :meta
-      def initialize(type, model, predecessor, graph, meta = {})
+      attr_reader :predecessor, :graph, :model, :meta
+      def initialize(model, predecessor, graph, meta = {})
         @meta = meta
-        @type = type
         @model = model
         @graph = graph
         @predecessor = predecessor
@@ -21,18 +20,12 @@ module IJTAG
       # one of its input ports)
       def successors(options = {})
         @successors ||= begin
-          if model.is_a?(ScanRegister)
-            debugger
+          if model.is_a?(IJTAG::ScanRegister)
             next_level(model.so)
           elsif model.is_a?(Origen::Models::Mux)
             next_level(model.output)
           elsif model.is_a?(Origen::Ports::Port)
-            if type == :sib
-              outputs = [meta[:unprocessed_ports], meta[:sr].so].flatten
-              outputs.map { |n| next_level(n, chain: [model]) }.flatten
-            else
-              predecessor ? [] : next_level(model)
-            end
+            predecessor ? [] : next_level(model)
           else
             fail "Unknown network model type: #{model.class}"
           end
@@ -42,16 +35,12 @@ module IJTAG
       def to_img(img = nil, options={})
         img, options = nil, img if img.is_a?(Hash)
         if img
-          if model.is_a?(ScanRegister)
+          if model.is_a?(IJTAG::ScanRegister)
             img.rectangle << img.node(path)
           elsif model.is_a?(Origen::Models::Mux)
             n = img.node(path)
             img.rectangle << n
             n.label "MUX (#{path})"
-          elsif type == :sib
-            n = img.node(path)
-            img.rectangle << n
-            n.label 'SIB'
           end
           successors.each do |s|
             img.edge path, s.path
@@ -62,7 +51,7 @@ module IJTAG
           img = ::Graph.new('G')
           img.rotate
           to_img(img)
-          img.save "#{RGen.root}/output/icl_network", 'png'
+          img.save "#{Origen.root}/output/icl_network", 'png'
         end
       end
 
@@ -77,12 +66,13 @@ module IJTAG
         else
           ports.map do |p|
             current_chain = chain.dup
-            if p.parent.is_a?(ScanRegister)
+            if p.parent.is_a?(IJTAG::ScanRegister)
               graph.node(:sr, p.parent, self)
             elsif p.parent.is_a?(Origen::Models::Mux)
               graph.node(:mux, p.parent, self)
             else
               if meta = sib_boundary(p)
+                debugger
                 if graph.sibs_by_mux[meta[:mux]]
                   next_level(meta[:sr].so)
                 else
@@ -110,7 +100,7 @@ module IJTAG
            mi.parent.select.connections.size == 1
           if r = mi.parent.select.connections[0].send(:cleaned_nodes)[0][:obj]
             if r.is_a?(Origen::Registers::Reg) &&
-               r.parent.is_a?(ScanRegister) && r.size == 1
+               r.parent.is_a?(IJTAG::ScanRegister) && r.size == 1
               { mux: mi.parent, sr: r.parent }
             end
           end
