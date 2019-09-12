@@ -22,6 +22,15 @@ when "my_command"
   # control flowing back to Origen
   exit 0
 
+when "build"
+  Dir.chdir Origen.root.join('ext') do
+    `flex ../vendor/ieee/ICL.l`
+    `bison ../vendor/ieee/ICL.y`
+    FileUtils.mv 'Lexer.c', 'ICL_lexer.c'
+    FileUtils.mv 'Lexer.h', 'ICL_lexer.h'
+  end
+  exit 0
+
 # Example of how to make a command to run unit tests, this simply invokes RSpec on
 # the spec directory
 when "specs"
@@ -87,6 +96,7 @@ else
   # origen -h, you can do this be assigning the required text to @application_commands
   # before handing control back to Origen. Un-comment the example below to get started.
   @application_commands = <<-EOT
+ build        Build for the latest grammar
  specs        Run the specs (tests), -c will enable coverage
   EOT
 # examples     Run the examples (tests), -c will enable coverage

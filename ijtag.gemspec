@@ -21,17 +21,16 @@ Gem::Specification.new do |spec|
                            "program/**/*.rb"
                           ]
   spec.executables   = []
-  spec.require_paths = ["lib"]
+  spec.require_paths = ["lib", "ext"]
 
   # Add any gems that your plugin needs to run within a host application
   spec.add_runtime_dependency "origen", ">= 0.5.7"
+  spec.add_runtime_dependency "ffi"
+
+  # TODO: Probably remove all of these
   spec.add_runtime_dependency "treetop", '~>1'
   spec.add_runtime_dependency "ast"
   spec.add_runtime_dependency "origen_jtag"
   spec.add_runtime_dependency "ruby-minisat"
   spec.add_runtime_dependency "graph"
-
-  # Add any gems that your plugin needs for its development environment only
-  spec.add_development_dependency "origen_doc_helpers"
-  spec.add_development_dependency "stackprof"
 end

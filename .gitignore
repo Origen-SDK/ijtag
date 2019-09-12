@@ -1,5 +1,6 @@
 # Misc
 .irb_history
+/lib/ijtag.so
 
 # Editor cruft
 *.swp
