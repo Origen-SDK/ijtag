@@ -9,6 +9,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["stephen.mcginty@freescale.com"]
   spec.summary       = "Origen interface/driver for the IEEE 1687 (IJTAG) standard"
   spec.homepage      = "http://origen-sdk.org/ijtag"
+  spec.extensions    = ['ext/extconf.rb']
 
   spec.required_ruby_version     = '>= 2'
   spec.required_rubygems_version = '>= 1.8.11'

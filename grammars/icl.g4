@@ -63,7 +63,7 @@ concat_tms_signal : signal | concat_tms_signal COMMA signal;
 concat_trst_signal : x_signal | concat_trst_signal COMMA x_signal;
 
 // 6.4.2
-icl_source : iclSource_items | icl_source iclSource_items;
+icl_source : iclSource_items+ EOF;
 iclSource_items : nameSpace_def | useNameSpace_def | module_def;
 
 // 6.4.3
@@ -659,6 +659,8 @@ SOURCE                        :  'Source'                                   ;
 STAR                          :  '*'                                        ;
 STD_1149_1_2001               :  'STD_1149_1_2001'                          ;
 STD_1149_1_2013               :  'STD_1149_1_2013'                          ;
+//STRING                        : 	\"(([^\"\\])|\\\\|\\)*\"                  ;
+STRING                        :  '"' (~('"'|'\\')|'\\\\'|'\\"')* '"'        ;
 TCKPORT                       :  'TCKPort'                                  ;
 TILDE                         :  '~'                                        ;
 LOGIC_NOT                     :  '!'                                        ;
@@ -683,8 +685,6 @@ WRITEENPORT                   :  'WriteEnPort'                              ;
 WRITEENSOURCE                 :  'WriteEnSource'                            ;
 SCALAR_ID                     :  [a-zA-Z][a-zA-Z0-9_]*                      ;
 XOR                           :  '^'                                        ;
-
-STRING                        :  '"' (~('"'|'\\')|'\\\\'|'\\"')* '"'        ;
 
 SPACE                         :  ( ' ' | '\t' | ('\r'? '\n') )+ -> skip     ;
 ML_COMMENT                    :  '/*' .*? '*/' -> skip                      ;

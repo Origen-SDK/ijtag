@@ -1,5 +1,9 @@
 
+To compile the C++ extension after making edits:
 
+~~~
+rake compile
+~~~
 
 https://en.wikipedia.org/wiki/GNU_Bison
 
