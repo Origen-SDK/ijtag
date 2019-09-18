@@ -9,6 +9,13 @@ namespace IJTAG {
 
 class iclGraph {
 
+  struct VertexData {
+    string text;
+  };
+
+  struct EdgeData {
+  };
+
 public:
 
 };

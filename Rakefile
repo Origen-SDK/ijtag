@@ -13,15 +13,17 @@ require "origen"
 task :default => :build
 
 desc 'Compile the C++ extension'
-task :build => 'ext/ijtag/iclParser.cpp' do
+task :build => 'ext/icl-parser/iclParser.cpp' do
   Rake::Task["compile"].invoke 
 end
 
+Rake::ExtensionTask.new('antlr4-runtime')
+Rake::ExtensionTask.new('icl-parser')
 Rake::ExtensionTask.new('ijtag')
 
-file 'ext/ijtag/iclParser.cpp' => 'grammars/icl.g4' do
+file 'ext/icl-parser/iclParser.cpp' => 'grammars/icl.g4' do
   Dir.chdir 'grammars' do
-    sh "java -jar #{ENV['ANTLR4']} -Dlanguage=Cpp -no-listener -visitor -o ../ext/ijtag icl.g4"
+    sh "java -jar #{ENV['ANTLR4']} -Dlanguage=Cpp -no-listener -visitor -o ../ext/icl-parser icl.g4"
   end
 end
 

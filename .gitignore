@@ -1,6 +1,12 @@
+# Listing these manually rather than *.so so that the lib symlinks do
+# get checked in
+/lib/antlr4-runtime.so
+/lib/icl-parser.so
+/lib/icl-parser.so
+/lib/ijtag.so
+
 # Misc
 .irb_history
-/lib/ijtag.so
 
 # Editor cruft
 *.swp
